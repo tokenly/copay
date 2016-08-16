@@ -1,0 +1,68 @@
+.assets {
+  margin-top: 30px;
+}
+
+.asset {
+  padding: 12px 20px;
+  background-color: #fff;
+  border-top: 1px solid #E4E8EC;
+  .asset--content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  &:last-of-type {
+    border-bottom: 1px solid #E4E8EC; 
+  }
+  .asset--primary {
+    display: flex;
+    align-items: center;
+  }
+  .asset--name {
+    .asset--short {
+      font-size: 22px;
+      font-weight: bold;
+      color: cornflowerblue;
+      line-height: 1.2;
+    }
+    .asset--sym {
+      font-size: 14px;
+      font-weight: bold;
+      color: #676767;
+      &:before, &:after {
+        color: #b1b1b1;
+      }
+      &:before {
+        content: '('
+      }
+      &:after {
+        content: ')'
+      }
+    }
+  }
+  .asset--avatar {
+    width: 33px;
+    height: 33px;
+    margin-right: 10px;
+    overflow: hidden;
+    background-color: coral;
+  }
+  .asset--balance {
+    margin-left: auto;
+    text-align: right;
+    font-family: monospace;
+    .asset--quantity {
+      font-size: 22px;
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+    .asset--currency {
+      font-size: 14px;
+      color: #676767;
+    }
+  }
+  .asset--info {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
