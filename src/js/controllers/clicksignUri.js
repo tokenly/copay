@@ -100,7 +100,7 @@ angular.module('copayApp.controllers').controller('clicksignUriController',
 		});
 		if (did_sign) {
 			var callback = this.callback;
-			var encode_sig = encodeURI(did_sign);
+			var encode_sig = encodeURIComponent(did_sign);
 			var has_query = false;
 			if (callback.split('?').length > 1) {
 				has_query = true;
