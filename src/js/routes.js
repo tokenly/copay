@@ -528,6 +528,16 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
             templateUrl: 'views/add.html'
           },
         }
+      })
+      .state('uriclicksign', {
+        url: '/uri-click-sign/:url',
+        needProfile: true,
+        walletShouldBeComplete: true,
+        views: {
+          'main': {
+            templateUrl: 'views/clicksignUri.html'
+          },
+        }
       });
   })
   .run(function($rootScope, $state, $location, $log, $timeout, $ionicPlatform, lodash, platformInfo, profileService, uxLanguage, go, gettextCatalog) {

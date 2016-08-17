@@ -26,7 +26,12 @@ angular.module('copayApp.services')
                         return cb(msg);
                 }
             } else {
-                details = JSON.parse(address);
+				if(typeof address == 'string') {
+					details = JSON.parse(address);
+				}
+				else {
+					details = address;
+				}
                 client.getClearSignedMessage(details, client.credentials.xPrivKey, toSign, function(response) {
                         result = response
                 });

@@ -16,9 +16,9 @@ angular.module('copayApp.services').factory('openURLService', function($rootScop
     startsWith: 'copay:coinbase',
 
   },{
-      stname: 'Pockets Callback',
-    startsWith: 'pockets:',
-    transitionTo: 'uripockets'
+    name: 'Pockets Click-to-Sign',
+    startsWith: 'pockets:sign',
+    transitionTo: 'uriclicksign'
   }];
 
 
@@ -110,6 +110,12 @@ angular.module('copayApp.services').factory('openURLService', function($rootScop
                         url: pathData.substring(pathData.indexOf('copay:'))
                     });
                 }
+				else if (pathData.indexOf('pockets:') != -1) {
+                    $log.debug('Pockets URL found');
+                    handleOpenURL({
+                        url: pathData.substring(pathData.indexOf('pockets:'))
+                    });
+                }                
             });
 
             // Used at the startup of Copay

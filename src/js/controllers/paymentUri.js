@@ -30,12 +30,6 @@ angular.module('copayApp.controllers').controller('paymentUriController',
         uri.network = uri.address.network.name;
         this.uri = uri;
       }
-
-      // Build pocketsURI with querystrings
-
-        var pocketQuery = [];
-
-        console.log($stateParams);
     };
 
     this.getWallets = function(network) {

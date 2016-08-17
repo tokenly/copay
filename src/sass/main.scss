@@ -2107,3 +2107,5 @@ body.modal-open {
     color: #2C3E50;
   }
 }
+
+select option:empty { display:none }
