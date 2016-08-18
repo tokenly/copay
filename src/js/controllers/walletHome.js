@@ -402,6 +402,9 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
         configurable: true
       });
 
+    // [temporary] token property
+    $scope.token = '';
+
     var fc = profileService.focusedClient;
     // ToDo: use a credential's (or fc's) function for this
     this.hideNote = !fc.credentials.sharedEncryptingKey;
@@ -454,9 +457,12 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
 
       address = form.address.$modelValue;
       amount = parseInt((form.amount.$modelValue * unitToSat).toFixed(0));
+      var token = $scope._token;
+      console.log('scope._token', token);
 
       outputs.push({
         'toAddress': address,
+        'token': token,
         'amount': amount,
         'message': comment
       });
@@ -536,7 +542,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
           walletService.signTx(client, publishedTxp, function(err, signedTxp) {
             ongoingProcess.set('signingTx', false);
             walletService.lock(client);
-            if (err) {tprv8ZgxMBicQKsPey4uCcsQJjgsrjnz7139DXNpD784vky4aYMtfRzgfyRaHe36FBLgQrVF673a6pfDTExyvUzy23ZSEe8v1zzraAFKGeVRAGr
+            if (err) {
               $scope.$emit('Local/TxProposalAction');
               return self.setSendError(
                 err.message ?

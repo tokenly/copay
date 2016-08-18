@@ -41,6 +41,7 @@
     "url": "https://github.com/bitpay/copay/issues"
   },
   "dependencies": {
+    "counterparty-utils": "https://github.com/tokenly/counterparty-utils.git",
     "bitcore-wallet-client": "https://github.com/tokenly/bitcore-wallet-client.git",
     "bitcore-counterparty-wallet-client": "https://github.com/tokenly/bitcore-counterparty-wallet-client.git",
     "coveralls": "^2.11.9",

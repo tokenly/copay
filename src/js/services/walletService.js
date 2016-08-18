@@ -1,7 +1,7 @@
 'use strict';
 
 // DO NOT INCLUDE STORAGE HERE \/ \/
-angular.module('copayApp.services').factory('walletService', function($log, lodash, trezor, ledger, storageService, configService, uxLanguage) {
+angular.module('copayApp.services').factory('walletService', function($log, lodash, trezor, ledger, storageService, configService, counterpartyService, uxLanguage) {
 // DO NOT INCLUDE STORAGE HERE ^^
   
   var root = {};
@@ -96,9 +96,28 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
         $log.debug('Dynamic fee: ' + txp.feeLevel + ' ' + feeLevelValue.feePerKB + ' SAT');
 
         txp.feePerKb = feeLevelValue.feePerKB;
+
+        // handle token send
+        console.log('counterpartyService.isTokenSendProposal(txp)', counterpartyService.isTokenSendProposal(txp));
+        var isTokenProposal = counterpartyService.isTokenSendProposal(txp);
+        var originalTxp = txp;
+        if (isTokenProposal) {
+          txp = counterpartyService.buildTrialTokenSendProposalScripts(originalTxp);
+        }
+
+        console.log('[walletService] client.createTxProposal txp.noShuffleOutputs', txp.noShuffleOutputs);
         client.createTxProposal(txp, function(err, createdTxp) {
           if (err) return cb(err);
           else {
+
+            if (isTokenProposal) {
+              counterpartyService.recreateRealTokenSendProposal(client, originalTxp, txp, createdTxp, function(err, recreatedTxp) {
+                if (err) return cb(err);
+                return cb(null, recreatedTxp);
+              });
+              return
+            }
+
             $log.debug('Transaction created');
             return cb(null, createdTxp);
           }

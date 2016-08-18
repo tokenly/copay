@@ -675,11 +675,13 @@ angular.module('copayApp.controllers').controller('indexController', function($r
 
       if (counterpartyService.isEnabled()) {
         // with tokens
-        var walletId = profileService.focusedClient.credentials.walletId;
-        return counterpartyService.applyCounterpartyDataToTxHistory(walletId, localTxs, function(err, localTxsWithCPData) {
+        addressService.getAddress(profileService.focusedClient.credentials.walletId, false, function(err, address) {
           if (err) return cb(err);
-          cb(null, lodash.compact(localTxsWithCPData))
-        });
+          return counterpartyService.applyCounterpartyDataToTxHistory(walletId, localTxs, function(err, localTxsWithCPData) {
+            if (err) return cb(err);
+            cb(null, lodash.compact(localTxsWithCPData))
+          });
+        })
       }
 
       return cb(null, lodash.compact(localTxs));
