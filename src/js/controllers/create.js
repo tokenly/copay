@@ -104,7 +104,7 @@ angular.module('copayApp.controllers').controller('createController',
         bwsurl: $scope.bwsurl,
         singleAddress: $scope.isTokenEnabled ? true : $scope.singleAddressEnabled,
         walletPrivKey: $scope._walletPrivKey, // Only for testing
-        isTokenEnabled: $scope.isTokenEnabled,
+        tokenEnabled: $scope.isTokenEnabled,
         bcpwsurl: $scope.bcpwsurl,
         version: 1
       };

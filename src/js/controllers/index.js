@@ -203,6 +203,13 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     var defaults = configService.getDefaults();
     var config = configService.getSync();
 
+    if (counterpartyService.isEnabled()) {
+      self.usingCustomBWS = config.bwsFor && config.bwsFor[self.walletId] && (config.bwsFor[self.walletId] != defaults.counterpartyTokens.bws.url);
+      console.log('BWS| defaults.counterpartyTokens.bws.url', defaults.counterpartyTokens.bws.url);
+      console.log('BWS| config.bwsFor[self.walletId]', config.bwsFor[self.walletId]);
+      return;
+    }
+
     self.usingCustomBWS = config.bwsFor && config.bwsFor[self.walletId] && (config.bwsFor[self.walletId] != defaults.bws.url);
   };
 
@@ -304,6 +311,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
             self.updateError = bwcError.msg(err, gettext('Could not update Wallet'));
           } else {
             self.isSingleAddress = !!ret.wallet.singleAddress;
+            self.isTokenEnabled = (self.isSingleAddress && counterpartyService.isEnabled())
             if (!opts.quiet)
               self.updating = ret.wallet.scanStatus == 'running';
           }
