@@ -4,9 +4,9 @@ angular.module('copayApp.controllers').controller('preferencesColorController', 
 
   $scope.colorList = [
         '#DD4B39',
-        '#F38F12',
+        '#F48E5A',
         '#FAA77F',
-        '#D0B136',
+        '#F4D15A',
         '#9EDD72',
         '#29BB9C',
         '#019477',
@@ -15,7 +15,7 @@ angular.module('copayApp.controllers').controller('preferencesColorController', 
         '#484ED3',
         '#9B59B6',
         '#E856EF',
-        '#FF599E',
+        '#E05273',
         '#7A8C9E',
       ];
 

@@ -32,14 +32,14 @@ textarea {
 
 input {
   &[type="text"]:focus, &[type="password"]:focus, &[type="date"]:focus, &[type="datetime"]:focus, &[type="datetime-local"]:focus, &[type="month"]:focus, &[type="week"]:focus, &[type="email"]:focus, &[type="number"]:focus, &[type="search"]:focus, &[type="tel"]:focus, &[type="time"]:focus, &[type="url"]:focus, &[type="color"]:focus {
-    color: #4B6178;
+    color: $brand-primary;
     border-color: #CED5DC;
     background: transparent;
   }
 }
 
 textarea:focus {
-  color: #4B6178;
+  color: $brand-primary;
   border-color: #CED5DC;
   background: transparent;
 }
@@ -469,7 +469,7 @@ input[type=number] {
   vertical-align: text-bottom;
   &.outline {
     background: transparent;
-    border: 1px solid #4B6178;
+    border: 1px solid $brand-primary;
     &.gray {
       font-size: 90%;
       background: transparent;
@@ -483,7 +483,7 @@ input[type=number] {
     background-color: #ED4A43;
   }
   &.gray {
-    background-color: #4B6178;
+    background-color: $brand-primary;
   }
 }
 
