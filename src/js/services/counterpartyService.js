@@ -29,13 +29,17 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
         }
       }
 
-      console.log('(cb2) balances for address '+address, tokenBalances);
+      // console.log('[CPTY] balances for address '+address, tokenBalances);
       cb(err, tokenBalances);
     });
   };
 
 
   root.applyCounterpartyDataToTxHistory = function(address, txHistory, cb) {
+    if (!root.isEnabled()) {
+      cp(null, txHistory);
+    }
+
     var txIdsForLookup = [];
     for (var i = 0; i < txHistory.length; i++) {
       var txObject = txHistory[i];
@@ -45,10 +49,10 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
     }
 
     // lookup all txids
-    console.log('applyCounterpartyDataToTxHistory address='+address+' txHistory', txHistory, 'txIdsForLookup:', txIdsForLookup);
+    console.log('[CPTY] applyCounterpartyDataToTxHistory address='+address+' txHistory', txHistory, 'txIdsForLookup:', txIdsForLookup);
     counterpartyClient.getTransactions(address, txIdsForLookup, function(err, cpTransactions) {
-      console.log('applyCounterpartyDataToTxHistory err:', err);
-      console.log('applyCounterpartyDataToTxHistory cpTransactions:', cpTransactions);
+      if (err) return cb(err)
+      console.log('[CPTY] applyCounterpartyDataToTxHistory cpTransactions:', cpTransactions);
       var cpTxHistory = applyCounterpartyTransactionsToTXHistory(cpTransactions, txHistory)
       cb(null, cpTxHistory);
     })
@@ -66,7 +70,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
   }
 
   root.buildTrialTokenSendProposalScripts = function(txp) {
-    console.log('buildTrialTokenSendProposalScripts',txp);
+    console.log('[CPTY] buildTrialTokenSendProposalScripts',txp);
 
     var newTxp = lodash.assign({}, txp);
 
@@ -97,8 +101,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
   }
 
   root.recreateRealTokenSendProposal = function(client, originalTxp, trialTxp, trialCreatedTxp, cb) {
-    console.log('recreateRealTokenSendProposal originalTxp=', originalTxp);
-    console.log('recreateRealTokenSendProposal trialCreatedTxp=', trialCreatedTxp);
+    console.log('[CPTY] recreateRealTokenSendProposal trialCreatedTxp=', trialCreatedTxp);
 
     var newTxp = lodash.assign({}, trialTxp);
 
@@ -108,9 +111,9 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
       var quantitySat = oldOutput.amount;
 
       // build the real OP_RETURN script
-      console.log('recreateRealTokenSendProposal '+quantitySat+' '+token+' '+trialCreatedTxp.inputs[0].txid+'');
+      console.log('[CPTY] recreateRealTokenSendProposal '+quantitySat+' '+token+' '+trialCreatedTxp.inputs[0].txid+'');
       newTxp.outputs[1].script = counterpartyUtils.createSendScriptHex(token, quantitySat, trialCreatedTxp.inputs[0].txid);
-      console.log('recreateRealTokenSendProposal script is '+newTxp.outputs[1].script+'');
+      console.log('[CPTY] recreateRealTokenSendProposal script is '+newTxp.outputs[1].script+'');
 
       // for realz
       newTxp.dryRun = false;
@@ -119,8 +122,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
       newTxp.inputs = lodash.clone(trialCreatedTxp.inputs);
 
       // now submit the proposal to the server with the correct script for final creation
-      console.log('creating final - submitting newTxp:', newTxp);
-      console.log('[counterpartyService] client.createTxProposal newTxp.noShuffleOutputs', newTxp.noShuffleOutputs);
+      console.log('[CPTY] creating final - submitting newTxp:', newTxp);
       client.createTxProposal(newTxp, function(err, finalCreatedTxp) {
         if (err) return cb(err);
 
@@ -129,7 +131,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
           finalCreatedTxp.recipientCount = 1;
         }
 
-        console.log('recreateRealTokenSendProposal finalCreatedTxp=', finalCreatedTxp);
+        console.log('[CPTY] recreateRealTokenSendProposal finalCreatedTxp=', finalCreatedTxp);
         cb(null, finalCreatedTxp);
       });
     }
@@ -169,13 +171,13 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
   }
 
   function applyCounterpartyTransaction(cpTransaction, txEntry) {
-    console.log('applyCounterpartyTransaction txid:'+txEntry.txid+' cpTransaction:', cpTransaction);
-    var cpData = txEntry.counterparty || {};
+    // make a copy of the existing counterparty data
+    var cpData = lodash.assign({}, txEntry.counterparty || {});
     cpData.validatedConfirmations = txEntry.confirmations;
 
-    // set to false by default if not set yet
+    // set to null by default if not set yet
     cpData.isCounterparty = null;
-    if (txEntry.isCounterparty != null && txEntry.counterparty.isCounterparty != null) {
+    if (txEntry.counterparty != null && txEntry.counterparty.isCounterparty != null) {
       cpData.isCounterparty = txEntry.counterparty.isCounterparty;
     }
 
@@ -183,14 +185,29 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
       // found a counterparty transaction - merge it in
       cpData.isCounterparty = true;
       lodash.assign(cpData, cpTransaction);
+      console.log('[CPTY] applyCounterpartyTransaction txid:'+txEntry.txid+' cpTransaction:', cpTransaction);
+
+      // sent hasMultiplesOutputs to false
+      txEntry.hasMultiplesOutputs = false;
+
+      // fix the amount to be the amounts from the first output
+      txEntry.amount = txEntry.outputs[0].amount
+      txEntry.amountStr = txEntry.outputs[0].amountStr
+
+      // create a counterparty amout string
+      cpData.amountStr = cpData.quantityFloat + " " + cpData.asset
+
     } else {
       // did not find this counterparty transaction
       if (isRecentOrUnvalidatedCounterpartyTransaction(txEntry)) {
         cpData.isCounterparty = false;        
+        console.log('[CPTY] applyCounterpartyTransaction txid:'+txEntry.txid+' cpData.isCounterparty:', cpData.isCounterparty);
       }
     }
 
     txEntry.counterparty = cpData;
+    txEntry.isCounterparty = cpData.isCounterparty;
+
     return txEntry;
   }
 

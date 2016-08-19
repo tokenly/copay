@@ -26,7 +26,8 @@
           </div>
 
           <div class="size-36" ng-click="copyToClipboard(btx.amountStr, $event)">
-            <span class="enable_text_select">{{btx.amountStr}}</span>
+            <span ng-if="btx.isCounterparty" class="enable_text_select">{{btx.counterparty.amountStr}}</span>
+            <span ng-if="!btx.isCounterparty" class="enable_text_select">{{btx.amountStr}}</span>
           </div>
           <div class="alternative-amount" ng-click="showRate=!showRate" ng-init="showRate = false">
             <span class="label gray radius" ng-show="!showRate && alternativeAmountStr">
@@ -86,6 +87,12 @@
             <time>{{ btx.time * 1000 | amDateFormat:'MM/DD/YYYY HH:mm a'}}</time>
             <time>({{ btx.time * 1000 | amTimeAgo}})</time>
           </span>
+        </li>
+
+        <li class="line-b p10" ng-if="btx.isCounterparty">
+          <span ng-show="btx.action == 'received'" class="text-gray" translate>Dust Received</span>
+          <span ng-show="btx.action != 'received'" class="text-gray" translate>Dust Sent</span>
+          <span class="right enable_text_select">{{btx.amountStr}}</span>
         </li>
 
         <li class="line-b p10" ng-show="btx.action != 'received'"

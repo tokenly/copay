@@ -673,17 +673,6 @@ angular.module('copayApp.controllers').controller('indexController', function($r
         $log.warn(ex);
       }
 
-      if (counterpartyService.isEnabled()) {
-        // with tokens
-        addressService.getAddress(profileService.focusedClient.credentials.walletId, false, function(err, address) {
-          if (err) return cb(err);
-          return counterpartyService.applyCounterpartyDataToTxHistory(walletId, localTxs, function(err, localTxsWithCPData) {
-            if (err) return cb(err);
-            cb(null, lodash.compact(localTxsWithCPData))
-          });
-        })
-      }
-
       return cb(null, lodash.compact(localTxs));
     });
   }
@@ -802,24 +791,28 @@ angular.module('copayApp.controllers').controller('indexController', function($r
         }
 
         updateNotes(function() {
-          var historyToSave = JSON.stringify(newHistory);
+          self.applyCounterpartyData(newHistory, function(err, newHistory) {
+            if (err) return cb(err);
 
-          lodash.each(txs, function(tx) {
-            tx.recent = true;
-          })
+            var historyToSave = JSON.stringify(newHistory);
 
-          $log.debug('Tx History synced. Total Txs: ' + newHistory.length);
+            lodash.each(txs, function(tx) {
+              tx.recent = true;
+            })
 
-          // Final update
-          if (walletId == profileService.focusedClient.credentials.walletId) {
-            self.completeHistory = newHistory;
-            self.setCompactTxHistory();
-          }
+            $log.debug('Tx History synced. Total Txs: ' + newHistory.length);
 
-          return storageService.setTxHistory(historyToSave, walletId, function() {
-            $log.debug('Tx History saved.');
+            // Final update
+            if (walletId == profileService.focusedClient.credentials.walletId) {
+              self.completeHistory = newHistory;
+              self.setCompactTxHistory();
+            }
 
-            return cb();
+            return storageService.setTxHistory(historyToSave, walletId, function() {
+              $log.debug('Tx History saved.');
+
+              return cb();
+            });
           });
         });
       });
@@ -1806,6 +1799,21 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     });
   });
 
+  self.applyCounterpartyData = function(txHistory, cb) {
+    if (!counterpartyService.isEnabled()) {
+      return cb(null, txHistory);
+    }
+
+    // add tokens
+    addressService.getAddress(profileService.focusedClient.credentials.walletId, false, function(err, address) {
+      if (err) return cb(err);
+
+      counterpartyService.applyCounterpartyDataToTxHistory(address, txHistory, function(err, txHistoryWithCPData) {
+        if (err) return cb(err);
+        cb(null, lodash.compact(txHistoryWithCPData))
+      });
+    })
+  }
 
   /* Start setup */
   lodash.assign(self, vanillaScope);
