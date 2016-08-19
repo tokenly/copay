@@ -514,17 +514,19 @@
           </h4>
         </div> -->
 
-        <div ng-show="tokenBalancesLoading" class="asset--loading">
-          Loading Token Balances...
-        </div>
-        <div ng-show="tokenBalances.length == 0">
-          No Tokens Found
+        <div class="assets--loading">
+          <div ng-show="tokenBalancesLoading" class="asset--loading">
+            Loading Token Balances...
+          </div>
+          <div ng-show="tokenBalances.length == 0">
+            No Tokens Found
+          </div>
         </div>
         <div class="asset" ng-show="!tokenBalancesLoading" ng-repeat="token in tokenBalances">
           <div class="asset--content">
             <div class="asset--primary">
               <div class="asset--avatar">
-                <img src="http://thecatapi.com/api/images/get?format=src&results_per_page=1&size=small" alt="Asset Avatar">
+                <img src="{{ asset.avatar ? asset.avatar : 'img/tokenly-logo.svg' }}" alt="Avatar">
               </div>
               <div class="asset--name">
                 <div>

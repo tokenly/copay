@@ -4,13 +4,19 @@
  *
  */
 
+$brand-primary: #42709f;
+$brand-secondary: #ebdd2f;
+
+$sidebar-color: #f7f7f7;
+
+
 body {
   font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .panel {
   h1, h2, h3, h4, h5, h6, p, li, dl {
-    color: #2C3E50;
+    color: $brand-primary;
   }
 }
 
@@ -40,7 +46,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #2C3E50;
+  color: $brand-primary;
 }
 
 h1 {
@@ -66,7 +72,7 @@ h4 {
   border-bottom: 1px solid #E2E7ED;
   background: #fff;
   padding: 0.8rem;
-  color: #4B6178;
+  color: $brand-primary;
   font-weight: 500;
   font-size: 0.75rem;
   text-align: center;
@@ -130,7 +136,7 @@ h4.title a {
   margin-bottom: 1.5rem;
   background-color: #E4E8EC;
   padding-left: 0.5rem;
-  color: #2C3E50;
+  color: $brand-primary;
   font-size: 13px;
   height: 35px;
   padding-top: 7px;
@@ -173,7 +179,7 @@ ul.button-group li {
 body, html {
   height: 100%;
   width: 100%;
-  color: #2C3E50;
+  color: $brand-primary;
   -webkit-user-select: text;
 }
 
@@ -242,7 +248,7 @@ a {
 }
 
 .main-dark {
-  background-color: #2C3E50;
+  background-color: $brand-primary;
   height: 100%;
 }
 
@@ -394,7 +400,7 @@ ul.tx-copayers {
 
 .receive h5, .backup h5 {
   font-weight: 500;
-  color: #4B6178;
+  color: $brand-primary;
   margin-bottom: 1rem;
 }
 
@@ -438,14 +444,14 @@ ul.tx-copayers {
   span {
     margin-bottom: 5px;
     font-size: 12px;
-    color: #2C3E50;
+    color: $brand-primary;
   }
 }
 
 .manage a {
   text-transform: uppercase;
   font-weight: 700;
-  color: #4B6178;
+  color: $brand-primary;
   padding: 1.5rem 1rem;
   display: block;
   overflow: hidden;
@@ -461,7 +467,7 @@ ul.manage li {
 }
 
 .manage a i.circle {
-  background-color: #4B6178;
+  background-color: $brand-primary;
   width: 50px;
   height: 50px;
   padding: 0.65rem;
@@ -1038,7 +1044,7 @@ input.ng-invalid-match {
 }
 
 .black {
-  background-color: #2C3E50;
+  background-color: $brand-primary;
 }
 
 .white {
@@ -1062,7 +1068,7 @@ input.ng-invalid-match {
 }
 
 .text-black {
-  color: #2C3E50;
+  color: $brand-primary;
 }
 
 .text-primary {
@@ -1223,7 +1229,7 @@ input.ng-invalid-match {
   z-index: 999;
   top: 0;
   left: 0;
-  background-color: #2C3E50;
+  background-color: $brand-primary;
 }
 
 .loading-screen-content {
@@ -1251,7 +1257,7 @@ input.ng-invalid-match {
   height: 280px;
   overflow: scroll;
   background: #213140;
-  border: 1px solid #4B6178;
+  border: 1px solid $brand-primary;
   border-radius: 5px;
   margin: 1rem;
   color: #A5B2BF;
@@ -1346,13 +1352,13 @@ input.ng-invalid-match {
 
 .splash {
   top: 0;
-  background: #2C3E50;
+  background: $brand-primary;
   background-image: -webkit-linear-gradient(#3D5672 0%, #223243 100%);
   background-image: -o-linear-gradient(#3D5672 0%, #223243 100%);
   background-image: linear-gradient(#3D5672 0%, #223243 100%);
   .start-button button {
     &.black {
-      background-color: #4B6178;
+      background-color: $brand-primary;
     }
     &.outline.tiny {
       font-size: 0.58rem;
@@ -1456,7 +1462,7 @@ input.ng-invalid-match {
 }
 
 .tab-bar {
-  background-color: #4B6178;
+  background-color: $brand-primary;
   z-index: 5;
   h1 {
     font-weight: 500;
@@ -1609,7 +1615,7 @@ input.ng-invalid-match {
 }
 
 .camera-icon a {
-  background: #4B6178;
+  background: $brand-primary;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.5);
   color: #fff;
   display: block;
@@ -1647,13 +1653,17 @@ a.missing-copayers {
   margin-bottom: 50px;
 }
 
+.sidebar-wrapper {
+  background-color: $sidebar-color;
+}
+  
 .sidebar ion-content {
-  background: #2C3E50;
+  background: $sidebar-color;
   top: 115px;
 }
 
 .sidebar {
-  background: #2C3E50;
+  background: $brand-primary;
   .icon {
     width: 39px;
     text-align: center;
@@ -1674,13 +1684,13 @@ a.missing-copayers {
 .sidebar {
   li {
     overflow: hidden;
-    border-bottom: 1px solid #384B5F;
+    border-bottom: 1px solid #d0d0d0;
     &.nav-item.selected {
-      background-color: #122232;
+      background-color: #fff;
     }
   }
   .avatar-wallet {
-    background-color: #2C3E50;
+    background-color: $brand-primary;
     color: #fff;
     font-size: 1.4rem;
     font-weight: 700;
@@ -1695,7 +1705,7 @@ a.missing-copayers {
 }
 
 .payment-uri .avatar-wallet, .modal-content .avatar-wallet {
-  background-color: #2C3E50;
+  background-color: $brand-primary;
   color: #fff;
   font-size: 1.4rem;
   font-weight: 700;
@@ -1712,7 +1722,6 @@ a.missing-copayers {
   header {
     text-align: center;
     padding: 1.7rem;
-    border-bottom: 1px solid #384B5F;
     h1 {
       color: #fff;
       margin: 0;
@@ -1721,6 +1730,13 @@ a.missing-copayers {
     small {
       color: #fff;
     }
+    .logo {
+      width: 30px;
+      height: auto;
+    }
+  }
+  .menu {
+    background-color: #f7f7f7;
   }
 }
 
@@ -1732,7 +1748,7 @@ a.missing-copayers {
   padding: 1rem 0.7rem;
   font-size: 12px;
   font-weight: 300;
-  color: #A5B2BF;
+  color: #656565;
   cursor: pointer !important;
 }
 
@@ -1879,7 +1895,7 @@ to prevent collapsing during animation*/
     top: 0px;
     z-index: 2000;
     opacity: 1.0 !important;
-    background-color: #2C3E50;
+    background-color: $brand-primary;
   }
   &.client-error {
     position: absolute;
@@ -2102,9 +2118,9 @@ body.modal-open {
 }
 
 .tab-container.selected {
-  border-bottom: 3px solid #4B6178;
+  border-bottom: 3px solid $brand-primary;
   a {
-    color: #2C3E50;
+    color: $brand-primary;
   }
 }
 
