@@ -332,7 +332,7 @@
     send
 
     -->
-    <div id="send" class="send tab-view">
+    <div id="send" class="send tab-view" ng-init="_token='BTC'">
       <div class="pr p25b">
         <h4 class="title m0" ng-show="!index.updating">
           <available-balance ng-show="!index.shouldHideBalance"></available-balance>
@@ -369,7 +369,11 @@
                   <span translate>Token</span>
                 </label>
                 <div class="input">
-                  <input  class="m0" type="text" id="token" name="address" placeholder="THETOKEN" ng-model="_token">
+                  <select class="m10t" ng-model="_token"
+                    ng-options="tokenValue as tokenLabel for (tokenValue, tokenLabel) in home.getSendableTokens()"
+                    ng-change="home.setTokenName(_token)">
+                  </select>
+
                 </div>
               </div>
             </div>
@@ -435,7 +439,7 @@
                   <div class="input">
                     <input type="number" id="amount" ng-disabled=" home.lockAmount" name="amount" ng-attr-placeholder="{{'Amount in'|translate}} {{home.unitName}}" ng-model="_amount" valid-amount required autocomplete="off" ng-focus="home.formFocus('amount')" ng-blur="home.formFocus(false)" ignore-mouse-wheel>
                     <input type="number" id="alternative"  name="alternative"  ng-model="_alternative" style="display:none">
-                    <a class="postfix button" ng-style="{'background-color':index.backgroundColor}" ng-click="home.showAlternative()">{{home.unitName}}</a>
+                    <a class="postfix button" ng-show="_token == 'BTC'" ng-style="{'background-color':index.backgroundColor}" ng-click="home.showAlternative()">{{home.unitName}}</a>
                   </div>
                 </div>
                 <div ng-show="home.canShowAlternative()">

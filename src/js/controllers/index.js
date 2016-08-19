@@ -205,8 +205,6 @@ angular.module('copayApp.controllers').controller('indexController', function($r
 
     if (counterpartyService.isEnabled()) {
       self.usingCustomBWS = config.bwsFor && config.bwsFor[self.walletId] && (config.bwsFor[self.walletId] != defaults.counterpartyTokens.bws.url);
-      console.log('BWS| defaults.counterpartyTokens.bws.url', defaults.counterpartyTokens.bws.url);
-      console.log('BWS| config.bwsFor[self.walletId]', config.bwsFor[self.walletId]);
       return;
     }
 

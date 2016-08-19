@@ -279,6 +279,23 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
 
   // Send
 
+  this.getSendableTokens = function() {
+    var sendableTokens = {
+      "BTC": "BTC",
+    }
+
+    lodash.each($scope.tokenBalances, function(token) {
+      sendableTokens[token.tokenName] = token.tokenName;
+    });
+
+    return sendableTokens;
+  };
+  this.setTokenName = function(newTokenValue) {
+    var tokenLabel = self.getSendableTokens()[newTokenValue];
+    self.unitName = tokenLabel;
+    this.hideAlternative();
+  };
+
   this.canShowAlternative = function() {
     return $scope.showAlternative;
   };
@@ -458,7 +475,6 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       address = form.address.$modelValue;
       amount = parseInt((form.amount.$modelValue * unitToSat).toFixed(0));
       var token = $scope._token;
-      console.log('scope._token', token);
 
       outputs.push({
         'toAddress': address,
