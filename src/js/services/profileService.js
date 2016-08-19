@@ -554,10 +554,10 @@ angular.module('copayApp.services')
         bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
 
         var bcpwsFor = {};
-        bcpwsFor[walletId] = opts.bcpwsurl || defaults.counterpartyTokens.counterpartyService;
+        bcpwsFor[walletId] = opts.bcpwsurl || defaults.counterpartyTokens.counterpartyService.url;
 
         // Dont save if these are the defaults
-        if (bwsFor[walletId] == defaults.bws.url && bcpwsFor[walletId] == defaults.counterpartyTokens.counterpartyService)
+        if (bwsFor[walletId] == defaults.bws.url && bcpwsFor[walletId] == defaults.counterpartyTokens.counterpartyService.url)
           return cb();
 
         configService.set({
