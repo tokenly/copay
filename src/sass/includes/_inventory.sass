@@ -1,0 +1,106 @@
+.inventory
+  $gutter: 20px
+  $width: 840px
+
+  .active-asset
+    color: #fff
+    padding-bottom: 20px
+    .active-asset--content
+      max-width: $width
+      margin: 0 auto
+      padding: 0 $gutter
+    .active--quantity
+      font-size: 24px
+      margin-bottom: 2px
+    .active--currency
+      font-size: 16px
+      color: #EDF5FF
+
+  .assets
+    margin-top: 20px
+    .assets--filters
+      max-width: $width
+      margin: 0 auto
+      padding: 0 $gutter
+      display: flex
+      .input-group
+        &:not(:last-of-type)
+          margin-right: 30px
+      
+      .input--search
+        width: 300px
+
+      .input--tags
+        width: 100px
+
+      .input--expiration
+        width: 100px
+
+    .asset
+      background-color: #fff
+      border-top: 1px solid #E4E8EC
+      &:hover
+        background-color: #f5f7fa
+      .asset--content
+        padding: 12px $gutter
+        max-width: $width
+        margin: 0 auto
+      &:last-of-type
+        border-bottom: 1px solid #E4E8EC 
+      .asset--primary
+        display: flex
+        align-items: center
+      .asset--name
+        .asset--short
+          font-size: 22px
+          font-weight: bold
+          color: cornflowerblue
+          line-height: 1.2
+          margin-right: 10px
+        .asset--sym
+          font-size: 14px
+          font-weight: bold
+          color: #676767
+          &:before, &:after
+            color: #b1b1b1
+          &:before
+            content: '('
+          &:after
+            content: ')'
+      .asset--ssl
+        vertical-align: super
+      .ssl--secure
+        color: #1abc9c
+      .ssl--unsecure
+        color: #ED4A43
+      .asset--avatar
+        width: 33px
+        height: 33px
+        margin-right: 10px
+        overflow: hidden
+        background-color: coral
+      .asset--balance
+        margin-left: auto
+        text-align: right
+        font-family: monospace
+        .asset--quantity
+          font-size: 22px
+          margin-bottom: 2px
+          line-height: 1.2
+        .asset--currency
+          font-size: 14px
+          color: #676767
+      .asset--info
+        margin-top: 10px
+        font-size: 14px
+        line-height: 1.4
+        .info--slot
+          padding: 8px 0
+          &:not(:last-of-type)
+            border-bottom: 1px solid #eee
+          .info--title
+            width: 150px
+            color: #9B9B9B
+            font-weight: bold
+            text-transform: uppercase
+            float: left

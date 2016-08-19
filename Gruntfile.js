@@ -51,13 +51,9 @@ module.exports = function(grunt) {
           grunt.log.writeln('Waiting for more changes...');
         },
       },
-      css: {
-        files: ['src/css/*.css'],
-        tasks: ['concat:css']
-      },
       sass: {
-        files: ['src/sass/*.scss'],
-        tasks: ['sass', 'concat:css']
+        files: [ 'src/sass/**' ],
+        tasks: ['sass']
       },
       main: {
         files: [
@@ -71,6 +67,12 @@ module.exports = function(grunt) {
           'src/js/controllers/**/*.js'
         ],
         tasks: ['concat:js']
+      },
+      livereload: {
+        files: ['src/**/**'],
+        options: {
+          livereload: true
+        }
       }
     },
     sass: {
@@ -81,8 +83,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          src: ['src/sass/*.scss'],
-          dest: './',
+          flatten: true,
+          src: [ 'src/sass/copay.sass' ],
+          dest: './public/css',
           ext: '.css'
         }]
       }
@@ -127,10 +130,6 @@ module.exports = function(grunt) {
           'bower_components/trezor-connect/login.js'
         ],
         dest: 'public/js/copay.js'
-      },
-      css: {
-        src: ['src/sass/*.css', 'src/css/*.css'],
-        dest: 'public/css/copay.css'
       },
       foundation: {
         src: [
@@ -276,4 +275,7 @@ module.exports = function(grunt) {
   grunt.registerTask('desktop', ['prod', 'nwjs', 'copy:linux', 'compress:linux']);
   grunt.registerTask('osx', ['prod', 'nwjs', 'exec:osx']);
   grunt.registerTask('release', ['string-replace:dist']);
+
+  grunt.loadNpmTasks('grunt-contrib-watch');
+
 };
