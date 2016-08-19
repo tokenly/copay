@@ -37,52 +37,6 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   $scope.tokenBalancesLoading = false;
   $scope.tokenBalances = [];
 
-  $scope.assets = [
-    {
-      shortName: 'Bitcoin',
-      symbol: 'BTC',
-      quantity: '302.213',
-      currency: '$242.12',
-      info: 'Internet money',
-      ssl: true
-    },
-    {
-      shortName: 'Tokenly',
-      symbol: 'TOKENLY',
-      quantity: '302.213',
-      currency: '$242.12',
-      info: 'We believe that Tokens have the capacity to democratize trade and barter around the world and we are committed to building the infrastructure which makes that possible.',
-      website: 'http://tokenly.com',
-      ssl: true
-    },
-    {
-      shortName: 'Cola',
-      symbol: 'COLACOIN',
-      quantity: '302.213',
-      currency: '$242.12',
-      info: 'Coca Cola',
-      website: 'http://coca-cola.com',
-      ssl: true
-    },
-    {
-      shortName: 'Apple',
-      symbol: 'JOBSCOIN',
-      quantity: '302.213',
-      currency: '$242.12',
-      info: 'Think different.',
-      ssl: false
-    },
-    {
-      shortName: 'Whopper Points',
-      symbol: 'BKING',
-      quantity: '302.213',
-      currency: '$242.12',
-      info: 'Have it your way.',
-      ssl: true
-    },
-
-  ];
-
   var vanillaScope = ret;
 
   var disableScannerListener = $rootScope.$on('dataScanned', function(event, data) {

@@ -78,22 +78,6 @@
              </div>
           </div> <!-- amount -->
 
-          <!-- Token Balances -->
-          <div class="token-balances" ng-show="tokenBalancesEnabled">
-            <div ng-show="tokenBalancesLoading">Loading Token Balances</div>
-            <div ng-show="!tokenBalancesLoading">
-            <h3>Token Balances</h3>
-
-            <div ng-repeat="tokenBalanceEntry in tokenBalances" style="margin-bottom: 4px;">
-              <span style="font-weight: bold;">{{ tokenBalanceEntry.tokenName }}</span>
-              <span style="margin-left: 8px; color: #333;">{{ tokenBalanceEntry.quantity }}</span>
-            </div>
-
-            <div ng-show="tokenBalances.length == 0">No Token Balances</div>
-            </div>
-          </div>
-
-
           <div class="wallet-info">
             <span ng-include="'views/includes/walletInfo.html'"></span>
           </div>
@@ -499,7 +483,7 @@
 
     <!--
 
-    inventory
+    Being Inventory
 
     -->
     <div id="inventory" class="inventory tab-view">
@@ -513,7 +497,7 @@
         <div class="assets--filters">
           <div class="input-group">
             <!-- <i class="input--icon fi-magnifying-glass"></i> -->
-            <input class="input--search" type="text" placeholder="Search {{ assets.length }} unique assets...">
+            <input class="input--search" type="text" placeholder="Search {{ tokenBalances.length }} unique tokens...">
           </div>
           <div class="input-group">
             <input class="input--tags" type="text" placeholder="TAGS">
@@ -530,7 +514,13 @@
           </h4>
         </div> -->
 
-        <div class="asset" ng-repeat="asset in assets">
+        <div ng-show="tokenBalancesLoading" class="asset--loading">
+          Loading Token Balances...
+        </div>
+        <div ng-show="tokenBalances.length == 0">
+          No Tokens Found
+        </div>
+        <div class="asset" ng-show="!tokenBalancesLoading" ng-repeat="token in tokenBalances">
           <div class="asset--content">
             <div class="asset--primary">
               <div class="asset--avatar">
@@ -538,25 +528,26 @@
               </div>
               <div class="asset--name">
                 <div>
-                  <span class="asset--short">{{ asset.shortName }}</span>
+                  <span class="asset--short">{{ token.tokenName }}</span>
 
-                  <i ng-if="asset.ssl" class="asset--ssl ssl--secure fi-lock"></i>
+                  <i ng-if="token.ssl" class="asset--ssl ssl--secure fi-lock"></i>
                   <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i>
                 </div>
-                <div class="asset--sym">{{ asset.symbol }}</div>
+                <div class="asset--sym">{{ token.tokenName }}</div>
               </div>
             
               <div class="asset--balance">
-                <div class="asset--quantity">{{ asset.quantity }}</div>
-                <div class="asset--currency">{{ asset.currency }}</div>
+                <div class="asset--quantity">{{ token.quantity }}</div>
+                <div class="asset--currency">{{ token.tokenName }}</div>
               </div>
             </div>
             <div class="asset--info">
-              <div ng-if="asset.website" class="info--slot">
+              <div ng-if="token.website" class="info--slot">
                 <div class="info--title">Website</div>
-                <a ng-href="asset.website" target="_blank">{{ asset.website }}</a>
+                <a ng-href="{{ token.website }}" target="_blank">{{ token.website }}</a>
               </div>
-              <div class="info--slot">{{ asset.info }}</div>
+              <div ng-if="token.info" class="info--slot">{{ token.info }}</div>
+              <div ng-if="!token.info" class="info--slot">No information provided</div>
             </div>
           </div>
         </div>
