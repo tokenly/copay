@@ -89,7 +89,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     if (tokenBalancesEnabled) {
       $log.debug('TOKEN: updating token balances address:', address);
       $scope.tokenBalancesLoading = true;
-      counterpartyService.getBalances(address, function(err, tokenBalances) {
+      counterpartyService.getBalances(profileService.focusedCounterpartyClient, address, function(err, tokenBalances) {
         $scope.tokenBalances = tokenBalances;
         $scope.tokenBalancesLoading = false;
         $scope.$digest();

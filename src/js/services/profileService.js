@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.services')
-  .factory('profileService', function profileServiceFactory($rootScope, $timeout, $filter, $log, sjcl, lodash, storageService, bwcService, configService, notificationService, pushNotificationsService, gettext, gettextCatalog, bwcError, uxLanguage, bitcore, platformInfo, walletService) {
+  .factory('profileService', function profileServiceFactory($rootScope, $timeout, $filter, $log, sjcl, lodash, storageService, bwcService, bcpwcService, configService, notificationService, pushNotificationsService, gettext, gettextCatalog, bwcError, uxLanguage, bitcore, platformInfo, walletService) {
 
 
     var isChromeApp = platformInfo.isChromeApp;
@@ -18,6 +18,8 @@ angular.module('copayApp.services')
     root.profile = null;
     root.focusedClient = null;
     root.walletClients = {};
+    root.focusedCounterpartyClient = null;
+    root.counterpartyWalletClients = {};
 
     root.Utils = bwcService.getUtils();
     root.formatAmount = function(amount, fullPrecision) {
@@ -42,6 +44,15 @@ angular.module('copayApp.services')
 
       if (lodash.isEmpty(root.focusedClient)) {
         root.focusedClient = root.walletClients[lodash.keys(root.walletClients)[0]];
+      }
+
+      if (walletId) {
+        root.focusedCounterpartyClient = root.counterpartyWalletClients[walletId];
+      } else {
+        root.focusedCounterpartyClient = [];
+      }
+      if (lodash.isEmpty(root.focusedCounterpartyClient)) {
+        root.focusedCounterpartyClient = root.counterpartyWalletClients[lodash.keys(root.counterpartyWalletClients)[0]];
       }
 
       // Still nothing?
@@ -120,6 +131,21 @@ angular.module('copayApp.services')
       return true;
     };
 
+    // Adds a counterparty wallet client to profileService
+    root.bindCounterpartyWalletClient = function(client, counterpartyClient, opts) {
+      var opts = opts || {};
+      var walletId = client.credentials.walletId;
+
+      if ((root.counterpartyWalletClients[walletId] && root.counterpartyWalletClients[walletId].started) || opts.force) {
+        return false;
+      }
+
+      root.counterpartyWalletClients[walletId] = counterpartyClient;
+      root.counterpartyWalletClients[walletId].started = true;
+
+      return true;
+    };
+
     var validationLock = false;
 
     root.runValidation = function(client, delay, retryDelay) {
@@ -178,11 +204,22 @@ angular.module('copayApp.services')
         bwsurl: getBWSURL(credentials.walletId),
       });
 
+      var getBCPWSURL = function(walletId) {
+        var config = configService.getSync();
+        var defaults = configService.getDefaults();
+        return ((config.bcpwsFor && config.bcpwsFor[walletId]) || defaults.counterpartyTokens.counterpartyService.url);
+      };
+
+      var counterpartyClient = bcpwcService.getClient({
+        bcpwsurl: getBCPWSURL(credentials.walletId)
+      });
+
       var skipKeyValidation = root.profile.isChecked(platformInfo.ua, credentials.walletId);
       if (!skipKeyValidation)
         root.runValidation(client, 500);
 
       $log.info('Binding wallet:' + credentials.walletId + ' Validating?:' + !skipKeyValidation);
+      root.bindCounterpartyWalletClient(client, counterpartyClient);
       return cb(null, root.bindWalletClient(client));
     };
 
@@ -435,6 +472,10 @@ angular.module('copayApp.services')
       return root.walletClients[walletId];
     };
 
+    root.getCounterpartyClient = function(walletId) {
+      return root.counterpartyWalletClients[walletId];
+    };
+
     root.deleteWalletClient = function(client, cb) {
       var walletId = client.credentials.walletId;
 
@@ -450,6 +491,9 @@ angular.module('copayApp.services')
 
       delete root.walletClients[walletId];
       root.focusedClient = null;
+
+      delete root.counterpartyWalletClients[walletId];
+      root.focusedCounterpartyClient = null;
 
 
       storageService.removeAllWalletData(walletId, function(err) {
@@ -503,17 +547,22 @@ angular.module('copayApp.services')
       root.bindWalletClient(client);
       $rootScope.$emit('Local/WalletListUpdated', client);
 
+      // sets the wallet service URL and the counterparty service URL
       var saveBwsUrl = function(cb) {
         var defaults = configService.getDefaults();
         var bwsFor = {};
         bwsFor[walletId] = opts.bwsurl || defaults.bws.url;
 
-        // Dont save the default
-        if (bwsFor[walletId] == defaults.bws.url)
+        var bcpwsFor = {};
+        bcpwsFor[walletId] = opts.bcpwsurl || defaults.counterpartyTokens.counterpartyService;
+
+        // Dont save if these are the defaults
+        if (bwsFor[walletId] == defaults.bws.url && bcpwsFor[walletId] == defaults.counterpartyTokens.counterpartyService)
           return cb();
 
         configService.set({
           bwsFor: bwsFor,
+          bcpwsFor: bcpwsFor,
         }, function(err) {
           if (err) $log.warn(err);
           return cb();

@@ -1,0 +1,17 @@
+<div
+  class="topbar-container"
+  ng-include="'views/includes/topbar.html'"
+  ng-init="titleSection='Counterparty Service URL'; goBackToState = 'preferencesAdvanced';">
+</div>
+
+<div class="content preferences" ng-controller="preferencesCPwsUrlController">
+  <h4></h4>
+  <form name="settingsBwsUrlForm" ng-submit="save()" class="columns">
+    <label class="left">Counterparty Service URL</label>
+    <a class="right size-12" ng-click="resetDefaultUrl()" translate> Set default url</a>
+    <input type="text" id="bcpwsurl" type="text" name="bcpwsurl" ng-model="bcpwsurl">
+    <input type="submit" class="button expand black round" value="{{'Save'|translate}}"
+    ng-style="{'background-color':index.backgroundColor}">
+  </form>
+</div>
+<div class="extra-margin-bottom"></div>

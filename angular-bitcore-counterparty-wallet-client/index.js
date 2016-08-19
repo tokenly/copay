@@ -20,7 +20,7 @@ bcpwcModule.provider("bcpwcService", function() {
       return Client.Utils;
     };
 
-    service.getClient = function(walletData, opts) {
+    service.getClient = function(opts) {
       opts = opts || {};
 
       //note opts use `bcpwsurl` all lowercase;

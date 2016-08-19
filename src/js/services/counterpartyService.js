@@ -1,8 +1,7 @@
 'use strict';
 
-angular.module('copayApp.services').factory('counterpartyService', function(bcpwcService, counterpartyUtils, configService, lodash, $timeout) {
+angular.module('copayApp.services').factory('counterpartyService', function(counterpartyUtils, configService, lodash, $timeout) {
   var root = {};
-  var counterpartyClient = bcpwcService.getClient();
 
   var CACHED_CONFIRMATIONS_LENGTH = 6;
   var CP_DUST_SIZE = 5430;
@@ -12,32 +11,35 @@ angular.module('copayApp.services').factory('counterpartyService', function(bcpw
     return configService.getSync().counterpartyTokens.enabled;
   }
 
-  root.getBalances = function(address, cb) {
-    counterpartyClient.getBalances(address, function(err, balanceEntries) {
-      var tokenBalances = [];
+  root.getBalances = function(counterpartyClient, address, cb) {
+    if (!counterpartyClient) { return cb('counterparty client not found'); }
 
-      if (!err) {
-        var entry;
-        for (var i = 0; i < balanceEntries.length; i++) {
-          entry = balanceEntries[i];
-          tokenBalances.push({
-            tokenName:   entry.asset,
-            quantity:    entry.quantityFloat,
-            quantitySat: entry.quantity,
-            divisible:   entry.divisible
-          });
-        }
+    counterpartyClient.getBalances(address, function(err, balanceEntries) {
+      if (err) return cb(err)
+
+      var tokenBalances = [];
+      var entry;
+      for (var i = 0; i < balanceEntries.length; i++) {
+        entry = balanceEntries[i];
+        tokenBalances.push({
+          tokenName:   entry.asset,
+          quantity:    entry.quantityFloat,
+          quantitySat: entry.quantity,
+          divisible:   entry.divisible
+        });
       }
 
       // console.log('[CPTY] balances for address '+address, tokenBalances);
-      cb(err, tokenBalances);
+      cb(null, tokenBalances);
     });
   };
 
 
-  root.applyCounterpartyDataToTxHistory = function(address, txHistory, cb) {
+  root.applyCounterpartyDataToTxHistory = function(counterpartyClient, address, txHistory, cb) {
+    if (!counterpartyClient) { return cb('counterparty client not found'); }
+
     if (!root.isEnabled()) {
-      cp(null, txHistory);
+      cb(null, txHistory);
     }
 
     var txIdsForLookup = [];

@@ -9,6 +9,8 @@ angular.module('copayApp.controllers').controller('createController',
 
     var self = this;
     var defaults = configService.getDefaults();
+    self.tokensEnabled = configService.getSync().counterpartyTokens.enabled;
+    $scope.isTokenEnabled = !!self.tokensEnabled;
     this.isWindowsPhoneApp = platformInfo.isWP && isCordova;
     $scope.account = 1;
 
@@ -29,7 +31,8 @@ angular.module('copayApp.controllers').controller('createController',
     };
 
     var defaults = configService.getDefaults();
-    $scope.bwsurl = defaults.bws.url;
+    $scope.bwsurl = self.tokensEnabled ? defaults.counterpartyTokens.bws.url : defaults.bws.url;
+    $scope.bcpwsurl = defaults.counterpartyTokens.counterpartyService.url;
     $scope.derivationPath = derivationPathHelper.default;
 
     // ng-repeat defined number of times instead of repeating over array?
@@ -99,8 +102,11 @@ angular.module('copayApp.controllers').controller('createController',
         myName: $scope.totalCopayers > 1 ? $scope.myName : null,
         networkName: $scope.testnetEnabled ? 'testnet' : 'livenet',
         bwsurl: $scope.bwsurl,
-        singleAddress: $scope.singleAddressEnabled,
+        singleAddress: $scope.isTokenEnabled ? true : $scope.singleAddressEnabled,
         walletPrivKey: $scope._walletPrivKey, // Only for testing
+        isTokenEnabled: $scope.isTokenEnabled,
+        bcpwsurl: $scope.bcpwsurl,
+        version: 1
       };
       var setSeed = self.seedSourceId == 'set';
       if (setSeed) {

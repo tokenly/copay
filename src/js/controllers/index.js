@@ -1815,7 +1815,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     addressService.getAddress(profileService.focusedClient.credentials.walletId, false, function(err, address) {
       if (err) return cb(err);
 
-      counterpartyService.applyCounterpartyDataToTxHistory(address, txHistory, function(err, txHistoryWithCPData) {
+      counterpartyService.applyCounterpartyDataToTxHistory(profileService.focusedCounterpartyClient, address, txHistory, function(err, txHistoryWithCPData) {
         if (err) return cb(err);
         cb(null, lodash.compact(txHistoryWithCPData))
       });
