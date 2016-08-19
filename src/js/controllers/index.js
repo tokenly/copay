@@ -38,6 +38,13 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     },
     'link': 'walletHome'
   }, {
+    'title': gettext('Inventory'),
+    'icon': {
+      false: 'fi-book',
+      true: 'fi-book'
+    },
+    'link': 'inventory'
+  }, {
     'title': gettext('Send'),
     'icon': {
       false: 'icon-send',

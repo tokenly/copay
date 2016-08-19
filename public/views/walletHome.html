@@ -497,6 +497,72 @@
       <div class="extra-margin-bottom"></div>
     </div> <!-- END Send -->
 
+    <!--
+
+    inventory
+
+    -->
+    <div id="inventory" class="inventory tab-view">
+      <!-- <div class="active-asset" ng-style="{'background-color':index.backgroundColor}">
+        <div class="active-asset--content">
+          <div class="active--quantity">19.2 BTC</div>
+          <div class="active--currency">$924.24</div>
+        </div>
+      </div> -->
+      <div class="assets">
+        <div class="assets--filters">
+          <div class="input-group">
+            <!-- <i class="input--icon fi-magnifying-glass"></i> -->
+            <input class="input--search" type="text" placeholder="Search {{ assets.length }} unique assets...">
+          </div>
+          <div class="input-group">
+            <input class="input--tags" type="text" placeholder="TAGS">
+          </div>
+          <div class="input-group">
+            <input class="input--expiration" type="text" placeholder="EXPIRATION">
+          </div>
+        </div>
+        
+<!--         <div class="p60b">
+          <h4 class="title" ng-click="index.startSearch(); openSearchModal()" ng-show="!index.notAuthorized">
+            <span translate>Assets</span>
+            
+          </h4>
+        </div> -->
+
+        <div class="asset" ng-repeat="asset in assets">
+          <div class="asset--content">
+            <div class="asset--primary">
+              <div class="asset--avatar">
+                <img src="http://thecatapi.com/api/images/get?format=src&results_per_page=1&size=small" alt="Asset Avatar">
+              </div>
+              <div class="asset--name">
+                <div>
+                  <span class="asset--short">{{ asset.shortName }}</span>
+
+                  <i ng-if="asset.ssl" class="asset--ssl ssl--secure fi-lock"></i>
+                  <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i>
+                </div>
+                <div class="asset--sym">{{ asset.symbol }}</div>
+              </div>
+            
+              <div class="asset--balance">
+                <div class="asset--quantity">{{ asset.quantity }}</div>
+                <div class="asset--currency">{{ asset.currency }}</div>
+              </div>
+            </div>
+            <div class="asset--info">
+              <div ng-if="asset.website" class="info--slot">
+                <div class="info--title">Website</div>
+                <a ng-href="asset.website" target="_blank">{{ asset.website }}</a>
+              </div>
+              <div class="info--slot">{{ asset.info }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END Inventory -->
+
     <div id="{{view.id}}" class="{{view.class}} tab-view" ng-repeat="view in index.addonViews" ng-include="view.template">
     </div>
 
