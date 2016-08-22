@@ -22,6 +22,7 @@
       max-width: $width
       margin: 0 auto
       padding: 0 $gutter
+
     .assets--filters
       max-width: $width
       margin: 0 auto
@@ -40,20 +41,31 @@
       .input--expiration
         width: 100px
 
+    .assets--empty
+      text-align: center
+      font-size: 18px
+      letter-spacing: 1px
+      text-transform: lowercase
+      color: #656565
+
     .asset
       background-color: #fff
       border-top: 1px solid #E4E8EC
       &:hover
-        background-color: #f5f7fa
+        background-color: #f7f8fb
+      .asset--block
+        margin-bottom: 10px
       .asset--content
-        padding: 12px $gutter
+        padding: 0 $gutter
         max-width: $width
         margin: 0 auto
+        overflow: hidden
       &:last-of-type
         border-bottom: 1px solid #E4E8EC 
       .asset--primary
         display: flex
         align-items: center
+        margin-top: 10px
       .asset--name
         .asset--short
           font-size: 22px
@@ -94,7 +106,6 @@
           font-size: 14px
           color: #676767
       .asset--info
-        margin-top: 10px
         font-size: 14px
         line-height: 1.4
         .info--slot

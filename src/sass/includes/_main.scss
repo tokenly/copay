@@ -6,12 +6,22 @@
 
 $brand-primary: #42709f;
 $brand-secondary: #ebdd2f;
+$font-stack: "Ubuntu", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 $sidebar-color: #f7f7f7;
 
+@font-face {
+  font-family: 'Ubuntu';
+  src:  url('/fonts/Ubuntu-Regular') format('ttf');
+}
 
 body {
-  font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: $font-stack
+}
+
+h1, h2, h3, h4, h5, h6, p, li, dl {
+  color: $brand-primary;
+  font-family: $font-stack;
 }
 
 .panel {
@@ -1720,8 +1730,10 @@ a.missing-copayers {
 
 .sidebar {
   header {
-    text-align: center;
     padding: 1.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     h1 {
       color: #fff;
       margin: 0;
@@ -1735,9 +1747,16 @@ a.missing-copayers {
       display: block;
       margin-bottom: -7px;
     }
+    .logo--wrapper {
+      width: 45px;
+      margin-right: 1.4em
+    }
     .logo {
-      width: 30px;
+      width: 100%;
       height: auto;
+    }
+    .header--content {
+      width: 60%;
     }
   }
   .menu {

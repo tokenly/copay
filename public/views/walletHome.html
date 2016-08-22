@@ -496,78 +496,62 @@
 
     -->
     <div id="inventory" class="inventory tab-view">
-        <div class="row">
-            <div class="large-12 columns">
-                <h2 class="text-center m10t" translate=""><span>My Token Inventory</span></h2>
-              <!-- <div class="active-asset" ng-style="{'background-color':index.backgroundColor}">
-                <div class="active-asset--content">
-                  <div class="active--quantity">19.2 BTC</div>
-                  <div class="active--currency">$924.24</div>
-                </div>
-              </div> -->
-              <div class="assets">
-                <div class="assets--filters">
-                  <div class="input-group">
-                    <!-- <i class="input--icon fi-magnifying-glass"></i> -->
-                    <input class="input--search" type="text" placeholder="Search {{ tokenBalances.length }} unique tokens...">
-                  </div>
-                  <!-- //disabled for now
-                  <div class="input-group">
-                    <input class="input--tags" type="text" placeholder="TAGS">
-                  </div>
-                  <div class="input-group">
-                    <input class="input--expiration" type="text" placeholder="EXPIRATION">
-                  </div>
-                  -->
-                </div>
-                
-        <!--         <div class="p60b">
-                  <h4 class="title" ng-click="index.startSearch(); openSearchModal()" ng-show="!index.notAuthorized">
-                    <span translate>Assets</span>
-                    
-                  </h4>
-                </div> -->
+      <!-- <div class="active-asset" ng-style="{'background-color':index.backgroundColor}">
+        <div class="active-asset--content">
+          <div class="active--quantity">19.2 BTC</div>
+          <div class="active--currency">$924.24</div>
+        </div>
+      </div> -->
+      <div class="assets">
+        <div class="assets--filters">
+          <div class="input-group">
+            <!-- <i class="input--icon fi-magnifying-glass"></i> -->
+            <input class="input--search" type="text" placeholder="Search {{ tokenBalances.length }} unique tokens..." ng-model="assetSearch">
+          </div>
+          <!-- TODO:
+          <div class="input-group">
+            <input class="input--tags" type="text" placeholder="TAGS">
+          </div>
+          <div class="input-group">
+            <input class="input--expiration" type="text" placeholder="EXPIRATION">
+          </div> -->
+        </div>
 
-                <div class="assets--loading">
-                  <div ng-show="tokenBalancesLoading" class="asset--loading">
-                    Loading Token Balances...
-                  </div>
-                  <div ng-show="tokenBalances.length == 0">
-                    No Tokens Found
-                  </div>
-                </div>
-                <div class="asset" ng-show="!tokenBalancesLoading" ng-repeat="token in tokenBalances">
-                  <div class="asset--content">
-                    <div class="asset--primary">
-                      <div class="asset--avatar">
-                        <img src="{{ asset.image ? asset.image : 'img/tokenly-logo.svg' }}" alt="Logo" title="{{ asset.image ? 'Logo' : 'No logo defined' }}">
-                      </div>
-                      <div class="asset--name">
-                        <div>
-                          <span class="asset--short">{{ token.tokenName }}</span>
-
-                          <!--<i ng-if="token.ssl" class="asset--ssl ssl--secure fi-lock"></i>
-                          <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i>-->
-                        </div>
-                        <!--<div class="asset--sym">{{ token.tokenName }}</div>-->
-                      </div>
-                    
-                      <div class="asset--balance">
-                        <div class="asset--quantity">{{ token.quantity }}</div>
-                        <div class="asset--currency">{{ token.tokenName }}</div>
-                      </div>
-                    </div>
-                    <div class="asset--info">
-                      <div ng-if="token.website" class="info--slot">
-                        <div class="info--title">Website</div>
-                        <a ng-href="{{ token.website }}" target="_blank">{{ token.website }}</a>
-                      </div>
-                      <div ng-if="token.info" class="info--slot">{{ token.info }}</div>
-                      <!--<div ng-if="!token.info" class="info--slot">No information provided</div>-->
-                    </div>
-                  </div>
-                </div>
+        <div class="assets--loading">
+          <div ng-show="tokenBalancesLoading" class="asset--loading">
+            Loading Token Balances...
+          </div>
+          <div ng-show="tokenBalances.length == 0" class="oh pr m20t text-gray size-12 text-center">
+            No tokens found
+          </div>
+        </div>
+        <div class="asset" ng-show="!tokenBalancesLoading" ng-repeat="token in tokenBalances | filter:assetSearch:tokenName">
+          <div class="asset--content">
+            <div class="asset--block asset--primary">
+              <div class="asset--avatar">
+                <img src="{{ asset.avatar ? asset.avatar : 'img/tokenly-logo.svg' }}" alt="Avatar">
               </div>
+              <div class="asset--name">
+                <div>
+                  <span class="asset--short">{{ token.tokenName }}</span>
+
+                  <i ng-if="token.ssl" class="asset--ssl ssl--secure fi-lock"></i>
+                  <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i>
+                </div>
+                <div class="asset--sym">{{ token.tokenName }}</div>
+              </div>
+            
+              <div class="asset--balance">
+                <div class="asset--quantity">{{ token.quantity }}</div>
+                <!-- TODO: currency conversion <div class="asset--currency">{{ token.tokenName }}</div> -->
+              </div>
+            </div>
+            <div class="asset--block asset--info">
+              <div ng-if="token.website" class="info--slot">
+                <div class="info--title">Website</div>
+                <a ng-href="{{ token.website }}" target="_blank">{{ token.website }}</a>
+              </div>
+              <div ng-if="token.info" class="info--slot">{{ token.info }}</div>
             </div>
         </div>
     </div> <!-- END Inventory -->
