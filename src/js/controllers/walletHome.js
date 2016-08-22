@@ -36,6 +36,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   $scope.tokenBalancesEnabled = tokenBalancesEnabled;
   $scope.tokenBalancesLoading = false;
   $scope.tokenBalances = [];
+  $scope.assetSearch = "";
 
   var vanillaScope = ret;
 

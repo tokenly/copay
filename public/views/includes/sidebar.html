@@ -1,8 +1,12 @@
 <div class="sidebar" ng-controller="sidebarController as sidebar">
   <header>
-    <logo ng-if="!sidebar.isWindowsPhoneApp" negative="true" width="80" alt="Tokenly" title="Tokenly Pockets"></logo>
-    <img class="logo" ng-if="sidebar.isWindowsPhoneApp" src="img/tokenly-logo.svg" alt="Tokenly" width="80" title="Tokenly Pockets">
-    <div ng-include="'views/includes/version.html'"></div>
+    <div class="logo--wrapper">
+      <logo ng-if="!sidebar.isWindowsPhoneApp" negative="true" alt="Tokenly" title="Tokenly Pockets"></logo>
+    </div>
+    <div class="header--content">
+      <img class="logo" ng-if="sidebar.isWindowsPhoneApp" src="img/tokenly-logo.svg" alt="Tokenly" width="80" title="Tokenly Pockets">
+      <div ng-include="'views/includes/version.html'"></div>
+    </div>
   </header>
   <ion-content>
     <ul class="pr">
