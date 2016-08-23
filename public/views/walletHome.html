@@ -543,7 +543,7 @@
               </div>
             
               <div class="asset--balance">
-                <div class="asset--quantity">{{ token.quantity }}</div>
+                <div class="asset--quantity" ng-bind="delimitNumber(token.quantity)"></div>
                 <!-- TODO: currency conversion <div class="asset--currency">{{ token.tokenName }}</div> -->
               </div>
             </div>

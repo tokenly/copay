@@ -38,6 +38,12 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   $scope.tokenBalances = [];
   $scope.assetSearch = "";
 
+  $scope.delimitNumber = function(n) {
+    return (n + "").replace(/\b(\d+)((\.\d+)*)\b/g, function(a, b, c) {
+      return (b.charAt(0) > 0 && !(c || ".").lastIndexOf(".") ? b.replace(/(\d)(?=(\d{3})+$)/g, "$1,") : b) + c;
+    });
+  };
+
   var vanillaScope = ret;
 
   var disableScannerListener = $rootScope.$on('dataScanned', function(event, data) {
