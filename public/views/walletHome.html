@@ -216,7 +216,7 @@
                   (possible double spend)
                   </span>
                   <span  ng-if="btx.action != 'invalid'">
-                    <span ng-show="btx.isCounterparty">{{btx.counterparty.amountStr}}</span>
+                    <span ng-show="btx.isCounterparty">{{btx.counterparty.amountStr}} {{btx.counterparty.token}}</span>
                     <span ng-hide="btx.isCounterparty">{{btx.amountStr}}</span>
                   </span>
                 </span>
@@ -506,7 +506,7 @@
         <div class="assets--filters">
           <div class="input-group">
             <!-- <i class="input--icon fi-magnifying-glass"></i> -->
-            <input class="input--search" type="text" placeholder="Search {{ tokenBalances.length }} unique tokens..." ng-model="assetSearch">
+            <input class="input--search" type="text" placeholder="Search {{ index.tokenBalances.length }} unique tokens..." ng-model="assetSearch">
           </div>
           <!-- TODO:
           <div class="input-group">
@@ -518,14 +518,14 @@
         </div>
 
         <div class="assets--loading">
-          <div ng-show="tokenBalancesLoading" class="asset--loading">
+          <div ng-show="index.tokenBalancesLoading && !index.tokenBalancesEverLoaded" class="asset--loading">
             Loading Token Balances...
           </div>
-          <div ng-show="tokenBalances.length == 0" class="oh pr m20t text-gray size-12 text-center">
+          <div ng-show="index.tokenBalancesEverLoaded && index.tokenBalances.length == 0" class="oh pr m20t text-gray size-12 text-center">
             No tokens found
           </div>
         </div>
-        <div class="asset" ng-show="!tokenBalancesLoading" ng-repeat="token in tokenBalances | filter:assetSearch:tokenName">
+        <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:assetSearch:tokenName">
           <div class="asset--content">
             <div class="asset--block asset--primary">
               <div class="asset--avatar">
@@ -541,9 +541,11 @@
                 </div>
                 <!-- <div class="asset--sym">{{ token.tokenName }}</div> -->
               </div>
-            
+
               <div class="asset--balance">
-                <div class="asset--quantity" ng-bind="delimitNumber(token.quantity)"></div>
+                <div class="asset--quantity" ng-bind="delimitNumber(token.quantityFloat)"></div>
+                <div class="asset--quantity-sending" ng-if="token.hasSendPending"> (-{{token.amountSendingStr}})</div>
+                <div class="asset--quantity-receiving" ng-if="token.hasReceivePending"> (+{{token.amountReceivingStr}})</div>
                 <!-- TODO: currency conversion <div class="asset--currency">{{ token.tokenName }}</div> -->
               </div>
             </div>

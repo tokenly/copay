@@ -26,7 +26,7 @@
           </div>
 
           <div class="size-36" ng-click="copyToClipboard(btx.amountStr, $event)">
-            <span ng-if="btx.isCounterparty" class="enable_text_select">{{btx.counterparty.amountStr}}</span>
+            <span ng-if="btx.isCounterparty" class="enable_text_select">{{btx.counterparty.amountStr}} {{btx.counterparty.token}}</span>
             <span ng-if="!btx.isCounterparty" class="enable_text_select">{{btx.amountStr}}</span>
           </div>
           <div class="alternative-amount" ng-click="showRate=!showRate" ng-init="showRate = false">

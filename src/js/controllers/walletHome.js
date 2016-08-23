@@ -31,11 +31,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   ret.sendMaxInfo = {};
 
   // tokens
-  var tokenBalancesEnabled = config.counterpartyTokens.enabled;
-  ret.tokenBalancesEnabled = tokenBalancesEnabled;
-  $scope.tokenBalancesEnabled = tokenBalancesEnabled;
-  $scope.tokenBalancesLoading = false;
-  $scope.tokenBalances = [];
+  $scope.tokenBalancesEnabled = config.counterpartyTokens.enabled;
   $scope.assetSearch = "";
 
   $scope.delimitNumber = function(n) {
@@ -92,18 +88,6 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     });
   });
 
-  var disableAddressSetListener = $rootScope.$on('Local/AddressSet', function(event, address) {
-    if (tokenBalancesEnabled) {
-      $log.debug('TOKEN: updating token balances address:', address);
-      $scope.tokenBalancesLoading = true;
-      counterpartyService.getBalances(profileService.focusedCounterpartyClient, address, function(err, tokenBalances) {
-        $scope.tokenBalances = tokenBalances;
-        $scope.tokenBalancesLoading = false;
-        $scope.$digest();
-      });
-    }
-  });
-
   var disableResumeListener = $rootScope.$on('Local/Resume', function() {
     // This is needed then the apps go to sleep
     self.bindTouchDown();
@@ -127,7 +111,6 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     disablePaymentUriListener();
     disableTabListener();
     disableFocusListener();
-    disableAddressSetListener();
     disableResumeListener();
     $rootScope.shouldHideMenuBar = false;
   });
@@ -291,7 +274,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       "BTC": "BTC",
     }
 
-    lodash.each($scope.tokenBalances, function(token) {
+    lodash.each($scope.index.tokenBalances, function(token) {
       sendableTokens[token.tokenName] = token.tokenName;
     });
 
@@ -608,6 +591,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     $scope.color = fc.backgroundColor;
     $scope.cb = cb;
 
+    console.log('=WALLET= $scope.tx=',$scope.tx);
     $ionicModal.fromTemplateUrl('views/modals/tx-status.html', {
       scope: $scope,
       animation: 'slide-in-up'

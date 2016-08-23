@@ -1,18 +1,29 @@
 <div class="m20t">
   <label class="size-14 text-center">
-    <span translate>Send bitcoin</span>
+    <span ng-if="!tx.isCounterparty" translate>Send bitcoin</span>
+    <span ng-if="tx.isCounterparty"><span translate>Send tokens</span></span>
   </label>
 </div>
 <div class="text-center">
-  <div class="size-36">{{tx.amountStr}}</div>
-  <div class="size-12 label gray radius" ng-show="tx.alternativeAmountStr">{{tx.alternativeAmountStr}}</div>
+  <div ng-if="tx.isCounterparty">
+    <span>{{tx.counterparty.amountStr}} {{btx.counterparty.token}}</span>
+  </div>
+  <div ng-if="!tx.isCounterparty">
+    <div class="size-36">{{tx.amountStr}}</div>
+    <div class="size-12 label gray radius" ng-show="tx.alternativeAmountStr">{{tx.alternativeAmountStr}}</div>
+  </div>
   <i class="db fi-arrow-down size-24 m10v"></i>
   <div class="payment-proposal-to" ng-click="copyToClipboard(tx.toAddress, $event)">
-    <i class="fi-bitcoin left m10l"></i>
-    <contact ng-if="!tx.hasMultiplesOutputs" class="dib enable_text_select ellipsis m5t m5b m15l size-14" address="{{tx.toAddress}}"></contact>
-    <span ng-if="tx.hasMultiplesOutputs" translate>
-      Multiple recipients
-    </span>
+    <div ng-if="tx.isCounterparty">
+      <contact class="dib enable_text_select ellipsis m5t m5b m15l size-14" address="{{tx.toAddress}}"></contact>
+    </div>
+    <div ng-if="!tx.isCounterparty">
+      <i class="fi-bitcoin left m10l"></i>
+      <contact ng-if="!tx.hasMultiplesOutputs" class="dib enable_text_select ellipsis m5t m5b m15l size-14" address="{{tx.toAddress}}"></contact>
+      <span ng-if="tx.hasMultiplesOutputs" translate>
+        Multiple recipients
+      </span>
+    </div>
   </div>
   <div class="m10t size-12" ng-init="processFee(tx.amount, tx.fee)">
     <div ng-show="!showPercentage" ng-click="showPercentage = true">
@@ -22,6 +33,13 @@
     </div>
     <div ng-show="showPercentage" ng-click="showPercentage = false" translate>
       {{feeRateStr}} of the transaction
+    </div>
+  </div>
+  <div class="m10t size-12" ng-if="tx.isCounterparty">
+    <div>
+      <span translate>Dust</span></span>:
+      <span class="text-bold">{{tx.amountStr}}</span>
+      <div class="size-12 label gray radius" ng-show="tx.alternativeAmountStr">{{tx.alternativeAmountStr}}</div>
     </div>
   </div>
   <div class="row m20t dib">

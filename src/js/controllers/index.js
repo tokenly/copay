@@ -156,6 +156,11 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       self.account = fc.credentials.account;
       self.incorrectDerivation = fc.keyDerivationOk === false;
 
+      self.tokenBalances = null;
+      self.tokenBalancesEverLoaded = false;
+      self.tokenBalancesLoading = false;
+      self.lastEssentialCompleteHistory = null;
+
       if (self.externalSource == 'trezor')
         self.account++;
 
@@ -590,6 +595,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
   };
 
   self.setBalance = function(balance) {
+    console.log('setBalance', balance);
     if (!balance) return;
     var config = configService.getSync().wallet.settings;
     var COIN = 1e8;
@@ -729,6 +735,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       if (walletId == profileService.focusedClient.credentials.walletId) {
         self.completeHistory = txsFromLocal;
         self.setCompactTxHistory();
+        self.fireOnceIfTXHistoryChanged(self.completeHistory, walletId);
       }
 
       if (historyUpdateInProgress[walletId])
@@ -763,6 +770,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
               newHistory = lodash.compact(newHistory.concat(confirmedTxs));
               self.completeHistory = newHistory;
               self.setCompactTxHistory();
+              self.fireOnceIfTXHistoryChanged(self.completeHistory, walletId);
             }
             $timeout(function() {
               $rootScope.$apply();
@@ -819,6 +827,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
             if (walletId == profileService.focusedClient.credentials.walletId) {
               self.completeHistory = newHistory;
               self.setCompactTxHistory();
+              self.fireOnceIfTXHistoryChanged(self.completeHistory, walletId);
             }
 
             return storageService.setTxHistory(historyToSave, walletId, function() {
@@ -1443,6 +1452,8 @@ angular.module('copayApp.controllers').controller('indexController', function($r
   $rootScope.$on('Local/ClearHistory', function(event) {
     $log.debug('The wallet transaction history has been deleted');
     self.txHistory = self.completeHistory = self.txHistorySearchResults = [];
+    self.tokenBalancesEverLoaded = false;
+    self.tokenBalances = [];
     self.debounceUpdateHistory();
   });
 
@@ -1506,6 +1517,56 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     }
   });
 
+  $rootScope.$on('TXHistoryChanged', function(event, completeHistory, walletId) {
+    console.log('[TOKEN] TXHistoryChanged');
+    if (self.isInFocus(walletId)) {
+      if (counterpartyService.isEnabled()) {
+        addressService.getAddress(walletId, false, function(err, address) {
+          $log.debug('[TOKEN] updating token balances for address:', address);
+          self.tokenBalancesLoading = true;
+          counterpartyService.getBalances(profileService.focusedCounterpartyClient, address, function(err, tokenBalances) {
+            if (err) {
+              $log.error(err);
+              return
+            }
+
+            tokenBalances = counterpartyService.updatePendingTokenBalancesFromHistory(tokenBalances, completeHistory);
+            self.tokenBalances = tokenBalances;
+            self.tokenBalancesLoading = false;
+            self.tokenBalancesEverLoaded = true;
+          });
+        });
+      }
+    }
+  });
+
+  self.fireOnceIfTXHistoryChanged = function(completeHistory, walletId) {
+    // console.log('=TXHISTORY= comparing '+(self.lastEssentialCompleteHistory ? self.lastEssentialCompleteHistory.length : null)+' with '+(completeHistory.length));
+    var essentializeHistory = function(completeHistory) {
+      return lodash.map(completeHistory, function(tx) {
+        return {
+          txid: tx.txid,
+          counterparty: lodash.clone(tx.counterparty),
+        };
+      });
+    };
+
+    var essentialCompleteHistory = essentializeHistory(completeHistory);
+    // console.log('=TXHISTORY= essentialCompleteHistory '+JSON.stringify(lodash.clone(essentialCompleteHistory),null,2));
+
+    if (lodash.isEqual(self.lastEssentialCompleteHistory, essentialCompleteHistory)) {
+      console.log('=TXHISTORY= not changed');
+      return;
+    }
+    console.log('=TXHISTORY= changed');
+    // console.log('=TXHISTORY= lastEssentialCompleteHistory'+JSON.stringify(lodash.clone(self.lastEssentialCompleteHistory),null,2));
+
+    self.lastEssentialCompleteHistory = essentialCompleteHistory;
+    
+    $rootScope.$emit('TXHistoryChanged', completeHistory, walletId)
+    return;
+  }
+
   self.debouncedUpdate = function() {
     var now = Date.now();
     var oneHr = 1000 * 60 * 60;
@@ -1552,6 +1613,9 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       addressService.expireAddress(walletId, function(err) {
         $timeout(function() {
           self.txHistory = self.completeHistory = self.txHistorySearchResults = [];
+          self.tokenBalancesEverLoaded = false;
+          self.tokenBalances = [];
+
           storageService.removeTxHistory(walletId, function() {
             self.startScan(walletId);
           });

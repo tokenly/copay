@@ -135,6 +135,10 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
     }, function(err, publishedTx) {
       if (err) return cb(err);
       else {
+        // pass the counterparty data through
+        publishedTx.isCounterparty = txp.isCounterparty;
+        publishedTx.counterparty   = txp.counterparty;
+
         $log.debug('Transaction published');
         return cb(null, publishedTx);
       }
@@ -160,6 +164,10 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
 
       try {
         client.signTxProposal(txp, function(err, signedTxp) {
+        // pass the counterparty data through
+        signedTxp.isCounterparty = txp.isCounterparty;
+        signedTxp.counterparty   = txp.counterparty;
+
           $log.debug('Transaction signed');
           return cb(err, signedTxp);
         });
@@ -180,6 +188,10 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
     client.broadcastTxProposal(txp, function(err, broadcastedTxp, memo) {
       if (err)
         return cb(err);
+
+      // pass the counterparty data through
+      broadcastedTxp.isCounterparty = txp.isCounterparty;
+      broadcastedTxp.counterparty   = txp.counterparty;
 
       $log.debug('Transaction broadcasted');
       if (memo) $log.info(memo);
