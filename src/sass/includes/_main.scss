@@ -4,7 +4,7 @@
  *
  */
 
-$brand-primary: #656565;
+$brand-primary: #3c3c3c;
 $brand-secondary: #ebdd2f;
 $font-stack: "Ubuntu", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -16,17 +16,18 @@ $sidebar-color: #f7f7f7;
 }
 
 body {
-  font-family: $font-stack
+  color: $brand-primary;
+  font-family: $font-stack;
 }
 
 h1, h2, h3, h4, h5, h6, p, li, dl {
-  color: #656565;
+  color: $brand-primary;
   font-family: $font-stack;
 }
 
 .panel {
   h1, h2, h3, h4, h5, h6, p, li, dl {
-    color: #656565;
+    color: $brand-primary;
   }
 }
 
@@ -185,7 +186,6 @@ ul.button-group li {
 body, html {
   height: 100%;
   width: 100%;
-  color: #656565;
   -webkit-user-select: text;
 }
 

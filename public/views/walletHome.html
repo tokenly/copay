@@ -549,13 +549,11 @@
                 <div class="asset--quantity-receiving" ng-if="token.hasReceivePending"> (+{{token.amountReceivingStr}})</div>
                 <!-- TODO: currency conversion <div class="asset--currency">{{ token.tokenName }}</div> -->
               </div>
+
+              <i class="icon-arrow-right3 size-24 more-arrow"></i>
             </div>
             <div class="asset--block asset--info">
-              <div ng-if="token.website" class="info--slot">
-                <div class="info--title">Website</div>
-                <a ng-href="{{ token.website }}" target="_blank">{{ token.website }}</a>
-              </div>
-              <div ng-if="token.info" class="info--slot">{{ token.info }}</div>
+              <!-- <div ng-if="token.info" class="info--slot">{{ token.info }}</div> -->
             </div>
           </div>
         </div> <!-- END token loop -->
@@ -563,7 +561,10 @@
 
       <ng-switch on="isFocused()" class="asset-detail-wrapper">
         <div ng-switch-when="true" class="asset-detail">
-          <a ng-click="closeFocusToken()" class="asset-detail-x" ng-style="{'color':index.backgroundColor}"><i class="fi-x"></i></a>
+          <a ng-click="closeFocusToken()" class="asset-detail-x" ng-style="{'color':index.backgroundColor, 'border-color':index.backgroundColor}">
+            <i class="icon-arrow-left3 size-24"></i>
+            Close
+          </a>
 
           <div class="token-primary">
             <div class="token-avatar-wrapper">
@@ -575,10 +576,15 @@
             </div>
           </div>
 
-          <button class="button primary round expand" ng-style="{'background-color':index.backgroundColor}" translate>Send</button>
+          <button class="button primary round expand" ng-style="{'background-color':index.backgroundColor}" translate ng-click="sendFocusToken()">Send</button>
 
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati et blanditiis, vitae, saepe suscipit reprehenderit voluptatem atque harum maxime nisi unde repudiandae cumque dolorum deleniti dolores vero ad odit ipsum.</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati et blanditiis, vitae, saepe suscipit reprehenderit voluptatem atque harum maxime nisi unde repudiandae cumque dolorum deleniti dolores vero ad odit ipsum.</p>
+          <div class="asset--info">
+            <div ng-if="focusToken.website" class="info--slot">
+              <div class="info--title">Website</div>
+              <a ng-href="{{ focusToken.website }}" target="_blank">{{ focusToken.website }}</a>
+            </div>
+            <div ng-if="focusToken.info" class="info--slot">{{ focusToken.info }}</div>
+          </div>
         </div>
       </ng-switch>
 

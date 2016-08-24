@@ -49,6 +49,13 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     $scope.focusToken = undefined;
   };
 
+  $scope.sendFocusToken = function() {
+    $scope._token = $scope.focusToken.tokenName;
+    var sendItem = $scope.index.menu.find(function(item){ return item.link == 'send' });
+    $scope.index.setTab(sendItem, false, 0, true);
+    $scope.closeFocusToken();
+  };
+
   $scope.delimitNumber = function(n) {
     return (n + "").replace(/\b(\d+)((\.\d+)*)\b/g, function(a, b, c) {
       return (b.charAt(0) > 0 && !(c || ".").lastIndexOf(".") ? b.replace(/(\d)(?=(\d{3})+$)/g, "$1,") : b) + c;
