@@ -80,6 +80,10 @@ angular.module('copayApp.services').factory('configService', function(storageSer
     }
   };
 
+  if (defaultConfig.counterpartyTokens.enabled) {
+    defaultConfig.bws.url = defaultConfig.counterpartyTokens.bws.url;
+  }
+
 
   var configCache = null;
 

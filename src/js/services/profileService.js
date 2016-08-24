@@ -416,6 +416,13 @@ angular.module('copayApp.services')
       opts.n = 1;
       opts.network = 'livenet';
 
+      // make the default wallet a single address wallet for tokens
+      var defaults = configService.getDefaults();
+      if (defaults.counterpartyTokens.enabled) {
+        opts.singleAddress = true;
+      }
+
+
       doCreateWallet(opts, function(err, walletClient) {
         if (err) return cb(err);
 
@@ -711,6 +718,8 @@ angular.module('copayApp.services')
       var defaults = configService.getDefaults();
 
       configService.get(function(err) {
+        opts.bwsurl = opts.bwsurl || defaults.bws.url;
+
         root.createDefaultProfile(opts, function(err, p) {
           if (err) return cb(err);
 
