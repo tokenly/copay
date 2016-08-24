@@ -72,10 +72,10 @@ angular.module('copayApp.services').factory('configService', function(storageSer
     counterpartyTokens: {
       enabled: true,
       bws: {
-        url: 'http://bitcore-stage.tokenly.com:3232/bws/api'
+        url: 'https://pockets-service.tokenly.com/bws/api'
       },
       counterpartyService: {
-        url: 'http://bitcore-stage.tokenly.com:3001/counterparty/api'
+        url: 'https://pockets-service.tokenly.com/counterparty/api'
       }
     }
   };
