@@ -3,6 +3,7 @@
   padding: 1rem 1.2rem 1.0625rem;
   border: 1px solid transparent;
   font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 1px;
 }
 
 .button.outline {
@@ -124,19 +125,19 @@ button {
 /* PRIMARY */
 
 button.primary {
-  background-color: #1ABC9C;
+  background-color: $brand-primary;
   color: #fff;
   &:hover, &:focus {
-    background-color: #1ABC9C;
+    background-color: $brand-primary;
     color: #fff;
   }
 }
 
 .button.primary {
-  background-color: #1ABC9C;
+  background-color: $brand-primary;
   color: #fff;
   &:hover, &:focus {
-    background-color: #1ABC9C;
+    background-color: $brand-primary;
     color: #fff;
   }
 }

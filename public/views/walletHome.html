@@ -496,7 +496,7 @@
     Being Inventory
 
     -->
-    <div id="inventory" class="inventory tab-view">
+    <div id="inventory" class="inventory tab-view" ng-class="isFocused() ? 'is-focused' : ''">
       <!-- <div class="active-asset" ng-style="{'background-color':index.backgroundColor}">
         <div class="active-asset--content">
           <div class="active--quantity">19.2 BTC</div>
@@ -526,7 +526,7 @@
             No tokens found
           </div>
         </div>
-        <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:assetSearch:tokenName">
+        <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:assetSearch:tokenName" ng-click="setFocusToken(token)">
           <div class="asset--content">
             <div class="asset--block asset--primary">
               <div class="asset--avatar">
@@ -557,7 +557,31 @@
               </div>
               <div ng-if="token.info" class="info--slot">{{ token.info }}</div>
             </div>
+          </div>
+        </div> <!-- END token loop -->
+      </div> <!-- END assets -->
+
+      <ng-switch on="isFocused()" class="asset-detail-wrapper">
+        <div ng-switch-when="true" class="asset-detail">
+          <a ng-click="closeFocusToken()" class="asset-detail-x" ng-style="{'color':index.backgroundColor}"><i class="fi-x"></i></a>
+
+          <div class="token-primary">
+            <div class="token-avatar-wrapper">
+              <img src="{{ focusToken.avatar ? focusToken.avatar : 'img/tokenly-logo.svg' }}" alt="Avatar">
+            </div>
+            <div class="token-primary-details">
+              <div class="token-name">{{ focusToken.tokenName }}</div>
+              <!-- TODO: <div class="token-quantity" ng-bind="delimitNumber(focusToken.quantity)"></div> -->
+            </div>
+          </div>
+
+          <button class="button primary round expand" translate>Send</button>
+
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati et blanditiis, vitae, saepe suscipit reprehenderit voluptatem atque harum maxime nisi unde repudiandae cumque dolorum deleniti dolores vero ad odit ipsum.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati et blanditiis, vitae, saepe suscipit reprehenderit voluptatem atque harum maxime nisi unde repudiandae cumque dolorum deleniti dolores vero ad odit ipsum.</p>
         </div>
+      </ng-switch>
+
     </div> <!-- END Inventory -->
 
     <div id="{{view.id}}" class="{{view.class}} tab-view" ng-repeat="view in index.addonViews" ng-include="view.template">

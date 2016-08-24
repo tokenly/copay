@@ -1,6 +1,13 @@
 .inventory
   $gutter: 20px
   $width: 840px
+  display: flex
+  width: 100%
+  &.is-focused
+    .assets
+      width: 50%
+    .asset-detail-wrapper
+      width: 50%
 
   .active-asset
     color: #fff
@@ -17,7 +24,9 @@
       color: #EDF5FF
 
   .assets
+    width: 100%
     margin-top: 20px
+    transition: width 0.2s ease
     .assets--loading
       max-width: $width
       margin: 0 auto
@@ -67,11 +76,11 @@
         display: flex
         align-items: center
         margin-top: 10px
+        flex-wrap: wrap
       .asset--name
         .asset--short
           font-size: 18px
           font-weight: bold
-          color: cornflowerblue
           line-height: 1.2
           margin-right: 10px
         .asset--sym
@@ -98,17 +107,15 @@
       .asset--balance
         margin-left: auto
         text-align: right
-        font-family: monospace
         .asset--quantity
           font-size: 22px
           margin-bottom: 2px
           line-height: 1.2
+          font-family: monospace
         .asset--quantity-sending
           color: #ee4a43
-
         .asset--quantity-receiving
           color: #1abc9c
-
         .asset--currency
           font-size: 14px
           color: #676767
@@ -125,3 +132,27 @@
             font-weight: bold
             text-transform: uppercase
             float: left
+
+  .asset-detail-wrapper
+    .asset-detail
+      width: 100%
+      padding: 30px
+      border-left: 1px solid #e2e7ed
+      height: 100%
+    .asset-detail-x
+      float: right
+    .token-primary
+      display: flex
+      align-items: center
+      margin-bottom: 18px
+    .token-avatar-wrapper
+      width: 70px
+      margin-right: 15px
+    .token-name
+      font-weight: 100
+      font-size: 26px
+      font-weight: bold
+    .token-quantity
+      font-size: 22px
+      letter-spacing: 1px
+      font-family: monospace
