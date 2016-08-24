@@ -530,7 +530,7 @@
           <div class="asset--content">
             <div class="asset--block asset--primary">
               <div class="asset--avatar">
-                <img ng-src="{{ asset.avatar ? asset.avatar : 'img/tokenly-logo.svg' }}" alt="Avatar">
+                <img ng-src="{{ asset.avatar ? asset.avatar : 'img/tokenly-logo-dark.svg' }}" alt="Avatar">
               </div>
               <div class="asset--name">
                 <div>
@@ -567,7 +567,7 @@
 
           <div class="token-primary">
             <div class="token-avatar-wrapper">
-              <img src="{{ focusToken.avatar ? focusToken.avatar : 'img/tokenly-logo.svg' }}" alt="Avatar">
+              <img ng-src="{{ focusToken.avatar ? focusToken.avatar : 'img/tokenly-logo-dark.svg' }}" alt="Avatar">
             </div>
             <div class="token-primary-details">
               <div class="token-name">{{ focusToken.tokenName }}</div>
@@ -575,7 +575,7 @@
             </div>
           </div>
 
-          <button class="button primary round expand" translate>Send</button>
+          <button class="button primary round expand" ng-style="{'background-color':index.backgroundColor}" translate>Send</button>
 
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati et blanditiis, vitae, saepe suscipit reprehenderit voluptatem atque harum maxime nisi unde repudiandae cumque dolorum deleniti dolores vero ad odit ipsum.</p>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati et blanditiis, vitae, saepe suscipit reprehenderit voluptatem atque harum maxime nisi unde repudiandae cumque dolorum deleniti dolores vero ad odit ipsum.</p>

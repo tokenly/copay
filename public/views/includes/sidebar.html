@@ -1,14 +1,14 @@
 <div class="sidebar" ng-controller="sidebarController as sidebar">
-  <header>
-    <div class="logo--wrapper">
-      <logo ng-if="!sidebar.isWindowsPhoneApp" negative="true" alt="Tokenly" title="Tokenly Pockets"></logo>
-    </div>
-    <div class="header--content">
-      <img class="logo" ng-if="sidebar.isWindowsPhoneApp" src="img/tokenly-logo.svg" alt="Tokenly" width="80" title="Tokenly Pockets">
-      <div ng-include="'views/includes/version.html'"></div>
-    </div>
-  </header>
   <ion-content>
+    <header>
+      <div class="logo--wrapper">
+        <logo ng-if="!sidebar.isWindowsPhoneApp" alt="Tokenly" title="Tokenly Pockets"></logo>
+      </div>
+      <div class="header--content">
+        <img class="logo" ng-if="sidebar.isWindowsPhoneApp" src="img/tokenly-logo.svg" alt="Tokenly" width="80" title="Tokenly Pockets">
+        <div ng-include="'views/includes/version.html'"></div>
+      </div>
+    </header>
     <ul class="pr">
       <li ng-show="sidebar.wallets[0]"
         ng-repeat="item in sidebar.wallets track by $index" ng-class="{'selected': item.id == index.walletId}" class="nav-item"

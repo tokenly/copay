@@ -4,7 +4,7 @@
  *
  */
 
-$brand-primary: #42709f;
+$brand-primary: #656565;
 $brand-secondary: #ebdd2f;
 $font-stack: "Ubuntu", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -1665,17 +1665,15 @@ a.missing-copayers {
   
 .sidebar ion-content {
   background: $sidebar-color;
-  top: 115px;
 }
 
 .sidebar {
-  background: $brand-primary;
   .app-name {
-    color: #fff;
+    color: #656565;
     margin-bottom: 1px;
   }
   .app-subname {
-    color: rgba(255, 255, 255, 0.73);
+    color: rgba(82, 82, 82, 0.73);
     letter-spacing: 1px;
     font-size: 9px
   }
@@ -1739,6 +1737,7 @@ a.missing-copayers {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 1px solid #d0d0d0;
     h1 {
       color: #fff;
       margin: 0;
@@ -1759,6 +1758,7 @@ a.missing-copayers {
     .logo {
       width: 100%;
       height: auto;
+      opacity: 0.8;
     }
     .header--content {
       width: 60%;
