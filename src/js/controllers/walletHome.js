@@ -34,6 +34,18 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   $scope.tokenBalancesEnabled = config.counterpartyTokens.enabled;
   $scope.assetSearch = "";
 
+  $scope.isFocused = function() {
+    return $scope.focusToken !== undefined;
+  };
+
+  $scope.setFocusToken = function(token) {
+    $scope.focusToken = token;
+  };
+
+  $scope.closeFocusToken = function() {
+    $scope.focusToken = undefined;
+  };
+
   $scope.delimitNumber = function(n) {
     return (n + "").replace(/\b(\d+)((\.\d+)*)\b/g, function(a, b, c) {
       return (b.charAt(0) > 0 && !(c || ".").lastIndexOf(".") ? b.replace(/(\d)(?=(\d{3})+$)/g, "$1,") : b) + c;

@@ -20,13 +20,13 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, p, li, dl {
-  color: $brand-primary;
+  color: #656565;
   font-family: $font-stack;
 }
 
 .panel {
   h1, h2, h3, h4, h5, h6, p, li, dl {
-    color: $brand-primary;
+    color: #656565;
   }
 }
 
@@ -53,10 +53,6 @@ h1, h2, h3, h4, h5, h6, p, li, dl {
 
 .icon-close-import {
   padding: 0px 40px 5px 10px;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: $brand-primary;
 }
 
 h1 {
@@ -189,7 +185,7 @@ ul.button-group li {
 body, html {
   height: 100%;
   width: 100%;
-  color: $brand-primary;
+  color: #656565;
   -webkit-user-select: text;
 }
 
@@ -1674,6 +1670,15 @@ a.missing-copayers {
 
 .sidebar {
   background: $brand-primary;
+  .app-name {
+    color: #fff;
+    margin-bottom: 1px;
+  }
+  .app-subname {
+    color: rgba(255, 255, 255, 0.73);
+    letter-spacing: 1px;
+    font-size: 9px
+  }
   .icon {
     width: 39px;
     text-align: center;
@@ -2103,7 +2108,6 @@ body.modal-open {
   top: 44px;
   bottom: 37px;
   overflow: auto;
-  padding-bottom: 40px;
 }
 
 .tab-in {
