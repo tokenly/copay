@@ -1,7 +1,8 @@
 <div>
   <span class="db text-bold">
     <span translate>Available Balance</span>:
-    {{index.availableBalanceStr }}
+    <span ng-if="!availableTokenBlanceStr || _token == 'BTC'">{{index.availableBalanceStr }}</span>
+    <span ng-if="availableTokenBlanceStr && _token != 'BTC'">{{availableTokenBlanceStr}}</span>
   </span>
   <span class="text-gray" ng-show="index.lockedBalanceSat">
     {{index.lockedBalanceStr}}

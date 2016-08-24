@@ -335,7 +335,8 @@
     <div id="send" class="send tab-view" ng-init="_token='BTC'">
      <div class="row">
         <div class="large-12 columns">
-            <h2 class="text-center m10t" translate>Send Tokens</h2>
+            <h2 ng-if="index.isSingleAddress" class="text-center m10t" translate>Send Tokens</h2>
+            <h2 ng-if="!index.isSingleAddress"  class="text-center m10t" translate>Send Bitcoin</h2>
         </div>
      </div>
       <div class="pr p25b">

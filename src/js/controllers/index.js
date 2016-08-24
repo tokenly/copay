@@ -359,7 +359,6 @@ angular.module('copayApp.controllers').controller('indexController', function($r
           self.handleError(err);
           return;
         }
-        $log.debug('Wallet Status:', walletStatus);
         self.setPendingTxps(walletStatus.pendingTxps);
 
         // Status Shortcuts
@@ -377,6 +376,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
 
         // Notify external addons or plugins
         $rootScope.$emit('Local/BalanceUpdated', walletStatus.balance);
+        $rootScope.$emit('Local/WalletStatusUpdated', walletStatus.wallet);
         $rootScope.$apply();
 
 

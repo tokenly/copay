@@ -31,8 +31,11 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   ret.sendMaxInfo = {};
 
   // tokens
-  $scope.tokenBalancesEnabled = config.counterpartyTokens.enabled;
+  console.log('configWallet=', configWallet);
+  console.log('profileService.focusedClient=', profileService.focusedClient);
+  $scope.tokenBalancesEnabled = config.counterpartyTokens.enabled
   $scope.assetSearch = "";
+  $scope.availableTokenBlanceStr = "";
 
   $scope.delimitNumber = function(n) {
     return (n + "").replace(/\b(\d+)((\.\d+)*)\b/g, function(a, b, c) {
@@ -284,6 +287,17 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     var tokenLabel = self.getSendableTokens()[newTokenValue];
     self.unitName = tokenLabel;
     this.hideAlternative();
+
+    // set the available token balance
+    // $scope.index.tokenBalances
+    $scope.availableTokenBlanceStr = '';
+    lodash.each($scope.index.tokenBalances, function(token) {
+      if (token.tokenName == newTokenValue) {
+        var quantityFloat = token.quantityFloat - token.quantityFloatSending;
+        if (quantityFloat < 0) { quantityFloat = 0; }
+        $scope.availableTokenBlanceStr = quantityFloat+" "+token.tokenName;
+      }
+    })
   };
 
   this.canShowAlternative = function() {
@@ -457,6 +471,26 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       $log.warn(msg);
       return self.setSendError(gettext(msg));
     };
+
+    // check available balance
+    if ($scope._token != 'BTC') {
+      var toSendFloat = form.amount.$modelValue;
+      var actualBalance = 0;
+      var tokenNameToSend = '';
+      lodash.each($scope.index.tokenBalances, function(token) {
+        if ($scope._token == token.tokenName) {
+          actualBalance = token.quantityFloat - token.quantityFloatSending;
+          tokenNameToSend = token.tokenName;
+        }
+      });
+
+      if (toSendFloat > actualBalance) {
+        var msg = 'You do not have enough '+tokenNameToSend+' available.';
+        $log.warn(msg);
+        return self.setSendError(gettext(msg));
+      };
+    }
+
 
     $timeout(function() {
       var paypro = self._paypro;
