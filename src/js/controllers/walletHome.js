@@ -311,14 +311,23 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     // set the available token balance
     // $scope.index.tokenBalances
     $scope.availableTokenBlanceStr = '';
-    lodash.each($scope.index.tokenBalances, function(token) {
-      if (token.tokenName == newTokenValue) {
-        var quantityFloat = token.quantityFloat - token.quantityFloatSending;
-        if (quantityFloat < 0) { quantityFloat = 0; }
-        $scope.availableTokenBlanceStr = quantityFloat+" "+token.tokenName;
-      }
-    })
+    var token = self.tokenBalanceDetailsByName(newTokenValue)
+    var quantityFloat = token.quantityFloat - token.quantityFloatSending;
+    if (quantityFloat < 0) { quantityFloat = 0; }
+    $scope.availableTokenBlanceStr = quantityFloat+" "+token.tokenName;
   };
+
+  this.tokenBalanceDetailsByName = function(tokenName) {
+    var foundToken = null, keepSearching = true;
+    lodash.each($scope.index.tokenBalances, function(token) {
+      if (!keepSearching) { return; }
+      if (token.tokenName == tokenName) {
+        foundToken = token;
+        keepSearching = false;
+      }
+    });
+    return foundToken;
+  }
 
   this.canShowAlternative = function() {
     return $scope.showAlternative;
@@ -516,15 +525,33 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       var paypro = self._paypro;
       var address, amount;
 
-      address = form.address.$modelValue;
-      amount = parseInt((form.amount.$modelValue * unitToSat).toFixed(0));
       var token = $scope._token;
+      var divisible;
+      if (token == 'BTC') {
+        divisible = true;
+      } else {
+        // determine divisibility
+        var tokenBalanceDetails = self.tokenBalanceDetailsByName(token)
+        if (!tokenBalanceDetails) {
+          throw new Error("Unable to find balance details for token "+token);
+        }
+        divisible = tokenBalanceDetails.divisible;
+      }
+
+      address = form.address.$modelValue;
+      if (divisible) {
+        amount = parseInt((form.amount.$modelValue * unitToSat).toFixed(0));
+      } else {
+        amount = parseInt(form.amount.$modelValue);
+      }
+      console.log('=SEND= token='+token+' divisible='+divisible+'');
 
       outputs.push({
-        'toAddress': address,
-        'token': token,
-        'amount': amount,
-        'message': comment
+        toAddress: address,
+        token:     token,
+        amount:    amount,
+        divisible: divisible,
+        message:   comment
       });
 
       var txp = {};

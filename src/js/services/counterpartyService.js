@@ -152,6 +152,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
     var oldOutput = txp.outputs[0];
     var destinationAddress = oldOutput.toAddress;
+    var divisible          = oldOutput.divisible;
 
     // build the dust send
     var dustSendOutput = {
@@ -176,11 +177,13 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     // save the counterparty data
     newTxp.isCounterparty = true;
     var SATOSHI = 100000000;
+    var quantityFloat = divisible ? (oldOutput.amount / SATOSHI) : oldOutput.amount;
     newTxp.counterparty = {
-      token:  oldOutput.token,
-      quantity:  oldOutput.amount,
-      quantityFloat: oldOutput.amount / SATOSHI,
-      amountStr: (oldOutput.amount / SATOSHI) + " " + oldOutput.token,
+      token:         oldOutput.token,
+      quantity:      oldOutput.amount,
+      quantityFloat: quantityFloat,
+      amountStr:     ""+quantityFloat,
+      divisible:     divisible,
     };
 
     return newTxp;
@@ -195,6 +198,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       var oldOutput   = originalTxp.outputs[0];
       var token       = oldOutput.token;
       var quantitySat = oldOutput.amount;
+      var divisible   = oldOutput.divisible;
 
       // build the real OP_RETURN script
       console.log('=CPTY= recreateRealTokenSendProposal '+quantitySat+' '+token+' '+trialCreatedTxp.inputs[0].txid+'');
