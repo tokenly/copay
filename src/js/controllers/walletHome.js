@@ -51,6 +51,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
 
   $scope.sendFocusToken = function() {
     $scope._token = $scope.focusToken.tokenName;
+    self.setTokenName($scope._token)
     var sendItem = $scope.index.menu.find(function(item){ return item.link == 'send' });
     $scope.index.setTab(sendItem, false, 0, true);
     $scope.closeFocusToken();
