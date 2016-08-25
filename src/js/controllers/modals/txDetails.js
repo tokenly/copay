@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('txDetailsController', function($rootScope, $log, $scope, $filter, $ionicPopup, gettextCatalog, profileService, configService, lodash) {
+angular.module('copayApp.controllers').controller('txDetailsController', function($rootScope, $log, $scope, $filter, $ionicPopup, $location, gettextCatalog, profileService, configService, lodash) {
 
   var self = $scope.self;
   var fc = profileService.focusedClient;
@@ -12,9 +12,24 @@ angular.module('copayApp.controllers').controller('txDetailsController', functio
   $scope.color = fc.backgroundColor;
   $scope.copayerId = fc.credentials.copayerId;
   $scope.isShared = fc.credentials.n > 1;
+  $scope.tokenBalances = $scope.index.tokenBalances;
 
   $scope.btx.amountStr = profileService.formatAmount($scope.btx.amount, true) + ' ' + walletSettings.unitName;
   $scope.btx.feeStr = profileService.formatAmount($scope.btx.fees, true) + ' ' + walletSettings.unitName;
+  
+  $scope.openTokenInfo = function(tokenName) {
+        $scope.cancel();
+        var token = false;
+        lodash.each($scope.tokenBalances, function(t, k) {
+            if(t.tokenName == tokenName) {
+                token = t;
+            }
+        });
+        $scope.index.setTab('inventory', false, 0, true);
+        setTimeout(function() {
+            $scope.home.defineFocusToken(token);
+        }, 200);
+  };
 
   $scope.showCommentPopup = function() {
     $scope.data = {

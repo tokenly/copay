@@ -29,6 +29,7 @@
             <span ng-if="btx.isCounterparty" class="enable_text_select">
                 {{ listBvam = index.bvamData[btx.counterparty.asset] || {};"" }}
                 {{ delimitNumber(btx.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || btx.counterparty.asset }}
+                <a href="#" class="ion-chevron-right" ng-click="openTokenInfo(btx.counterparty.asset)"></a>
                 <div ng-if="listBvam.short_name != btx.counterparty.asset">
                     <small><strong>({{ btx.counterparty.asset }})</strong></small>
                 </div>

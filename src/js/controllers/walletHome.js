@@ -36,6 +36,10 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   $scope.tokenBalancesEnabled = config.counterpartyTokens.enabled
   $scope.assetSearch = "";
   $scope.availableTokenBlanceStr = "";
+  
+  this.defineFocusToken = function(token) {
+    $scope.focusToken = token;
+  }
 
   $scope.isFocused = function() {
     return $scope.focusToken !== undefined;
@@ -118,6 +122,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
 
   var disableTabListener = $rootScope.$on('Local/TabChanged', function(e, tab) {
     // This will slow down switch, do not add things here!
+    $scope.focusToken = undefined;
     switch (tab) {
       case 'receive':
         // just to be sure we have an address
