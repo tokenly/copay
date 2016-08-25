@@ -32373,6 +32373,22 @@ API.prototype.getTransactions = function(address, txids, cb) {
   this._doPostRequest('/transactions', args, cb);
 };
 
+/**
+ * Get asset info by asset name
+ *
+ * @param {Callback} cb
+ */
+API.prototype.getBvamInfo = function(assets, cb) {
+  if (assets == null || assets.length == 0) {
+    return cb('Asset names were invalid');
+  }
+  var args = {
+    assets: assets
+  }
+
+  this._doPostRequest('/bvam/info', args, cb);
+};
+
 
 
 

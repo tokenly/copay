@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('indexController', function($rootScope, $scope, $log, $filter, $timeout, $ionicScrollDelegate, $ionicPopup, $ionicSideMenuDelegate, latestReleaseService, feeService, bwcService, bcpwcService, pushNotificationsService, lodash, go, profileService, configService, rateService, storageService, addressService, gettext, gettextCatalog, amMoment, addonManager, bwcError, txFormatService, uxLanguage, glideraService, coinbaseService, platformInfo, addressbookService, openURLService, counterpartyService, ongoingProcess) {
+angular.module('copayApp.controllers').controller('indexController', function($rootScope, $scope, $log, $filter, $timeout, $ionicScrollDelegate, $ionicPopup, $ionicSideMenuDelegate, latestReleaseService, feeService, bwcService, bcpwcService, pushNotificationsService, lodash, go, profileService, configService, rateService, storageService, addressService, gettext, gettextCatalog, amMoment, addonManager, bwcError, txFormatService, uxLanguage, glideraService, coinbaseService, platformInfo, addressbookService, openURLService, counterpartyService, bvamService, ongoingProcess) {
   var self = this;
   var SOFT_CONFIRMATION_LIMIT = 12;
   var errors = bwcService.getErrors();
@@ -160,6 +160,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       self.tokenBalancesEverLoaded = false;
       self.tokenBalancesLoading = false;
       self.lastEssentialCompleteHistory = null;
+      self.bvamData = {}
 
       if (self.externalSource == 'trezor')
         self.account++;
@@ -993,6 +994,16 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     self.updateHistory();
   }, 5000);
 
+  self.loadBvam = function(cb) {
+    var tokenNames = lodash.map(self.tokenBalances, 'tokenName');
+    bvamService.getBvamData(profileService.focusedCounterpartyClient, tokenNames, function(err, bvamData) {
+      if (err) {
+        return cb(err);
+      }
+      cb(null, bvamData);
+    });
+  }
+
   self.showErrorPopup = function(msg, cb) {
     $log.warn('Showing err popup:' + msg);
 
@@ -1454,7 +1465,19 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     self.txHistory = self.completeHistory = self.txHistorySearchResults = [];
     self.tokenBalancesEverLoaded = false;
     self.tokenBalances = [];
+    self.bvamData = {};
     self.debounceUpdateHistory();
+  });
+
+  $rootScope.$on('Local/ClearBvam', function(event) {
+    $log.debug('The bvam cache has been deleted');
+    self.bvamData = {};
+
+    self.loadBvam(function(err, bvamData) {
+      if (err) { return $log.error(err); }
+      self.bvamData = bvamData;
+      $rootScope.$digest();
+    });
   });
 
   $rootScope.$on('Local/AddressbookUpdated', function(event, ab) {
@@ -1534,6 +1557,13 @@ angular.module('copayApp.controllers').controller('indexController', function($r
             self.tokenBalances = tokenBalances;
             self.tokenBalancesLoading = false;
             self.tokenBalancesEverLoaded = true;
+            $rootScope.$digest();
+
+            self.loadBvam(function(err, bvamData) {
+              if (err) { return $log.error(err); }
+              self.bvamData = bvamData;
+              $rootScope.$digest();
+            })
           });
         });
       }
@@ -1615,6 +1645,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
           self.txHistory = self.completeHistory = self.txHistorySearchResults = [];
           self.tokenBalancesEverLoaded = false;
           self.tokenBalances = [];
+          self.bvamData = {};
 
           storageService.removeTxHistory(walletId, function() {
             self.startScan(walletId);

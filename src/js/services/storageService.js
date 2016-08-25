@@ -318,5 +318,32 @@ angular.module('copayApp.services')
       });
     };
 
+    root.getBvamCache = function(cb) {
+      storage.get('bvam', function(err, loadedBvamString) {
+        if (err) return cb(err);
+        if (loadedBvamString == null) {
+          return cb(null, {});
+        }
+        var bvamCache;
+        try {
+          bvamCache = JSON.parse(loadedBvamString);
+        } catch (e) {
+          $log.error("failed to parse BVAM string: "+loadedBvamString);
+          bvamCache = {};
+        }
+        cb(null, bvamCache)
+      });
+    };
+
+    root.storeBvamCache = function(bvamCache, cb) {
+      $log.debug('=CACHE= Storing BVAM cache', bvamCache);
+      storage.set('bvam', JSON.stringify(bvamCache), cb);
+    };
+
+    root.removeBvamCache = function(cb) {
+      $log.debug('=CACHE= Removing BVAM cache');
+      storage.remove('bvam', cb);
+    };
+
     return root;
   });

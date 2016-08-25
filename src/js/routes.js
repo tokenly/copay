@@ -407,6 +407,18 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
 
         }
       })
+      .state('preferencesBvam', {
+        url: '/preferencesBvam',
+        templateUrl: 'views/preferencesBvam.html',
+        walletShouldBeComplete: true,
+        needProfile: true,
+        views: {
+          'main': {
+            templateUrl: 'views/preferencesBvam.html'
+          },
+
+        }
+      })
       .state('deleteWords', {
         url: '/deleteWords',
         templateUrl: 'views/preferencesDeleteWords.html',

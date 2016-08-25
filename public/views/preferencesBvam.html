@@ -1,0 +1,14 @@
+<div
+  class="topbar-container"
+  ng-include="'views/includes/topbar.html'"
+  ng-init="titleSection='BVAM Cache'; goBackToState = 'preferencesAdvanced'">
+</div>
+<div class="content preferences" ng-controller="preferencesBvam">
+  <h4></h4>
+
+  <ul class="no-bullet m0">
+    <li ng-click="clearBvamCache()" ng-style="{'color':index.backgroundColor}" translate>
+      Clear BVAM cache
+    </li>
+  </ul>
+</div>

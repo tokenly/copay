@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').factory('counterpartyService', function(counterpartyUtils, configService, lodash, $timeout) {
+angular.module('copayApp.services').factory('counterpartyService', function(counterpartyUtils, bvamService, configService, lodash, $timeout) {
   var root = {};
 
   var CACHED_CONFIRMATIONS_LENGTH = 6;
@@ -17,6 +17,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     counterpartyClient.getBalances(address, function(err, balanceEntries) {
       if (err) return cb(err)
 
+      var tokenNames = [];
       var tokenBalances = [];
       var entry;
       for (var i = 0; i < balanceEntries.length; i++) {
@@ -24,6 +25,8 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
         tokenBalances.push(buildNewTokenBalanceEntry(entry, {
           amountStr: ""+entry.quantityFloat
         }));
+
+        tokenNames.push(entry.asset);
       }
 
       // console.log('=CPTY= balances for address '+address, tokenBalances);
