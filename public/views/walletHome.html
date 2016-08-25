@@ -509,7 +509,7 @@
         <div class="assets--filters">
           <div class="input-group">
             <!-- <i class="input--icon fi-magnifying-glass"></i> -->
-            <input class="input--search" type="text" placeholder="Search {{ index.tokenBalances.length }} unique tokens..." ng-model="assetSearch">
+            <input class="input--search" type="text" placeholder="Search {{ index.countNonZeroTokens() }} unique tokens..." ng-model="assetSearch">
           </div>
           <!-- TODO:
           <div class="input-group">
@@ -529,7 +529,7 @@
           </div>
         </div>
         <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:assetSearch:tokenName" ng-click="setFocusToken(token)">
-          <div class="asset--content">
+          <div class="asset--content" ng-if="token.quantityFloat && token.quantityFloat > 0">
             {{listBvam = index.bvamData[token.tokenName] || {};""}}
             <div class="asset--block asset--primary">
               <div class="asset--avatar">

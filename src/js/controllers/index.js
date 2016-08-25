@@ -1921,6 +1921,16 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       });
     })
   }
+  
+  self.countNonZeroTokens = function() {
+    var count = 0;
+    lodash.each(self.tokenBalances, function(token) {
+        if (token.quantityFloat > 0) {
+            count++;
+        }
+    });
+    return count;
+  };
 
   /* Start setup */
   lodash.assign(self, vanillaScope);
