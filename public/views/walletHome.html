@@ -216,8 +216,8 @@
                   (possible double spend)
                   </span>
                   <span  ng-if="btx.action != 'invalid'">
-                    <span ng-show="btx.isCounterparty">{{btx.counterparty.amountStr}} {{btx.counterparty.token}}</span>
-                    <span ng-hide="btx.isCounterparty">{{btx.amountStr}}</span>
+                    <span ng-show="btx.isCounterparty">{{ delimitNumber(btx.counterparty.amountStr) }} {{btx.counterparty.token}}</span>
+                    <span ng-hide="btx.isCounterparty">{{ delimitNumber(btx.amountStr) }}</span>
                   </span>
                 </span>
                 <div class="size-12 text-gray">
