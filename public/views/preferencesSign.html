@@ -1,3 +1,8 @@
+<div
+  class="topbar-container"
+  ng-include="'views/includes/topbar.html'"
+  ng-init="titleSection='Sign Message'; goBackToState = 'preferences'">
+</div>
 <div ng-controller="preferencesSign" ng-init="init()">
     <form name="signForm" class="ng-pristine ng-invalid ng-invalid-required ng-invalid-valid-amount ng-valid-maxlength" ng-controller="preferencesSign">
         <div class="row">
@@ -28,8 +33,6 @@
         </div>
 
         <div class="row">
-                <a translate="" class="button expand outline dark-gray round" ng-click="home.resetForm(sign)"><span>Cancel</span></a>
-            </div>
             <div class="columns">
                 <button ng-click="sign(keySelector, message)" ng-style="{'background-color':index.backgroundColor}" class="button black round expand" style="background-color: rgb(74, 144, 226);" ><span>Sign</span></button>
             </div>
