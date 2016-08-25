@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.bitpay.copay"
+<widget id="com.tokenly.pockets"
   version="%APP-VERSION%"
   android-versionCode="%ANDROID-VERSION-CODE%"
   ios-CFBundleVersion="%APP-VERSION%">
-    <name>Copay</name>
+    <name>Tokenly Pockets</name>
     <description>
-      A secure bitcoin wallet for friends and companies.
+      A secure bitcoin & Counterparty wallet for friends and companies. Powered by Copay
     </description>
-    <author email="support@bitpay.com" href="https://copay.io">
-        BitPay Inc.
+    <author email="support@tokenly.com" href="https://tokenly.com">
+        Tokenly Inc.
     </author>
     <content src="index.html" />
     <access origin="*" />

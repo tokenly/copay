@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=Application
 Version=%APP-VERSION%
-Name=Copay
-Comment=A multisignature wallet
-Exec=copay
+Name=Tokenly Pockets
+Comment=A multisignature token wallet
+Exec=pockets
 Icon=icon-256.png
 Terminal=false
 Categories=Finance

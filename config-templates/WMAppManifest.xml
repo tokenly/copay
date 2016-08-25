@@ -11,7 +11,7 @@
     <Language code="pl" />
     <Language code="cs" />
   </Languages>
-  <App Author="Bitpay Inc." BitsPerPixel="32" Description="A multisignature Bitcoin Wallet" Genre="apps.normal" ProductID="{5381aa50-9069-11e4-84cc-293caf9cbdc8}" Publisher="Copay Bitcoin Wallet" PublisherID="{31cdd08b-457c-413d-b440-f6665eec847d}" RuntimeType="Silverlight" Title="Copay Bitcoin Wallet" Version="%APP-VERSION%.0" xmlns="" NotificationService="MPN">
+  <App Author="Tokenly Inc." BitsPerPixel="32" Description="A multisignature Bitcoin & Counterparty Wallet" Genre="apps.normal" ProductID="{5381aa50-9069-11e4-84cc-293caf9cbdc8}" Publisher="Tokenly Pockets Powered by Copay" PublisherID="{31cdd08b-457c-413d-b440-f6665eec847d}" RuntimeType="Silverlight" Title="Tokenly Pockets Powered by Copay" Version="%APP-VERSION%.0" xmlns="" NotificationService="MPN">
     <IconPath IsRelative="true" IsResource="false">Assets\icon@2.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
@@ -28,7 +28,7 @@
           <SmallImageURI IsRelative="true" IsResource="false">Assets\200x200@1.png</SmallImageURI>
           <Count>0</Count>
           <BackgroundImageURI IsRelative="true" IsResource="false">Assets\200x200@2.png</BackgroundImageURI>
-          <Title>Copay Bitcoin Wallet</Title>
+          <Title>Tokenly Pockets Powered by Copay</Title>
           <BackContent />
           <BackBackgroundImageURI />
           <BackTitle />

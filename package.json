@@ -1,7 +1,7 @@
 {
-  "name": "copay",
-  "description": "A multisignature bitcoin wallet",
-  "author": "BitPay",
+  "name": "pockets",
+  "description": "A multisignature token wallet powered by Copay",
+  "author": "Tokenly",
   "version": "2.4.2",
   "androidVersionCode": "114",
   "keywords": [
@@ -13,7 +13,7 @@
   ],
   "main": "public/index.html",
   "window": {
-    "title": "Copay - A multisignature bitcoin wallet",
+    "title": "Tokenly Pockets - A multisignature token wallet",
     "icon": "./public/img/icons/icon-256.png",
     "show": true,
     "visible": true,

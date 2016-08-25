@@ -220,7 +220,7 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'webkitbuilds/',
           src: ['.desktop', '../public/img/icons/favicon.ico', '../public/img/icons/icon-256.png'],
-          dest: 'webkitbuilds/Copay/linux64/',
+          dest: 'webkitbuilds/Pockets/linux64/',
           flatten: true,
           filter: 'isFile'
         }],
@@ -237,7 +237,7 @@ module.exports = function(grunt) {
     },
     nwjs: {
       options: {
-        appName: 'Copay',
+        appName: 'Pockets',
         platforms: ['win64', 'osx64', 'linux64'],
         buildDir: './webkitbuilds',
         version: '0.16.0',
@@ -249,12 +249,12 @@ module.exports = function(grunt) {
     compress: {
       linux: {
         options: {
-          archive: './webkitbuilds/Copay-linux.zip'
+          archive: './webkitbuilds/Pockets-linux.zip'
         },
         expand: true,
-        cwd: './webkitbuilds/Copay/linux64/',
+        cwd: './webkitbuilds/Pockets/linux64/',
         src: ['**/*'],
-        dest: 'copay-linux/'
+        dest: 'pockets-linux/'
       }
     },
     browserify: {

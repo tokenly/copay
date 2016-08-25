@@ -18,8 +18,8 @@ checkOK() {
 
 # Configs
 BUILDDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-APPDIR="$BUILDDIR/copay-chrome-extension"
-ZIPFILE="copay-chrome-extension.zip"
+APPDIR="$BUILDDIR/pockets-chrome-extension"
+ZIPFILE="pockets-chrome-extension.zip"
 VERSION=`cut -d '"' -f2 $BUILDDIR/../../src/js/version.js|head -n 1`
 
 # Move to the build directory
