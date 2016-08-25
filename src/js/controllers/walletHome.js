@@ -57,7 +57,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     $scope.closeFocusToken();
   };
 
-  $scope.delimitNumber = function(n) {
+  $rootScope.delimitNumber = function(n) {
     return (n + "").replace(/\b(\d+)((\.\d+)*)\b/g, function(a, b, c) {
       return (b.charAt(0) > 0 && !(c || ".").lastIndexOf(".") ? b.replace(/(\d)(?=(\d{3})+$)/g, "$1,") : b) + c;
     });
@@ -296,9 +296,25 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     var sendableTokens = {
       "BTC": "BTC",
     }
-
+    var listBvam = $scope.index.bvamData;
     lodash.each($scope.index.tokenBalances, function(token) {
-      sendableTokens[token.tokenName] = token.tokenName;
+      var label = token.tokenName;
+      var bvam = {};
+      if (listBvam[token.tokenName]) {
+          bvam = listBvam[token.tokenName];
+      }
+      if (bvam.short_name || bvam.name) {
+         if (bvam.short_name) {
+             label = bvam.short_name;
+         }
+         else {
+             label = bvam.name;
+         }
+         if (token.tokenName != label) {
+             label = label + ' (' + token.tokenName + ')';
+         }
+      }
+      sendableTokens[token.tokenName] = label;
     });
 
     return sendableTokens;
@@ -314,7 +330,17 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     var token = self.tokenBalanceDetailsByName(newTokenValue)
     var quantityFloat = token.quantityFloat - token.quantityFloatSending;
     if (quantityFloat < 0) { quantityFloat = 0; }
-    $scope.availableTokenBlanceStr = quantityFloat+" "+token.tokenName;
+    var bvam = $scope.index.bvamData[token.tokenName] || {};
+    var availableLabel = token.tokenName;
+    if (bvam.short_name || bvam.name) {
+        if (bvam.short_name) {
+            availableLabel = bvam.short_name;
+        }
+        else {
+            availableLabel = bvam.name;
+        }
+    }    
+    $scope.availableTokenBlanceStr = quantityFloat+" "+availableLabel;
   };
 
   this.tokenBalanceDetailsByName = function(tokenName) {

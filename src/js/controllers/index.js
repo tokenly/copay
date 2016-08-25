@@ -1802,7 +1802,6 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     function openConfirmationPopup(txp, cb) {
 
       $scope.tx = txFormatService.processTx(txp);
-
       self.confirmationPopup = $ionicPopup.show({
         templateUrl: 'views/includes/confirm-tx.html',
         scope: $scope,
