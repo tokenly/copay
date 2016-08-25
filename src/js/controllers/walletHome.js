@@ -529,6 +529,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
 
     // check available balance
     if ($scope._token != 'BTC') {
+      unitToSat = 100000000;
       var toSendFloat = form.amount.$modelValue;
       var actualBalance = 0;
       var tokenNameToSend = '';
@@ -570,6 +571,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       } else {
         amount = parseInt(form.amount.$modelValue);
       }
+
       console.log('=SEND= token='+token+' divisible='+divisible+'');
 
       outputs.push({
