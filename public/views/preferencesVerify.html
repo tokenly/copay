@@ -3,29 +3,34 @@
   ng-include="'views/includes/topbar.html'"
   ng-init="titleSection='Verify Signed Message'; goBackToState = 'preferences'">
 </div>
-<div ng-controller="preferencesVerify" ng-init="init()">
+<div class="preferencesVerify" ng-controller="preferencesVerify" ng-init="init()">
+    <div class="row">
+        <div class="large-12 columns">
+            <h1>Verify Message</h1>
+        </div>
+    </div>
     <form name="verifyForm" class="ng-pristine ng-invalid ng-invalid-required ng-invalid-valid-amount ng-valid-maxlength" ng-controller="preferencesVerify">
         <div class="row">
             <div class="large-12 columns">
                 <label for="message"><span translate=""><span>Message</span></span></label>
                 <div class="input">
-                    <textarea ng-model="message" ng-blur="home.formFocus(false)" ng-focus="home.formFocus('message')" name="message" id="message" class="ng-pristine ng-valid ng-empty ng-touched" style="width: 607px; height: 84px;"></textarea>
+                    <textarea ng-model="message" ng-blur="home.formFocus(false)" ng-focus="home.formFocus('message')" name="message" id="message" class="ng-pristine ng-valid ng-empty ng-touched" rows="4"></textarea>
                 </div>
             </div>
         </div>
 
         <div class="row">
             <div class="large-12 columns">
-            <label for="pubKey" ng-click="copyToClipboard(pubKey)"><span translate=""><span>Address</span></span></label>
+            <label for="pubKey"><span translate=""><span>Address</span></span></label>
                 <input id="pubKey" ng-model="pubKey" name="pubKey" ng-value="pubKey" />
             </div>
         </div>
 
         <div class="row">
             <div class="large-12 columns">
-                <label for="signature" ng-click="copyToClipboard(signature)"><span translate=""><span>Signature</span></span></label>
+                <label for="signature"><span translate=""><span>Signature</span></span></label>
                 <div class="input">
-                    <textarea ng-model="signature" ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')"  name="signature" id="signature" class="ng-pristine ng-valid ng-empty ng-valid-maxlength ng-touched" style="width: 607px; height: 84px;"></textarea>
+                    <textarea ng-model="signature" ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')"  name="signature" id="signature" class="ng-pristine ng-valid ng-empty ng-valid-maxlength ng-touched" rows="4"></textarea>
                 </div>
             </div>
         </div>

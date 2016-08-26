@@ -39,7 +39,12 @@ angular.module('copayApp.controllers').controller('preferencesSign',
                 }
 
                 $scope.addresses = addresses;
+                // Set sign address to first address in wallet
+                $scope.keySelector = $scope.addresses[0];
+
                 $scope.$apply();
             });
-        }});
+        };
+    }
+);
 

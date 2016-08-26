@@ -4,23 +4,20 @@ input {
   border-radius: 2px;
   background: #EDEDED;
   color: #2C3E42;
-  padding: 1.2rem 0.7rem;
+  padding: 1.2rem 1rem;
   margin-bottom: 1.5rem;
-  border: 0;
   &[type="color"], &[type="date"], &[type="datetime-local"], &[type="datetime"], &[type="email"], &[type="month"], &[type="number"], &[type="password"], &[type="search"], &[type="tel"], &[type="text"], &[type="time"], &[type="url"], &[type="week"] {
     color: #B7C2CD;
     margin-bottom: 1.5rem;
     height: 35px;
     background: transparent;
     border: none;
-    padding-left: 0.1rem;
     font-size: 13px;
     border-bottom: 1px solid #E9EDF0;
   }
 }
 
 textarea {
-  color: #B7C2CD;
   margin-bottom: 1.5rem;
   height: 35px;
   background: transparent;
@@ -33,14 +30,12 @@ textarea {
 input {
   &[type="text"]:focus, &[type="password"]:focus, &[type="date"]:focus, &[type="datetime"]:focus, &[type="datetime-local"]:focus, &[type="month"]:focus, &[type="week"]:focus, &[type="email"]:focus, &[type="number"]:focus, &[type="search"]:focus, &[type="tel"]:focus, &[type="time"]:focus, &[type="url"]:focus, &[type="color"]:focus {
     color: $brand-primary;
-    border-color: #CED5DC;
     background: transparent;
   }
 }
 
 textarea:focus {
   color: $brand-primary;
-  border-color: #CED5DC;
   background: transparent;
 }
 
@@ -287,7 +282,6 @@ fieldset[disabled] textarea {
 select {
   background-color: transparent;
   color: #7A8C9E;
-  border-color: #A5B2BF;
 }
 
 label {
@@ -537,6 +531,19 @@ label.postfix {
   label {
     color: #A5B2BF;
     font-weight: normal;
+  }
+}
+
+/* We use this to get basic styling on all basic form elements */
+input:not([type]), input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="color"], textarea, select {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #a5b2bf;
+  margin-bottom: 15px;
+  padding: 0.6em 1em;
+  background-color: #fff;
+  &:focus {
+    background-color: #fff;
   }
 }
 
