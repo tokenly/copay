@@ -76,4 +76,11 @@ angular.module('copayApp.controllers').controller('customAmountController', func
   $scope.cancel = function() {
     $scope.customAmountModal.hide();
   };
+
+  $scope.setCustomTokenName = function(customToken) {
+    $scope.unitName = customToken;
+    $scope.showAlternative = false;
+  }
+
+
 });
