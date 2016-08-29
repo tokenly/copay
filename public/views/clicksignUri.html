@@ -4,8 +4,12 @@
   ng-init="titleSection='Choose a pocket address to sign message'; closeToHome = true">
 </div>
 
-<div class="p20v row payment-uri" ng-controller="clicksignUriController as clicksign" ng-init="clicksign.init()">
-	<h1 ng-if="this.callback_label != null">{{ this.callback_label }}</h1>
+<div class="payment-uri" ng-controller="clicksignUriController as clicksign" ng-init="clicksign.init()">
+    <div class="row">
+        <div class="large-12 columns">
+	       <h1 ng-if="this.callback_label != null">{{ this.callback_label }}</h1>
+        </div>
+    </div>
     <form name="clicksign.signForm" class="ng-pristine ng-invalid ng-invalid-required ng-invalid-valid-amount ng-valid-maxlength" ng-init="clicksign.setFormScope(this)">
         <div class="row">
             <div class="large-12 columns">
