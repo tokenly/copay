@@ -4,14 +4,14 @@
   ng-init="titleSection='Choose a pocket address to sign message'; closeToHome = true">
 </div>
 
-<div class="content p20v row payment-uri" ng-controller="clicksignUriController as clicksign" ng-init="clicksign.init()">
-	<h3 ng-if="this.callback_label != null">{{ this.callback_label }}</h3>
+<div class="p20v row payment-uri" ng-controller="clicksignUriController as clicksign" ng-init="clicksign.init()">
+	<h1 ng-if="this.callback_label != null">{{ this.callback_label }}</h1>
     <form name="clicksign.signForm" class="ng-pristine ng-invalid ng-invalid-required ng-invalid-valid-amount ng-valid-maxlength" ng-init="clicksign.setFormScope(this)">
         <div class="row">
             <div class="large-12 columns">
                 <label for="sign_message"><span translate=""><span>Message</span></span></label>
                 <div class="input">
-                    <textarea ng-model="sign_message" readonly ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" name="sign_message" id="sign_message" class="ng-pristine ng-valid ng-empty ng-touched" style="width: 607px; height: 84px;"></textarea>
+                    <textarea ng-model="sign_message" readonly ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" name="sign_message" id="sign_message" class="ng-pristine ng-valid ng-empty ng-touched" rows="4"></textarea>
                 </div>
             </div>
         </div>
@@ -26,16 +26,20 @@
             <div class="large-12 columns">
                 <label for="signature" ng-click="copyToClipboard(signature)"><span translate=""><span>Signature</span></span></label>
                 <div class="input">
-                    <textarea ng-model="signature" readonly ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" ng-maxlength="500" name="signature" id="signature" class="ng-pristine ng-valid ng-empty ng-valid-maxlength ng-touched" style="width: 607px; height: 84px;"></textarea>
+                    <textarea ng-model="signature" readonly ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" ng-maxlength="500" name="signature" id="signature" class="ng-pristine ng-valid ng-empty ng-valid-maxlength ng-touched" rows="4"></textarea>
                 </div>
             </div>
         </div>
 
         <div class="row">
-                <a translate="" class="button expand outline dark-gray round" ng-click="clicksign.closeWindow()"><span>Cancel</span></a>
+            <div class="large-12 columns">
+                <button translate="" class="button expand outline dark-gray round" ng-click="clicksign.closeWindow()"><span>Cancel</span></button>
             </div>
-            <div class="columns">
-                <button ng-click="sign(keySelector, sign_message)" ng-style="{'background-color':index.backgroundColor}" class="button black round expand" style="background-color: rgb(74, 144, 226);" ><span>Sign &amp; Continue</span></button>
+        </div>
+        
+        <div class="row">
+            <div class="large-12 columns">
+                <button ng-click="sign(keySelector, sign_message)" ng-style="{'background-color':index.backgroundColor}" class="button black round expand" style="background-color: rgb(74, 144, 226);"><span>Sign &amp; Continue</span></button>
             </div>
         </div>
     </form>
