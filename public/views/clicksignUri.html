@@ -11,7 +11,7 @@
             <div class="large-12 columns">
                 <label for="sign_message"><span translate=""><span>Message</span></span></label>
                 <div class="input">
-                    <textarea ng-model="sign_message" ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" name="sign_message" id="sign_message" class="ng-pristine ng-valid ng-empty ng-touched" style="width: 607px; height: 84px;"></textarea>
+                    <textarea ng-model="sign_message" readonly ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" name="sign_message" id="sign_message" class="ng-pristine ng-valid ng-empty ng-touched" style="width: 607px; height: 84px;"></textarea>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <div class="large-12 columns">
                 <label for="signature" ng-click="copyToClipboard(signature)"><span translate=""><span>Signature</span></span></label>
                 <div class="input">
-                    <textarea ng-model="signature" ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" ng-maxlength="500" name="signature" id="signature" class="ng-pristine ng-valid ng-empty ng-valid-maxlength ng-touched" style="width: 607px; height: 84px;"></textarea>
+                    <textarea ng-model="signature" readonly ng-blur="home.formFocus(false)" ng-focus="home.formFocus('msg')" ng-maxlength="500" name="signature" id="signature" class="ng-pristine ng-valid ng-empty ng-valid-maxlength ng-touched" style="width: 607px; height: 84px;"></textarea>
                 </div>
             </div>
         </div>

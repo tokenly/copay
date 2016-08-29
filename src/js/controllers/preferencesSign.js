@@ -15,7 +15,9 @@ angular.module('copayApp.controllers').controller('preferencesSign',
 
         $scope.sign = function(address) {
             var toSign = $scope.signForm.message.$modelValue;
-
+            if(toSign.trim() == '') {
+                return false;
+            }
             signService.deriveKeyAndSign(address, fc, toSign, function(signed) {
                 $scope.signature = signed;
                 $scope.$apply();
