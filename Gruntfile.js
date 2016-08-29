@@ -219,7 +219,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'webkitbuilds/',
-          src: ['.desktop', '../public/img/icons/favicon.ico', '../public/img/icons/icon-256.png'],
+          src: ['.desktop', '../public/favicons/favicon.ico', '../public/img/icons/icon-256.png'],
           dest: 'webkitbuilds/Pockets/linux64/',
           flatten: true,
           filter: 'isFile'
