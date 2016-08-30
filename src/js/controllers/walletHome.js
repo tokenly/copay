@@ -333,9 +333,9 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     // $scope.index.tokenBalances
     $scope.availableTokenBlanceStr = '';
     var token = self.tokenBalanceDetailsByName(newTokenValue)
-    var quantityFloat = token.quantityFloat - token.quantityFloatSending;
+    var quantityFloat = token ? (token.quantityFloat - token.quantityFloatSending) : 0;
     if (quantityFloat < 0) { quantityFloat = 0; }
-    var bvam = $scope.index.bvamData[token.tokenName] || {};
+    var bvam = token ? ($scope.index.bvamData[token.tokenName] || {}) : {};
     var availableLabel = token.tokenName;
     if (bvam.short_name || bvam.name) {
         if (bvam.short_name) {
