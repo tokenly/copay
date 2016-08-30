@@ -2160,3 +2160,12 @@ select option:empty { display:none }
 .preferences-sign, .preferencesVerify, .payment-uri {
   margin-top: 30px
 }
+
+#receive-address{
+    border: none;
+    background: transparent;
+    text-align: center;
+    margin: 10px auto;
+    display: block; 
+    font-size: 22px;
+}

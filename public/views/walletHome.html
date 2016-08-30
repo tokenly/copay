@@ -291,9 +291,8 @@
                 </div>
               </div>
               <div class="m10t" >
-                <h4 ng-class="{'enable_text_select': !index.isCordova}" class="size-12">
-                  {{home.generatingAddress ? '...' : home.addr}}
-                </h4>
+                <input type="text" readonly ng-class="{'enable_text_select': !index.isCordova}" class="size-12" id="receive-address" onclick="this.select()"
+                  value="{{home.generatingAddress ? '...' : home.addr}}" />
               </div>
             </div>
           </div>
