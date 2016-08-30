@@ -693,6 +693,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
         $log.warn(ex);
       }
 
+      console.log('=TX= getSavedTxs ',localTxs);
       return cb(null, lodash.compact(localTxs));
     });
   }
@@ -750,6 +751,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
 
           newTxs = newTxs.concat(lodash.compact(res));
           skip = skip + requestLimit;
+          console.log('=TX= newTxs:', newTxs);
 
           $log.debug('Syncing TXs. Got:' + newTxs.length + ' Skip:' + skip, ' EndingTxid:', endingTxid, ' Continue:', shouldContinue);
 
