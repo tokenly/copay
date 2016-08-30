@@ -987,6 +987,11 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   };
 
   this.sendMax = function(availableBalanceSat) {
+    var token = $scope._token;
+    if (token != 'BTC') {
+      return this.sendMaxByToken(token, availableBalanceSat);
+    }
+
     if (availableBalanceSat == 0) {
       this.error = gettext("Cannot create transaction. Insufficient funds");
       return;
@@ -1065,6 +1070,27 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       });
     }, 10);
   };
+
+  this.sendMaxByToken = function(tokenToSend, availableBTCBalanceSat) {
+    console.log('=SEND= sendMaxByToken availableBTCBalanceSat=', availableBTCBalanceSat);
+
+    if (availableBTCBalanceSat == 0) {
+      this.error = gettext("Cannot create transaction. Insufficient BTC funds");
+      return;
+    }
+
+    var actualTokenBalance, tokenNameToSend;
+    lodash.each($scope.index.tokenBalances, function(token) {
+      if (tokenToSend == token.tokenName) {
+        actualTokenBalance = token.quantityFloat - token.quantityFloatSending;
+        tokenNameToSend = token.tokenName;
+      }
+    });
+
+    // set the token quantity
+    $scope._amount = Math.max(actualTokenBalance,0);
+    return;
+  }
 
   /* Start setup */
   lodash.assign(self, vanillaScope);
