@@ -141,7 +141,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
 
   root.isTokenSendProposal = function(txp, cb) {
-    if (txp.outputs != null && txp.outputs[0].token != null) {
+    if (txp.outputs != null && txp.outputs[0].token != null && txp.outputs[0].token != 'BTC') {
       return true;
     }
 
