@@ -19,7 +19,14 @@ angular.module('copayApp.controllers').controller('preferencesSign',
                 return false;
             }
             signService.deriveKeyAndSign(address, fc, toSign, function(signed) {
-                $scope.signature = signed;
+                var result = '-----BEGIN BITCOIN SIGNED MESSAGE-----\n' + toSign + '\n';
+                result = result + '-----BEGIN BITCOIN SIGNATURE-----\n';
+                result = result + 'Version: Bitcoin-qt (1.0)\n';
+                console.log(address);
+                result = result + 'Address: ' + address.address + '\n\n';
+                result = result + signed + '\n';
+                result = result + '-----END BITCOIN SIGNATURE-----';
+                $scope.signature = result;                
                 $scope.$apply();
             })
         };
