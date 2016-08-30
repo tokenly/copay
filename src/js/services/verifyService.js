@@ -15,10 +15,10 @@ angular.module('copayApp.services')
                 return cb('MISSING_PARAMETER');
 
             client.getMessageVerification(message, signature, pubKey, function(response) {
-                    result = response
+                    result = response;
             });
 
-            return cb(result)
+            return cb(result);
         };
 
         return root;

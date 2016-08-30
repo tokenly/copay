@@ -13,9 +13,28 @@ angular.module('copayApp.controllers').controller('preferencesVerify',
 
 
             verifyService.getMessageVerification(message, signature, pubKey, function(result) {
-
-                $scope.result = result;
-               // $scope.$apply();
+                $scope.verifyResult = '';
+                if(result) {
+                    if(result == 'MISSING_PARAMETER') {
+                        alert('Please enter all required fields');
+                    }
+                    else {
+                        $scope.verifyResult = 'Signature verified!';
+                        $scope.verifyClass = 'text-success';
+                        setTimeout(function() {
+                            $scope.verifyResult = '';
+                            $scope.verifyClass = '';
+                        }, 5000);
+                    }
+                }
+                else {
+                        $scope.verifyResult = 'Invalid signature';
+                        $scope.verifyClass = 'text-danger';
+                        setTimeout(function() {
+                            $scope.verifyResult = '';
+                            $scope.verifyClass = '';
+                        }, 5000);
+                }
             })
         };
 
