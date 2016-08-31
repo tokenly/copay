@@ -1260,15 +1260,11 @@ input.ng-invalid-match {
 }
 
 .scrollArea {
-  height: 280px;
-  overflow: scroll;
-  background: #213140;
-  border: 1px solid $brand-primary;
   border-radius: 5px;
   margin: 1rem;
   color: #A5B2BF;
   line-height: 30px;
-  padding: 0.5rem;
+  padding: 1rem 1.5rem;
   ul {
     font-size: 0.8rem;
     text-align: left;
@@ -1358,10 +1354,7 @@ input.ng-invalid-match {
 
 .splash {
   top: 0;
-  background: $brand-primary;
-  background-image: -webkit-linear-gradient(#3D5672 0%, #223243 100%);
-  background-image: -o-linear-gradient(#3D5672 0%, #223243 100%);
-  background-image: linear-gradient(#3D5672 0%, #223243 100%);
+  background: #f7f7f7;
   .start-button button {
     &.black {
       background-color: $brand-primary;
@@ -1372,6 +1365,10 @@ input.ng-invalid-match {
   }
   .container-image {
     padding: 1rem 0;
+  }
+  .button-box {
+    background: #f7f7f7;
+    box-shadow: rgba(117, 117, 117, 0.78) 0px 0px 8px;
   }
 }
 
