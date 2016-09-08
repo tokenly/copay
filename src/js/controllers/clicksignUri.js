@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.controllers').controller('clicksignUriController',
-  function($rootScope, $scope, $stateParams, $location, $timeout, profileService, configService, lodash, signService, go, bitcore) {
+  function($rootScope, $scope, $stateParams, $location, $timeout, profileService, configService, lodash, signService, go, bitcore, $http, platformInfo) {
     //setup variables
 	var fc = profileService.focusedClient;
 	var walletId = fc.credentials.walletId;
@@ -12,6 +12,7 @@ angular.module('copayApp.controllers').controller('clicksignUriController',
     
     //run ng-init to assign page vars
     this.init = function() {
+      window.focus();
       var query = [];
       this.clicksignURI = $stateParams.url;
       var uri = this.parseURI(this.clicksignURI);
@@ -88,8 +89,26 @@ angular.module('copayApp.controllers').controller('clicksignUriController',
 			else {
 				callback = callback + '?signature=' + encode_sig;
 			}
-			//redirect them to defined URL
-			window.location.href = callback;
+			//post back to defined callback URL
+            $http({
+               method: 'POST',
+               url: callback 
+            }).then(function successCallback(response){
+                console.log(response);
+                
+            }, function errorCallback(response){
+                console.log('ERROR');
+                console.log(response);
+            });
+            $location.path('/');
+            if(platformInfo.isNW){
+                var gui = require('nw.gui');
+                var win = gui.Window.get();
+                win.minimize();
+            }
+            else{
+                window.minimize();
+            }
 		}
 	};	
     
@@ -118,6 +137,15 @@ angular.module('copayApp.controllers').controller('clicksignUriController',
 	
     //close window when they hit cancel
 	this.closeWindow = function() {
-		window.close();
+        $location.path('/');
+        if(platformInfo.isNW){
+            var gui = require('nw.gui');
+            var win = gui.Window.get();
+            win.minimize();
+        }
+        else{
+            window.minimize();
+        }
+        
 	}
   });
