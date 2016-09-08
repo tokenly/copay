@@ -240,7 +240,7 @@ module.exports = function(grunt) {
         appName: 'Pockets',
         platforms: ['win64', 'osx64', 'linux64'],
         buildDir: './webkitbuilds',
-        version: '0.16.0',
+        version: '0.17.0',
         macIcns: './public/img/icons/icon.icns',
         exeIco: './public/img/icons/icon.ico'
       },
