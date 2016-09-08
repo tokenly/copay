@@ -3,13 +3,12 @@ Type=Application
 Version=%APP-VERSION%
 Name=Tokenly Pockets
 Comment=A multisignature token wallet
-Exec=pockets
+Exec=Pockets %u
 Icon=icon-256.png
 Terminal=false
-Categories=Finance
+Categories=Finance;Internet;
 X-Ubuntu-Touch=true
 X-Ubuntu-StageHint=SideStage
-MimeType=application/pockets;x-scheme-handler/pockets;application/bitcoin;x-scheme-handler/bitcoin;a
-pplication/copay;x-scheme-handler/copay;
+MimeType=application/pockets;x-scheme-handler/pockets;application/bitcoin;x-scheme-handler/bitcoin;application/copay;x-scheme-handler/copay;
 
 
