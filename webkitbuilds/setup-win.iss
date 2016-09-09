@@ -18,7 +18,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputBaseFilename=Copay-win
+OutputBaseFilename=Pockets-win
 OutputDir=./
 Compression=lzma
 SolidCompression=yes
@@ -33,9 +33,9 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "Tokenly Pockets\win64\pockets.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Tokenly Pockets\win64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "../public/img/icons/favicon.ico"; DestDir: "{app}"; DestName: "icon.ico"; Flags: ignoreversion
+Source: "Pockets\win64\Pockets.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Pockets\win64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "favicon.ico"; DestDir: "{app}"; DestName: "icon.ico"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
