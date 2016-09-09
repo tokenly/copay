@@ -224,7 +224,7 @@ module.exports = function(grunt) {
           flatten: true,
           filter: 'isFile'
         }],
-      }
+      }   
     },
     karma: {
       unit: {
@@ -242,7 +242,8 @@ module.exports = function(grunt) {
         buildDir: './webkitbuilds',
         version: '0.17.0',
         macIcns: './public/img/icons/icon.icns',
-        exeIco: './public/img/icons/icon.ico'
+        exeIco: './public/img/icons/icon.ico',
+        macPlist: './extra/osx/Info.plist'
       },
       src: ['./package.json', './public/**/*']
     },
