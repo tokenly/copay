@@ -1,23 +1,23 @@
 VERSION=`cut -d '"' -f2 $BUILDDIR/../version.js`
 
 sign:
-	gpg -u 1112CFA1 --output browser-extensions/chrome/copay-chrome-extension.zip.sig --detach-sig browser-extensions/chrome/copay-chrome-extension.zip
+	gpg -u 1112CFA1 --output browser-extensions/chrome/pockets-chrome-extension.zip.sig --detach-sig browser-extensions/chrome/pockets-chrome-extension.zip
 verify: 
-	gpg --verify browser-extensions/chrome/copay-chrome-extension.zip.sig browser-extensions/chrome/copay-chrome-extension.zip
+	gpg --verify browser-extensions/chrome/pockets-chrome-extension.zip.sig browser-extensions/chrome/pockets-chrome-extension.zip
 
 sign-osx:
-	codesign -s 3rd webkitbuilds/Copay-osx.dmg 
+	codesign -s 3rd webkitbuilds/Pockets-osx.dmg 
 
 verify-osx:
-	codesign -dv webkitbuilds/Copay-osx.dmg 
+	codesign -dv webkitbuilds/Pockets-osx.dmg 
 
 sign-desktop:
-	gpg -u 1112CFA1 --output webkitbuilds/Copay-linux.zip.sig --detach-sig webkitbuilds/Copay-linux.zip
-	gpg -u 1112CFA1 --output webkitbuilds/Copay-win.exe.sig --detach-sig webkitbuilds/Copay-win.exe
+	gpg -u 1112CFA1 --output webkitbuilds/Pockets-linux.zip.sig --detach-sig webkitbuilds/Pockets-linux.zip
+	gpg -u 1112CFA1 --output webkitbuilds/Pockets-win.exe.sig --detach-sig webkitbuilds/Pockets-win.exe
 
 verify-desktop:
-	gpg --verify webkitbuilds/Copay-linux.zip.sig webkitbuilds/Copay-linux.zip
-	gpg --verify webkitbuilds/Copay-win.exe.sig webkitbuilds/Copay-win.exe
+	gpg --verify webkitbuilds/Pockets-linux.zip.sig webkitbuilds/Pockets-linux.zip
+	gpg --verify webkitbuilds/Pockets-win.exe.sig webkitbuilds/Pockets-win.exe
 
 chrome:
 	browser-extensions/chrome/build.sh
@@ -48,12 +48,12 @@ wp8-debug:
 ios-prod:
 	cordova/build.sh IOS --clear
 	cd cordova/project && cordova build ios
-	open cordova/project/platforms/ios/Copay.xcodeproj
+	open cordova/project/platforms/ios/Pockets.xcodeproj
 
 ios-debug:
 	cordova/build.sh IOS --dbgjs
 	cd cordova/project && cordova build ios
-	open cordova/project/platforms/ios/Copay.xcodeproj
+	open cordova/project/platforms/ios/Pockets.xcodeproj
 
 android-prod:
 	cordova/build.sh ANDROID --clear
