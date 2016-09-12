@@ -121,7 +121,14 @@
             {{btx.merchant.pr.pd.memo}}
           </span>
         </li>
-
+        <li ng-if="btx.inputs && btx.inputs[0]" class="line-b p10 oh" ng-click="copyToClipboard(btx.inputs[0].address, $event)">
+          <span class="text-gray" translate>Source Address</span>
+          <span class="right" >
+            <span class="right" ng-show="btx.inputs[0].address">
+              {{ btx.inputs[0].address }}
+            </span>
+          </span>
+        </li>
         <li ng-if="btx.time" class="line-b p10 oh">
           <span class="text-gray" translate>Confirmations</span>
           <span class="right" >

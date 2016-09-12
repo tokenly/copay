@@ -936,7 +936,8 @@ angular.module('copayApp.controllers').controller('indexController', function($r
 
     client.getTxHistory({
       skip: skip,
-      limit: limit
+      limit: limit,
+      includeExtendedInfo: true
     }, function(err, txsFromServer) {
       if (err) return cb(err);
 
