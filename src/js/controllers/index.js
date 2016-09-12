@@ -135,7 +135,8 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       $rootScope.$apply();
 
       self.hasProfile = true;
-      self.isSingleAddress = false;
+      self.isSingleAddress = true;
+      self.isTokenEnabled = true;
       self.noFocusedWallet = false;
       self.updating = false;
 
