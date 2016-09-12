@@ -43,7 +43,8 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       false: 'fi-book',
       true: 'fi-book'
     },
-    'link': 'inventory'
+    'link': 'inventory',
+    'token_enabled': true
   }, {
     'title': gettext('Send'),
     'icon': {
