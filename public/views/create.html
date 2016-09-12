@@ -78,7 +78,7 @@
             </div>
 
             <div>
-              <label for="bcpwsurl" class="oh" ng-show="isTokenEnabled && totalCopayers == 1">
+              <label for="bcpwsurl" class="oh" ng-show="isTokenEnabled">
                 <span>Counterparty Service URL</span>
                 <input type="text" id="bcpwsurl" name="bcpwsurl" ng-model="bcpwsurl">
               </label>
@@ -141,7 +141,7 @@
                 <input type="text" class="form-control" name="derivationPath" ng-model="derivationPath">
               </label>
             </div>
-            <div class="oh" ng-show="create.tokensEnabled && totalCopayers == 1">
+            <div class="oh" ng-show="create.tokensEnabled">
               <ion-toggle ng-model="isTokenEnabled" toggle-class="toggle-balanced" class="bct">
                 <span class="toggle-label">
                   <span class="db">Tokens Enabled</span>
@@ -154,7 +154,7 @@
                 <span class="toggle-label">Testnet</span>
               </ion-toggle>
             </div>
-            <div class="oh" ng-show="!isTokenEnabled || totalCopayers != 1">
+            <div class="oh" ng-show="!isTokenEnabled">
               <ion-toggle ng-model="singleAddressEnabled" toggle-class="toggle-balanced" class="bct">
                 <div class="toggle-label">
                   <span class="db" translate>Single Address Wallet</span>
