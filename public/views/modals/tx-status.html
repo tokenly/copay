@@ -1,11 +1,12 @@
 <ion-modal-view ng-controller="txStatusController">
   <div ng-if="type == 'broadcasted'" class="popup-txsent text-center">
     <i class="small-centered columns fi-check m30tp" ng-style="{'color':color, 'border-color':color}"></i>
-    <div ng-show="tx.amountStr && !tx.isCounterparty" class="m20t size-36 text-white">
+    <div ng-show="tx.amountStr && !tx.isCounterparty && (!tx.customData || !tx.customData.isCounterparty)" class="m20t size-36 text-white">
       {{tx.amountStr}}
     </div>
-    <div ng-show="tx.isCounterparty" class="m20t size-36 text-white">
-      <span>{{tx.counterparty.amountStr}} {{tx.counterparty.token}}</span>
+    <div ng-show="tx.isCounterparty || (tx.customData != null && tx.customData.isCounterparty" class="m20t size-36 text-white">
+        <span ng-if="(tx.customData != null && tx.customData.isCounterparty)">{{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{tx.customData.counterparty.token}}</span>
+        <span ng-else>{{ delimiteNumber(tx.counterparty.quantityFloat) }} {{ tx.counterparty.token }}</span>
     </div>
     <div class="size-16 text-gray">
       <span translate>Sent</span>
