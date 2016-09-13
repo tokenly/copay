@@ -4,9 +4,21 @@
     <div ng-show="tx.amountStr && !tx.isCounterparty && (!tx.customData || !tx.customData.isCounterparty)" class="m20t size-36 text-white">
       {{tx.amountStr}}
     </div>
-    <div ng-show="tx.isCounterparty || (tx.customData != null && tx.customData.isCounterparty" class="m20t size-36 text-white">
-        <span ng-if="(tx.customData != null && tx.customData.isCounterparty)">{{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{tx.customData.counterparty.token}}</span>
-        <span ng-else>{{ delimiteNumber(tx.counterparty.quantityFloat) }} {{ tx.counterparty.token }}</span>
+    <div ng-if="tx.isCounterparty || (tx.customData && tx.customData.isCounterparty)" class="m20t size-36 text-white">
+        <span ng-if="tx.customData && tx.customData.isCounterparty">
+            {{ listBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
+            {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || tx.customData.counterparty.token }}
+            <div ng-if="listBvam.short_name != tx.customData.counterparty.token">
+                <small><strong>({{ tx.customData.counterparty.token }})</strong></small>
+            </div>            
+        </span>
+        <span ng-else>
+            {{ listBvam = index.bvamData[tx.counterparty.token] || {};"" }}
+            {{ delimiteNumber(tx.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || tx.counterparty.token }}
+            <div ng-if="listBvam.short_name != tx.counterparty.token">
+                <small><strong>({{ tx.counterparty.token }})</strong></small>
+            </div>            
+        </span>
     </div>
     <div class="size-16 text-gray">
       <span translate>Sent</span>
