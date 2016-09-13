@@ -163,6 +163,14 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       self.tokenBalancesLoading = false;
       self.lastEssentialCompleteHistory = null;
       self.bvamData = {}
+      
+      //set supported bvam display labels
+      self.bvamDisplayLabels = {
+            "owner": "Issuer",
+            "website": {"label": "Website", "link": true},
+            "expiration_date": "Expiration"
+            //add other fields here as needed
+      };
 
       if (self.externalSource == 'trezor')
         self.account++;

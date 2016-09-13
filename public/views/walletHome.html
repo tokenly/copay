@@ -590,14 +590,24 @@
                 <div class="info--title">Balance</div>
                 <span>{{ delimitNumber(focusToken.quantityFloat) }}</span>
             </div>
-            <div ng-hide="1" ng-if="focusBvam.issuer != null" class="info--slot">
-              <div class="info--title">Issuer</div>
-              <span>{{ focusBvam.issuer }}</span>
+            <div ng-repeat="(bvam_field, bvam_label) in index.bvamDisplayLabels">
+                <div ng-if="focusBvam[bvam_field] != null" class="info--slot">
+                  <div class="info--title">
+                      {{ bvam_label.label || bvam_label }}
+                  </div>
+                  <div ng-if="bvam_label.link">
+                    <a href="{{ focusBvam[bvam_field] }}" target="_blank">{{ focusBvam[bvam_field] }}</a>
+                  </div>
+                  <div ng-if="!bvam_label.link">
+                    {{ focusBvam[bvam_field] }}
+                  </div>
+                </div>
             </div>
+            <!--
             <div ng-if="focusBvam.website" class="info--slot">
               <div class="info--title">Website</div>
               <a ng-href="{{ focusBvam.website }}" target="_blank">{{ focusBvam.website }}</a>
-            </div>
+            </div>-->
             <div ng-if="focusBvam.supplyFloat" class="info--slot">
               <div class="info--title">Global Supply</div>
               <span>{{ delimitNumber(focusBvam.supplyFloat) }}</span>
