@@ -76,7 +76,15 @@
         <array>
           <string>pockets</string>
         </array>
-      </dict>                  
+      </dict>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>Counterparty URL</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>counterparty</string>
+        </array>
+      </dict>                           
     </array>
     <key>CFBundleVersion</key>
     <string>2.4.2</string>

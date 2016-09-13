@@ -61,3 +61,8 @@ Root: HKCR; Subkey: "pockets"; ValueType: "string"; ValueName: "URL Protocol"; V
 Root: HKCR; Subkey: "pockets\DefaultIcon"; ValueType: "string"; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKCR; Subkey: "pockets\shell\open\command"; ValueType: "string"; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
+Root: HKCR; Subkey: "counterparty"; ValueType: "string"; ValueData: "URL:Counterparty Custom Protocol"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "counterparty"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCR; Subkey: "counterparty\DefaultIcon"; ValueType: "string"; ValueData: "{app}\{#MyAppExeName},0"
+Root: HKCR; Subkey: "counterparty\shell\open\command"; ValueType: "string"; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+

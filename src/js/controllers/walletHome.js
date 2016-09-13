@@ -66,6 +66,9 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       return (b.charAt(0) > 0 && !(c || ".").lastIndexOf(".") ? b.replace(/(\d)(?=(\d{3})+$)/g, "$1,") : b) + c;
     });
   };
+  
+  $scope.send_label = null;
+  this.send_label = null;
 
   var vanillaScope = ret;
 
@@ -482,6 +485,19 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
         enumerable: true,
         configurable: true
       });
+      
+    Object.defineProperty($scope,
+      "_token", {
+        get: function() {
+          return $scope.__token;
+        },
+        set: function(newValue) {
+          $scope.__token = newValue;
+          self.resetError();
+        },
+        enumerable: true,
+        configurable: true
+      });      
 
     // [temporary] token property
     $scope.token = '';
@@ -632,6 +648,9 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
             else self.resetForm();
           });
         }
+        
+        $scope.send_label = null;
+        self.send_label = null;
       });
 
     }, 100);
@@ -729,7 +748,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     });
   };
 
-  this.setForm = function(to, amount, comment) {
+  this.setForm = function(to, amount, comment, asset) {
     var form = $scope.sendForm;
     if (to) {
       form.address.$setViewValue(to);
@@ -750,6 +769,11 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       form.comment.$isValid = true;
       form.comment.$render();
     }
+    
+    if (asset) {
+       this.lockSendToken = true;
+       $scope._token = asset;    
+    }
   };
 
   this.resetForm = function() {
@@ -760,8 +784,11 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
 
     this.lockAddress = false;
     this.lockAmount = false;
+    this.lockSendToken = false;
+    
+    $scope.send_label = null;
 
-    this._amount = this._address = null;
+    this._amount = this._address = null; this._token = null;
 
     var form = $scope.sendForm;
 
@@ -779,6 +806,13 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
         form.address.$setViewValue('');
         form.address.$render();
       }
+      
+      if (form.token) {
+          form.token.$pristine = tru;
+          form.token.$setViewValue('BTC');
+          form.token.$render();
+      }
+      $scope._token = 'BTC';
     }
     $timeout(function() {
       $rootScope.$digest();
@@ -898,6 +932,13 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     };
 
     var satToUnit = 1 / this.unitToSatoshi;
+    
+    var isCounterparty = uri.includes('counterparty:');
+    var uri = uri.replace('counterparty:', 'bitcoin:');    
+    var extraParams = [];
+    if (this.isCounterparty) {
+      extraParams.push('asset');
+    }    
 
     // URI extensions for Payment Protocol with non-backwards-compatible request
     if ((/^bitcoin:\?r=[\w+]/).exec(uri)) {
@@ -910,27 +951,37 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     } else {
       uri = sanitizeUri(uri);
 
-      if (!bitcore.URI.isValid(uri)) {
+      if (!bitcore.URI.isValid(uri, extraParams)) {
         return uri;
       }
-      var parsed = new bitcore.URI(uri);
+      var parsed = new bitcore.URI(uri, extraParams);
+      
+      if (parsed.label) {
+          this.send_label = parsed.label;
+          $scope.send_label = parsed.label;
+      }
 
       var addr = parsed.address ? parsed.address.toString() : '';
       var message = parsed.message;
+      var asset = parsed.extras.asset || 'BTC';
 
-      var amount = parsed.amount ?
-        (parsed.amount.toFixed(0) * satToUnit).toFixed(this.unitDecimals) : 0;
-
+      if (asset == 'BTC') {
+          var amount = parsed.amount ?
+            (parsed.amount.toFixed(0) * satToUnit).toFixed(this.unitDecimals) : 0;
+      }
+      else {
+          var amount = (parsed.amount / 100000000).toFixed(8) || 0;
+      }
 
       if (parsed.r) {
         this.setFromPayPro(parsed.r, function(err) {
           if (err && addr && amount) {
-            self.setForm(addr, amount, message);
+            self.setForm(addr, amount, message, asset);
             return addr;
           }
         });
       } else {
-        this.setForm(addr, amount, message);
+        this.setForm(addr, amount, message, asset);
         return addr;
       }
     }
@@ -944,7 +995,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     if (this._paypro)
       return value;
 
-    if (value.indexOf('bitcoin:') === 0) {
+    if (value.indexOf('bitcoin:') === 0 || value.indexOf('counterparty:') === 0) {
       return this.setFromUri(value);
     } else if (/^https?:\/\//.test(value)) {
       return this.setFromPayPro(value);
@@ -952,6 +1003,8 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       return value;
     }
   };
+  
+
 
   // History
 

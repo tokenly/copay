@@ -369,7 +369,7 @@
       <div class="row m20t">
         <div class="large-12 large-centered columns">
           <form name="sendForm"   novalidate>
-
+            <h2 class="send-label" ng-if="home.send_label">{{ home.send_label }}</h2>
             <!-- token -->
             <div>
               <div class="row collapse">
@@ -377,7 +377,7 @@
                   <span translate>Token</span>
                 </label>
                 <div class="input">
-                  <select class="m10t" ng-model="_token"
+                  <select class="m10t" ng-model="_token" ng-disabled="home.lockSendToken"
                     ng-options="tokenValue as tokenLabel for (tokenValue, tokenLabel) in home.getSendableTokens()"
                     ng-change="home.setTokenName(_token)">
                   </select>
