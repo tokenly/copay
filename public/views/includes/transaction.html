@@ -26,7 +26,12 @@
   </div>
   <div class="large-5 medium-5 small-5 columns text-right">
     <span class="size-16">
-      - {{tx.amountStr}}
+        <span ng-show="tx.customData != null && tx.customData.isCounterparty">
+            - {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ tx.customData.counterparty.token }}
+        </span>
+        <span ng-show="tx.customData == null || !tx.customData.isCounterparty">
+            - {{tx.amountStr}}
+        </span>
     </span>
     <div class="size-12 text-gray">
       <time>{{ (tx.ts || tx.createdOn ) * 1000 | amTimeAgo}}</time>

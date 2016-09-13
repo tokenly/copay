@@ -11,13 +11,25 @@
   <ion-content ng-style="{'background-color': '#F6F7F9'}">
     <div class="modal-content fix-modals-touch" ng-init="updateCopayerList()">
       <div class="payment-proposal-head" ng-style="{'background-color':color}">
-        <div class="size-36">{{tx.amountStr}}</div>
-        <div class="size-14 text-light" ng-show="tx.alternativeAmountStr">{{tx.alternativeAmountStr}}</div>
+        <div class="size-36">
+            <span ng-if="tx.customData != null && tx.customData.isCounterparty" class="enable_text_select">
+                {{ listBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
+                {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || tx.customData.counterparty.token }}
+                <div ng-if="listBvam.short_name != tx.customData.counterparty.token">
+                    <small><strong>({{ tx.customData.counterparty.token }})</strong></small>
+                </div>
+            </span>    
+            <span ng-if="tx.customData == null || !tx.customData.isCounterparty">
+                {{tx.amountStr}}
+            </span>
+        </div>
+        <div class="size-14 text-light" ng-show="tx.alternativeAmountStr && (tx.customData == null || !tx.customData.isCounterparty)">{{tx.alternativeAmountStr}}</div>
         <i class="db fi-arrow-down size-24 m10v"></i>
         <span class="payment-proposal-to" ng-click="copyToClipboard(tx.toAddress, $event)">
           <i class="fi-bitcoin left"></i>
-          <contact ng-if="!tx.hasMultiplesOutputs" class="dib enable_text_select ellipsis m5t m5b size-14" address="{{tx.toAddress}}"></contact>
-          <span ng-if="tx.hasMultiplesOutputs" translate>Multiple recipients</span>
+          <contact ng-if="!tx.hasMultiplesOutputs" class="dib enable_text_select ellipsis m5t m5b size-14" address="{{tx.toAddress}}">{{tx.toAddress}}</contact>
+          <span ng-if="tx.hasMultiplesOutputs && (tx.customData == null || !tx.customData.isCounterparty)" translate>Multiple recipients</span>
+          <contact ng-if="!tx.hasMultiplesOutputs || (tx.customData != null && tx.customData.isCounterparty)" address="{{tx.outputs[0].toAddress}}"></contact>
         </span>
       </div>
 
@@ -72,17 +84,31 @@
           <span class="right">{{tx.message}}</span>
         </li>
 
-        <li ng-show="tx.hasMultiplesOutputs" class="line-b p10 oh" ng-click="showMultiplesOutputs = !showMultiplesOutputs">
+        <li ng-show="tx.hasMultiplesOutputs && (tx.customData == null || !tx.customData.isCounterparty)" class="line-b p10 oh" ng-click="showMultiplesOutputs = !showMultiplesOutputs">
           <span class="text-gray" translate>Recipients</span>
           <span class="right">{{tx.recipientCount}}
             <i ng-show="showMultiplesOutputs" class="icon-arrow-up3 size-24"></i>
             <i ng-show="!showMultiplesOutputs" class="icon-arrow-down3 size-24"></i>
           </span>
         </li>
-
         <div class="line-b" ng-show="tx.hasMultiplesOutputs && showMultiplesOutputs"
           ng-repeat="output in tx.outputs" ng-include="'views/includes/output.html'">
         </div>
+        
+        <li ng-show="tx.customData != null && tx.customData.isCounterparty" class="line-b p10 oh"
+          ng-click="copyToClipboard(tx.outputs[0].addressTo, $event)">
+          <span class="text-gray" translate>Destination</span>
+          <span class="right">
+              <span ng-show="tx.labelTo">{{tx.labelTo}}</span>
+              <contact ng-show="!tx.labelTo" class="enable_text_select" address="{{tx.outputs[0].toAddress}}"></contact>
+          </span>
+        </li>
+        
+        <li class="line-b p10" ng-if="tx.customData != null && tx.customData.isCounterparty">
+          <span ng-show="btx.action == 'received'" class="text-gray" translate>Dust Received</span>
+          <span ng-show="btx.action != 'received'" class="text-gray" translate>Dust Sent</span>
+          <span class="right enable_text_select">{{ delimitNumber(tx.amountStr) }}</span>
+        </li>        
 
         <li class="line-b p10">
           <span class="text-gray" translate>Fee</span>

@@ -104,7 +104,8 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
         if (isTokenProposal) {
           txp = counterpartyService.buildTrialTokenSendProposalScripts(originalTxp);
         }
-
+        //assign counterparty data to customData
+        txp.customData = {isCounterparty: txp.isCounterparty, counterparty: txp.counterparty};  
         console.log('[walletService] client.createTxProposal txp.noShuffleOutputs', txp.noShuffleOutputs);
         client.createTxProposal(txp, function(err, createdTxp) {
           if (err) return cb(err);
@@ -113,6 +114,7 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
             if (isTokenProposal) {
               counterpartyService.recreateRealTokenSendProposal(client, originalTxp, txp, createdTxp, function(err, recreatedTxp) {
                 if (err) return cb(err);
+                
                 return cb(null, recreatedTxp);
               });
               return
@@ -138,7 +140,6 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
         // pass the counterparty data through
         publishedTx.isCounterparty = txp.isCounterparty;
         publishedTx.counterparty   = txp.counterparty;
-
         $log.debug('Transaction published');
         return cb(null, publishedTx);
       }
