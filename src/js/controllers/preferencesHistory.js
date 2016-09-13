@@ -40,9 +40,9 @@ angular.module('copayApp.controllers').controller('preferencesHistory',
         var satToBtc = 1 / 100000000;
         $scope.csvContent = [];
         $scope.csvFilename = 'Copay-' + ($scope.alias || $scope.walletName) + '.csv';
-        $scope.csvHeader = ['Date', 'Destination', 'Description', 'Amount', 'Currency', 'Txid', 'Creator', 'Copayers', 'Comment'];
+        $scope.csvHeader = ['Date', 'Destination', 'Description', 'Amount', 'Token', 'Txid', 'BTC Dust', 'Creator', 'Copayers', 'Comment'];
 
-        var _amount, _note, _copayers, _creator, _comment;
+        var _amount, _note, _copayers, _creator, _comment, _dust;
         data.forEach(function(it, index) {
           var amount = it.amount;
 
@@ -59,19 +59,26 @@ angular.module('copayApp.controllers').controller('preferencesHistory',
             _creator = (it.creatorName && it.creatorName != 'undefined') ? it.creatorName : '';
           }
           _amount = (it.action == 'sent' ? '-' : '') + (amount * satToBtc).toFixed(8);
+          _dust = null;
+          if(it.isCounterparty){
+              _amount = (it.action == 'sent' ? '-' : '') + it.counterparty.quantityFloat;
+              _dust = (amount * satToBtc).toFixed(8);
+          }
           _note = it.message || '';
           _comment = it.note ? it.note.body : '';
 
           if (it.action == 'moved')
             _note += ' Moved:' + (it.amount * satToBtc).toFixed(8)
-
+            console.log('TESTING');
+            console.log
           $scope.csvContent.push({
             'Date': formatDate(it.time * 1000),
             'Destination': it.addressTo || '',
             'Description': _note,
             'Amount': _amount,
-            'Currency': 'BTC',
+            'Token': it.counterparty.asset || 'BTC',
             'Txid': it.txid,
+            'BTC Dust': _dust,
             'Creator': _creator,
             'Copayers': _copayers,
             'Comment': _comment
@@ -84,8 +91,9 @@ angular.module('copayApp.controllers').controller('preferencesHistory',
               'Destination': 'Bitcoin Network Fees',
               'Description': '',
               'Amount': '-' + _fee,
-              'Currency': 'BTC',
+              'Token': 'BTC',
               'Txid': '',
+              'BTC Dust': '',
               'Creator': '',
               'Copayers': ''
             });
