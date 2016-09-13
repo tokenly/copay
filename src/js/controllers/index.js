@@ -129,7 +129,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
 
     self.cleanInstance();
     self.loadingWallet = true;
-    self.setSpendUnconfirmed();
+    self.setSpendUnconfirmed(true);
 
     $timeout(function() {
       $rootScope.$apply();
@@ -157,7 +157,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       self.externalSource = fc.getPrivKeyExternalSourceName();
       self.account = fc.credentials.account;
       self.incorrectDerivation = fc.keyDerivationOk === false;
-
+      
       self.tokenBalances = null;
       self.tokenBalancesEverLoaded = false;
       self.tokenBalancesLoading = false;
