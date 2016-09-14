@@ -1,12 +1,13 @@
 <a ng-click="index.setTab(item, false, 0, true)"
-   ng-style="{'color': index.tab == item.link ? index.backgroundColor : '#A5B2BF'}" 
+   ng-style="{'color': index.tab == item.link ? index.backgroundColor : 'rgb(90, 97, 104)'}"
    id="menu-{{item.link}}"
+   class="bottom-bar__item"
    >
     <i class="size-18 {{item.icon[index.tab == item.link]}} db"></i>
-    <span class="size-10 tu">
+    <span class="bottom-bar__item__name">
         {{ item.title|translate }}
-        <span class="label round" 
-          ng-style="{'background-color':index.backgroundColor}" 
+        <span class="label round"
+          ng-style="{'background-color':index.backgroundColor}"
           ng-if="item.link=='walletHome' && index.pendingTxProposalsCountForUs > 0">
             {{ index.pendingTxProposalsCountForUs }}
         </span>

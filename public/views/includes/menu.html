@@ -1,11 +1,9 @@
 <div class="bottom-bar row collapse p0i" ng-show="!index.notAuthorized">
-    <div>
-        <div class="row collapse p0i">
-            <div class="medium-3 small-3 columns text-center bottombar-item"
-                 ng-repeat="item in index.menu"
-                 ng-if="!item.token_enabled || (item.token_enabled == true && index.isTokenEnabled)">
-              <span ng-include="'views/includes/menu-item.html'"></span>
-            </div>
+    <div class="bottom-bar__items">
+        <div class="medium-3 small-3 columns text-center bottombar-item"
+             ng-repeat="item in index.menu"
+             ng-if="!item.token_enabled || (item.token_enabled == true && index.isTokenEnabled)">
+          <span ng-include="'views/includes/menu-item.html'"></span>
         </div>
     </div>
 </div>

@@ -1537,6 +1537,18 @@ input.ng-invalid-match {
   border-top: 1px solid #E2E7ED;
 }
 
+.bottom-bar__items {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottom-bar__item__name {
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
 .second-bottom-bar {
   z-index: 6;
   &.animated {
@@ -1659,7 +1671,7 @@ a.missing-copayers {
 .sidebar-wrapper {
   background-color: $sidebar-color;
 }
-  
+
 .sidebar ion-content {
   background: $sidebar-color;
 }
@@ -2153,7 +2165,7 @@ select option:empty { display:none }
 
 [class*=" fi-"] {
   line-height: 1 }
-  
+
 .preferences-sign, .preferencesVerify, .payment-uri {
   margin-top: 30px
 }
@@ -2163,6 +2175,6 @@ select option:empty { display:none }
     background: transparent;
     text-align: center;
     margin: 10px auto;
-    display: block; 
+    display: block;
     font-size: 12px;
 }
