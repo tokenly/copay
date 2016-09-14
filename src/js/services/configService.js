@@ -23,10 +23,10 @@ angular.module('copayApp.services').factory('configService', function(storageSer
       reconnectDelay: 5000,
       idleDurationMin: 4,
       settings: {
-        unitName: 'bits',
-        unitToSatoshi: 100,
-        unitDecimals: 2,
-        unitCode: 'bit',
+        unitName: 'BTC',
+        unitToSatoshi: 100000000,
+        unitDecimals: 8,
+        unitCode: 'btc',
         alternativeName: 'US Dollar',
         alternativeIsoCode: 'USD',
       }
