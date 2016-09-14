@@ -1,17 +1,18 @@
 .inventory
   $gutter: 20px
   $width: 840px
+  $breakpoint: 768px
   display: flex
   width: 100%
   overflow-x: hidden
   &.is-focused
     .assets
       width: 100%
-      @media(min-width: 380px)
+      @media(min-width: $breakpoint)
         width: 50%
     .asset-detail-wrapper
       left: 0%
-      @media(min-width: 380px)
+      @media(min-width: $breakpoint)
         left: 50%
 
   .active-asset
@@ -142,7 +143,7 @@
   .asset-detail-wrapper
     background-color: #fff
     width: 100%
-    @media(min-width: 380px)
+    @media(min-width: $breakpoint)
       width: 50%
     position: absolute
     left: 100%
