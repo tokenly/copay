@@ -89,6 +89,7 @@ angular.module('copayApp.controllers').controller('clicksignUriController',
 			else {
 				callback = callback + '?signature=' + encode_sig;
 			}
+            callback = callback + '&address=' + address.address;
 			//post back to defined callback URL
             $http({
                method: 'POST',
