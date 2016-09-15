@@ -772,7 +772,8 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     
     if (asset) {
        this.lockSendToken = true;
-       $scope._token = asset;    
+       $scope._token = asset;   
+       this.setTokenName(asset);
     }
   };
 
