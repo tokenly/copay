@@ -19,6 +19,11 @@ angular.module('copayApp.services').factory('openURLService', function($rootScop
     name: 'Pockets Click-to-Sign',
     startsWith: 'pockets:sign',
     transitionTo: 'uriclicksign'
+  },
+{
+    name: 'Counterparty CIP2 URL',
+    startsWith: 'counterparty:',
+    transitionTo: 'uripayment'
   }];
 
 
@@ -120,7 +125,13 @@ angular.module('copayApp.services').factory('openURLService', function($rootScop
                     handleOpenURL({
                         url: pathData.substring(pathData.indexOf('pockets:'))
                     });
-                }                
+                }       
+				else if (pathData.indexOf('counterparty:') != -1) {
+                    $log.debug('Counterparty URL found');
+                    handleOpenURL({
+                        url: pathData.substring(pathData.indexOf('counterparty:'))
+                    });
+                }                                 
             });
 
             // Used at the startup of Copay
@@ -139,7 +150,11 @@ angular.module('copayApp.services').factory('openURLService', function($rootScop
 				else if (pathData.indexOf('pockets:') != -1) {
                     $log.debug('Pockets URL found');
                     use_url = pathData.substring(pathData.indexOf('pockets:'));
-                }                    
+                }         
+				else if (pathData.indexOf('counterparty:') != -1) {
+                    $log.debug('Counterparty URL found');
+                    use_url = pathData.substring(pathData.indexOf('counterparty:'));
+                }                                     
                 handleOpenURL({
                     url: use_url
                 });
@@ -155,6 +170,7 @@ angular.module('copayApp.services').factory('openURLService', function($rootScop
                 navigator.registerProtocolHandler('bitcoin', url, 'Copay Bitcoin Handler');
                 navigator.registerProtocolHandler('web+copay', url, 'Copay Wallet Handler');
                 navigator.registerProtocolHandler('web+pockets', url, 'Tokenly Wallet Handler');
+                navigator.registerProtocolHandler('web+counterparty', url, 'Tokenly Wallet Counterparty Handler');
             }
         }
     };
