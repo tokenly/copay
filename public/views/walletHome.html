@@ -563,7 +563,8 @@
 
       <ng-switch on="isFocused()" class="asset-detail-wrapper">
         <div ng-switch-when="true" class="asset-detail">
-          {{focusBvam = index.bvamData[focusToken.tokenName] || {};""}}
+          {{ focusBvam = index.bvamData[focusToken.tokenName] || {}; "" }}
+          {{ show_raw = false; "" }}
           <a ng-click="closeFocusToken()" class="asset-detail-x" ng-style="{'color':index.backgroundColor, 'border-color':index.backgroundColor}">
             <i class="icon-arrow-left3 size-24"></i>
             Close
@@ -587,27 +588,24 @@
               <a href="https://blockscan.com/assetInfo/{{ focusToken.tokenName }}" class="ion-information-circled" title="View info on block explorer" target="_blank"></a>
             </div>
             <div class="info--slot">
-                <div class="info--title">Balance</div>
+                <div class="info--title" ng-click="console.log(focusBvam)">Balance</div>
                 <span>{{ delimitNumber(focusToken.quantityFloat) }}</span>
             </div>
             <div ng-repeat="(bvam_field, bvam_label) in index.bvamDisplayLabels">
-                <div ng-if="focusBvam[bvam_field] != null" class="info--slot">
+                <div ng-if="focusBvam[bvam_field] != null && focusBvam[bvam_field].trim() != ''" class="info--slot">
                   <div class="info--title">
                       {{ bvam_label.label || bvam_label }}
                   </div>
                   <div ng-if="bvam_label.link">
                     <a href="{{ focusBvam[bvam_field] }}" target="_blank">{{ focusBvam[bvam_field] }}</a>
+                    &nbsp;
                   </div>
                   <div ng-if="!bvam_label.link">
                     {{ focusBvam[bvam_field] }}
+                    &nbsp;
                   </div>
                 </div>
             </div>
-            <!--
-            <div ng-if="focusBvam.website" class="info--slot">
-              <div class="info--title">Website</div>
-              <a ng-href="{{ focusBvam.website }}" target="_blank">{{ focusBvam.website }}</a>
-            </div>-->
             <div ng-if="focusBvam.supplyFloat" class="info--slot">
               <div class="info--title">Global Supply</div>
               <span>{{ delimitNumber(focusBvam.supplyFloat) }}</span>
@@ -621,6 +619,15 @@
               <span>{{ focusBvam.locked ? 'Yes' : 'No' }}</span>
             </div>
             <div ng-if="focusBvam.description" class="info--slot">{{ focusBvam.description }}</div>
+            <div ng-if="focusBvam">
+                <p><small><a href="#" ng-click="show_raw = !show_raw">(Advanced) Show raw BVAM data</a></small></p>
+                <div ng-show="show_raw">
+                    <hr>
+                    <pre>   
+{{ focusBvam | json }}
+                    </pre>
+                </div>
+            </div>            
           </div>
         </div>
       </ng-switch>
