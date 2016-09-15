@@ -31,14 +31,14 @@
   },
   "dom_storage_quota": 200,
   "id": "jid1-x7bV5evAaI1P9Q",
-  "homepage": "https://github.com/bitpay/copay",
+  "homepage": "https://github.com/tokenly/copay",
   "license": "MIT",
   "repository": {
-    "url": "git://github.com/bitpay/copay.git",
+    "url": "git://github.com/tokenly/copay.git",
     "type": "git"
   },
   "bugs": {
-    "url": "https://github.com/bitpay/copay/issues"
+    "url": "https://github.com/tokenly/copay/issues"
   },
   "dependencies": {
     "counterparty-utils": "https://github.com/tokenly/counterparty-utils.git",
@@ -92,6 +92,7 @@
     "load-grunt-tasks": "^3.5.0",
     "mocha": "^2.4.5",
     "phantomjs-prebuilt": "^2.1.7",
-    "xcode": "^0.8.2"
+    "xcode": "^0.8.2",
+    "windows": "^0.0.6"
   }
 }

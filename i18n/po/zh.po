@@ -1695,7 +1695,7 @@ msgid "There are no wallets to make this payment"
 msgstr "没有钱包以进行此支付"
 
 #: src/js/controllers/index.js
-msgid "There is a new version of Copay. Please update"
+msgid "There is a new version of Pockets. Please update"
 msgstr "Copay 有新版本。请更新"
 
 #: src/js/controllers/import.js

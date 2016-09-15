@@ -1695,8 +1695,8 @@ msgid "There are no wallets to make this payment"
 msgstr "No dispone de monederos para realizar este pago"
 
 #: src/js/controllers/index.js
-msgid "There is a new version of Copay. Please update"
-msgstr "Hay una nueva versión de Copay. Por favor actualizar"
+msgid "There is a new version of Pockets. Please update"
+msgstr "Hay una nueva versión de Pockets. Por favor actualizar"
 
 #: src/js/controllers/import.js
 msgid "There is an error in the form"
