@@ -28,6 +28,7 @@ angular.module('copayApp.controllers').controller('sidebarController',
       var client = profileService.focusedClient;
       if (selectedWalletId == currentWalletId && client.isComplete()) return;
       self.walletSelection = false;
+      $rootScope.$emit('Local/WalletSwitched', true);
       profileService.setAndStoreFocus(selectedWalletId, function() {});
       $ionicScrollDelegate.scrollTop();
     };

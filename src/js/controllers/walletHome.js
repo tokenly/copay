@@ -67,6 +67,10 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     });
   };
   
+  $rootScope.$on('Local/WalletSwitched', function(event) {
+    $scope.closeFocusToken();
+  });  
+  
   $scope.send_label = null;
   this.send_label = null;
 
@@ -1146,6 +1150,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     $scope._amount = Math.max(actualTokenBalance,0);
     return;
   }
+  
 
   /* Start setup */
   lodash.assign(self, vanillaScope);
