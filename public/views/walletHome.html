@@ -586,6 +586,16 @@
             </div>
           </div>
 
+          <div ng-if="tokenBvam.metadata.description" class="info--full-description">
+            {{ tokenBvam.metadata.description | limitTo: limitLength }}<span ng-if="tokenBvam.metadata.description.length > limitLength">&hellip;</span>
+
+            <div ng-if="tokenBvam.metadata.description.length > 480">
+              <button class="button outline round dark-gray tiny show-more-less" ng-if="!metaDescriptionExpanded" ng-click="showMoreDescription()">Show More</button>
+              <button class="button outline round dark-gray tiny show-more-less" ng-if="metaDescriptionExpanded" ng-click="showLessDescription()">Show Less</button>
+            </div>
+          </div>
+
+
           <button class="button primary round expand" ng-style="{'background-color':index.backgroundColor}" translate ng-click="sendFocusToken()">Send</button>
 
           <div class="asset--info">
@@ -629,7 +639,6 @@
               <div class="info--title">Supply Locked</div>
               <span>{{ tokenBvam.assetInfo.locked ? 'Yes' : 'No' }}</span>
             </div>
-            <div ng-if="tokenBvam.metadata.description" class="info--slot">{{ tokenBvam.metadata.description }}</div>
             <div ng-if="tokenBvam">
                 <hr class="advanced-separator">
                 <h3>Other Token Details</h3>

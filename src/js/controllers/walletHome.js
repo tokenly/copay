@@ -1178,6 +1178,23 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     $scope._amount = Math.max(actualTokenBalance,0);
     return;
   }
+
+  // ------------------------------------------------------------------------
+
+  $scope.limitLength             = 360;
+  $scope.metaDescriptionExpanded = false;
+
+  $scope.showMoreDescription = function() {
+    console.log('showMoreDescription');
+    $scope.limitLength             = 999999;
+    $scope.metaDescriptionExpanded = true;
+  }
+  
+  $scope.showLessDescription = function() {
+    console.log('showLessDescription');
+    $scope.limitLength             = 360;
+    $scope.metaDescriptionExpanded = false;
+  }
   
 
   /* Start setup */
