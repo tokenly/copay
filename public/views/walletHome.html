@@ -545,8 +545,9 @@
                 <div>
                   <span class="asset--short">{{ listBvam.shortName }}<span ng-if="listBvam.shortNameWasTruncated">&hellip;</span></span>
                   <!-- TODO: -->
-                  <!-- <i ng-if="token.ssl" class="asset--ssl ssl--secure fi-lock"></i> -->
+                  <!-- <i ng-if="listBvam.validated" class="asset--ssl ssl--secure fi-lock"></i> -->
                   <!-- <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i> -->
+                  <i ng-if="listBvam.validated" class="bvam--validated fi-lock"></i>
                 </div>
                 <div class="asset--sym" ng-if="listBvam.shortName != token.tokenName">{{ token.tokenName }}</div>
               </div>
@@ -630,12 +631,24 @@
             </div>
             <div ng-if="tokenBvam.metadata.description" class="info--slot">{{ tokenBvam.metadata.description }}</div>
             <div ng-if="tokenBvam">
-                <p><small><a href="#" ng-click="show_raw = !show_raw">(Advanced) Show raw BVAM data</a></small></p>
-                <div ng-show="show_raw">
-                    <hr>
-                    <pre>   
-{{ tokenBvam.metadata | json }}
-                    </pre>
+                <hr class="advanced-separator">
+                <h3>Other Token Details</h3>
+                <div class="bvam-attribute-entry info--header">
+                  <h4>Full Name</h4>
+                </div>
+                <div ng-class="[bvam-attribute-entry, {'info--header': bvamAttribute.isHeader, 'info--slot': !bvamAttribute.isHeader}]" ng-repeat="bvamAttribute in focusedTokenBvamAttributes">
+                  <h4 ng-if="bvamAttribute.isHeader">{{ bvamAttribute.label }}</h4>
+                  <div ng-if="!bvamAttribute.isHeader">
+                    <div class="info--title">{{ bvamAttribute.label }}</div>
+                    <span>{{ bvamAttribute.value }}</span>
+                  </div>
+                </div>
+                <div class="bvam-attribute-entry info--header">
+                  <h4>BVAM Validation</h4>
+                  <div class="bvam-attribute-entry info--slot">
+                    <div class="info--title">Validated</div>
+                    <span ng-class="{'is-valid': tokenBvam.validated}">{{ tokenBvam.validated ? 'Yes' : 'No' }}</span>
+                  </div>
                 </div>
             </div>            
           </div>

@@ -147,6 +147,71 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
     return bvamEntry;
   }
 
+  root.buildAllBVAMAttributes = function(bvamToken) {
+    console.log('buildAllBVAMAttributes', bvamToken);
+    var formattedEntries = [];
+    if (bvamToken == null) { return formattedEntries; }
+
+    _buildBvamDataEntriesRecursively(formattedEntries, bvamToken.metadata, 0)
+
+    return formattedEntries;
+  }
+
+  var labelBlacklistMap = {
+    asset:       true,
+    description: true,
+    website:     true,
+    images:      true,
+    meta:        true,
+  };
+
+  function _buildBvamDataEntriesRecursively(formattedEntries, object, depth) {
+    lodash.forEach(object, function(val, key) {
+      if (labelBlacklistMap[key] != null) { return; }
+
+      if (lodash.isObject(val)) {
+        // recurse
+        if (lodash.isNumber(key)) {
+          // formattedEntries.push({
+          //   isHeader: true,
+          //   label: "Entry "+(key + 1),
+          //   depth: depth,
+          // });
+        } else {
+          formattedEntries.push({
+            isHeader: true,
+            label: labelify(key),
+            depth: depth,
+          });
+        }
+
+        _buildBvamDataEntriesRecursively(formattedEntries, val, depth+1)
+      } else {
+        var entry = {
+          name: key,
+          depth: depth,
+          isHeader: false,
+          label: labelify(key),
+          value: val
+        }
+        formattedEntries.push(entry);
+      }
+    });
+  }
+
+  function labelify(rawKey) {
+    var words = (''+rawKey).split('_').join(' ');
+    var label = words
+      .replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function ($1) {
+        return $1.toUpperCase()
+      })
+
+    return label;
+  }
+
+  // ------------------------------------------------------------------------
+  
+
   function isExpired(cacheEntry) {
     console.log('=BVAM= cacheEntry.time', cacheEntry.time);
     if (Date.now() - cacheEntry.time >= OLD_CACHE_TIME) {
