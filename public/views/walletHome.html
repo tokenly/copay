@@ -218,7 +218,7 @@
                   <span  ng-if="btx.action != 'invalid'">
                     <span ng-show="btx.isCounterparty">
                         {{ listBvam = index.bvamData[btx.counterparty.asset] || {};"" }}
-                        {{ delimitNumber(btx.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || btx.counterparty.asset }}
+                        {{ delimitNumber(btx.counterparty.quantityFloat) }} {{ listBvam.metadata.short_name || listBvam.metadata.name || btx.counterparty.asset }}
                     </span>
                     <span ng-hide="btx.isCounterparty">{{ delimitNumber(btx.amountStr) }}</span>
                   </span>
@@ -532,17 +532,17 @@
             {{listBvam = index.bvamData[token.tokenName] || {};""}}
             <div class="asset--block asset--primary">
               <div class="asset--avatar">
-                <img ng-src="{{ listBvam.image || 'img/tokenly-logo-dark.svg' }}" alt="Avatar">
+                <img ng-src="{{ listBvam.smallImage || 'img/tokenly-logo-dark.svg' }}" alt="Avatar">
               </div>
               <div class="asset--name">
                 <div>
-                  <span class="asset--short">{{ listBvam.short_name || token.tokenName }}</span>
+                  <span class="asset--short">{{ listBvam.shortName }}<span ng-if="listBvam.shortNameWasTruncated">&hellip;</span></span>
   
                   <!-- TODO: -->
                   <!-- <i ng-if="token.ssl" class="asset--ssl ssl--secure fi-lock"></i> -->
                   <!-- <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i> -->
                 </div>
-                <div class="asset--sym" ng-if="listBvam.short_name != token.tokenName">{{ token.tokenName }}</div>
+                <div class="asset--sym" ng-if="listBvam.shortName != token.tokenName">{{ token.tokenName }}</div>
               </div>
 
               <div class="asset--balance">
@@ -555,7 +555,7 @@
               <i class="icon-arrow-right3 size-24 more-arrow"></i>
             </div>
             <div class="asset--block asset--info">
-              <div ng-if="listBvam.description" class="info--slot">{{ listBvam.description | limitTo: 240 }}{{listBvam.description.length > 240 ? '&hellip;' : ''}}</div>
+              <div ng-if="listBvam.metadata.description" class="info--slot">{{ listBvam.metadata.description | limitTo: 240 }}{{listBvam.metadata.description.length > 240 ? '&hellip;' : ''}}</div>
             </div>
           </div>
         </div> <!-- END token loop -->
@@ -572,10 +572,10 @@
 
           <div class="token-primary">
             <div class="token-avatar-wrapper">
-              <img ng-src="{{ focusBvam.image || 'img/tokenly-logo-dark.svg' }}" alt="Avatar">
+              <img ng-src="{{ focusBvam.largeImage || 'img/tokenly-logo-dark.svg' }}" alt="Avatar">
             </div>
             <div class="token-primary-details">
-              <div class="token-name">{{ focusBvam.short_name || focusBvam.name || focusToken.tokenName }}</div>
+              <div class="token-name">{{ focusBvam.fullName }}</div>
             </div>
           </div>
 
@@ -592,39 +592,39 @@
                 <span>{{ delimitNumber(focusToken.quantityFloat) }}</span>
             </div>
             <div ng-repeat="(bvam_field, bvam_label) in index.bvamDisplayLabels">
-                <div ng-if="focusBvam[bvam_field] != null && focusBvam[bvam_field].trim() != ''" class="info--slot">
+                <div ng-if="focusBvam.metadata[bvam_field] != null && focusBvam.metadata[bvam_field].trim() != ''" class="info--slot">
                   <div class="info--title">
                       {{ bvam_label.label || bvam_label }}
                   </div>
                   <div ng-if="bvam_label.link">
-                    <a href="{{ focusBvam[bvam_field] }}" target="_blank">{{ focusBvam[bvam_field] }}</a>
+                    <a href="{{ focusBvam.metadata[bvam_field] }}" target="_blank">{{ focusBvam.metadata[bvam_field] }}</a>
                     &nbsp;
                   </div>
                   <div ng-if="!bvam_label.link">
-                    {{ focusBvam[bvam_field] }}
+                    {{ focusBvam.metadata[bvam_field] }}
                     &nbsp;
                   </div>
                 </div>
             </div>
-            <div ng-if="focusBvam.supplyFloat" class="info--slot">
+            <div ng-if="focusBvam.assetInfo.supplyFloat" class="info--slot">
               <div class="info--title">Global Supply</div>
-              <span>{{ delimitNumber(focusBvam.supplyFloat) }}</span>
+              <span>{{ delimitNumber(focusBvam.assetInfo.supplyFloat) }}</span>
             </div>
-            <div ng-if="focusBvam.divisible != null" class="info--slot">
+            <div ng-if="focusBvam.assetInfo.divisible != null" class="info--slot">
               <div class="info--title">Divisible</div>
-              <span>{{ focusBvam.divisible ? 'Yes' : 'No' }}</span>
+              <span>{{ focusBvam.assetInfo.divisible ? 'Yes' : 'No' }}</span>
             </div>            
-            <div ng-if="focusBvam.locked != null" class="info--slot">
+            <div ng-if="focusBvam.assetInfo.locked != null" class="info--slot">
               <div class="info--title">Supply Locked</div>
-              <span>{{ focusBvam.locked ? 'Yes' : 'No' }}</span>
+              <span>{{ focusBvam.assetInfo.locked ? 'Yes' : 'No' }}</span>
             </div>
-            <div ng-if="focusBvam.description" class="info--slot">{{ focusBvam.description }}</div>
+            <div ng-if="focusBvam.metadata.description" class="info--slot">{{ focusBvam.metadata.description }}</div>
             <div ng-if="focusBvam">
                 <p><small><a href="#" ng-click="show_raw = !show_raw">(Advanced) Show raw BVAM data</a></small></p>
                 <div ng-show="show_raw">
                     <hr>
                     <pre>   
-{{ focusBvam | json }}
+{{ focusBvam.metadata | json }}
                     </pre>
                 </div>
             </div>            
