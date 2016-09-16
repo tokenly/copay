@@ -1,10 +1,10 @@
-{{listBvam = index.bvamData[tx.counterparty.token] || {};""}}
+{{tokenBvam = index.bvamData[tx.counterparty.token] || {};""}}
 <div class="m20t">
   <label class="size-14 text-center">
     <span ng-if="!tx.isCounterparty" translate>Send bitcoin</span>
     <span ng-if="tx.isCounterparty">
-        <span translate>Send {{ listBvam.short_name || listBvam.name || tx.counterparty.token }}</span>
-        <div ng-if="listBvam.short_name != tx.counterparty.token">
+        <span translate>Send {{ tokenBvam.shortName || tx.counterparty.token }}</span>
+        <div ng-if="tokenBvam.shortName != tx.counterparty.token">
             <small><strong>({{ tx.counterparty.token }})</strong></small>
         </div>
     </span>
@@ -12,7 +12,7 @@
 </div>
 <div class="text-center">
   <div ng-if="tx.isCounterparty">
-    <span>{{ delimitNumber(tx.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || tx.counterparty.token }}</span>
+    <span>{{ delimitNumber(tx.counterparty.quantityFloat) }} {{ tokenBvam.shortName || tx.counterparty.token }}</span>
   </div>
   <div ng-if="!tx.isCounterparty">
     <div class="size-36">{{ tx.amountStr }}</div>

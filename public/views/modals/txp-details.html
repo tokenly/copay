@@ -13,9 +13,9 @@
       <div class="payment-proposal-head" ng-style="{'background-color':color}">
         <div class="size-36">
             <span ng-if="tx.customData != null && tx.customData.isCounterparty" class="enable_text_select">
-                {{ listBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
-                {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || tx.customData.counterparty.token }}
-                <div ng-if="listBvam.short_name != tx.customData.counterparty.token">
+                {{ tokenBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
+                {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ tokenBvam.shortName || tx.customData.counterparty.token }}
+                <div ng-if="tokenBvam.shortName != tx.customData.counterparty.token">
                     <small><strong>({{ tx.customData.counterparty.token }})</strong></small>
                 </div>
             </span>    

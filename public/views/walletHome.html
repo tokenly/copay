@@ -218,7 +218,7 @@
                   <span  ng-if="btx.action != 'invalid'">
                     <span ng-show="btx.isCounterparty">
                         {{ listBvam = index.bvamData[btx.counterparty.asset] || {};"" }}
-                        {{ delimitNumber(btx.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || btx.counterparty.asset }}
+                        {{ delimitNumber(btx.counterparty.quantityFloat) }} {{ listBvam.shortName || btx.counterparty.asset }}
                     </span>
                     <span ng-hide="btx.isCounterparty">{{ delimitNumber(btx.amountStr) }}</span>
                   </span>
@@ -501,7 +501,7 @@
 
     <!--
 
-    Being Inventory
+    Begin Inventory
 
     -->
     <div id="inventory" class="inventory tab-view" ng-class="isFocused() ? 'is-focused' : ''">
@@ -535,7 +535,7 @@
           </div>
         </div>
         <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:assetSearch:tokenName" ng-click="setFocusToken(token)">
-          <div class="asset--content" ng-if="token.quantityFloat && token.quantityFloat > 0">
+          <div class="asset--content" ng-if="(token.quantityFloat && token.quantityFloat > 0) || (token.hasSendPending || token.hasReceivePending)">
             {{listBvam = index.bvamData[token.tokenName] || {};""}}
             <div class="asset--block asset--primary">
               <div class="asset--avatar">

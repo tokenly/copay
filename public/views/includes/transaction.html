@@ -29,7 +29,7 @@
         <span ng-show="tx.customData != null && tx.customData.isCounterparty">
             -
             {{ listBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
-            {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ listBvam.short_name || listBvam.name || tx.customData.counterparty.token }}          
+            {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ listBvam.shortName || tx.customData.counterparty.token }}          
         </span>
         <span ng-show="tx.customData == null || !tx.customData.isCounterparty">
             - {{tx.amountStr}}

@@ -23,7 +23,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       for (var i = 0; i < balanceEntries.length; i++) {
         entry = balanceEntries[i];
         tokenBalances.push(buildNewTokenBalanceEntry(entry, {
-          amountStr: ""+entry.quantityFloat
+          amountStr: ""+delimitNumber(entry.quantityFloat)
         }));
 
         tokenNames.push(entry.asset);
@@ -61,12 +61,12 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       if (pendingTokenBalance.isReceive) {
         // receive
         newTokenBalance.quantityFloatReceiving += pendingTokenBalance.quantityFloat;
-        newTokenBalance.amountReceivingStr = newTokenBalance.quantityFloatReceiving;
+        newTokenBalance.amountReceivingStr = delimitNumber(newTokenBalance.quantityFloatReceiving);
         newTokenBalance.hasReceivePending = true;
       } else {
         // send
         newTokenBalance.quantityFloatSending += pendingTokenBalance.quantityFloat;
-        newTokenBalance.amountSendingStr = newTokenBalance.quantityFloatSending;
+        newTokenBalance.amountSendingStr = delimitNumber(newTokenBalance.quantityFloatSending);
         newTokenBalance.hasSendPending = true;
       }
       tokenBalancesMap[tokenName] = newTokenBalance;
@@ -99,7 +99,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
           quantityFloat: quantityFloat,
           divisible: txObject.counterparty.divisible,
           isReceive: isReceive,
-          amountStr: quantityFloat,
+          amountStr: delimitNumber(quantityFloat),
           btcAmount: txObject.amount
         })
       }
@@ -187,7 +187,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       token:         oldOutput.token,
       quantity:      oldOutput.amount,
       quantityFloat: quantityFloat,
-      amountStr:     ""+quantityFloat,
+      amountStr:     ""+delimitNumber(quantityFloat),
       divisible:     divisible,
     };
 
@@ -326,7 +326,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       txEntry.amountStr = txEntry.outputs[0].amountStr
 
       // create a counterparty amout string
-      cpData.amountStr = cpData.quantityFloat + " " + cpData.asset
+      cpData.amountStr = delimitNumber(cpData.quantityFloat)
 
       // apply debit/credit for mempool transactions based on address
       if (cpData.mempool) {
@@ -348,6 +348,12 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
     return txEntry;
   }
+
+  function delimitNumber(n) {
+    return (n + "").replace(/\b(\d+)((\.\d+)*)\b/g, function(a, b, c) {
+      return (b.charAt(0) > 0 && !(c || ".").lastIndexOf(".") ? b.replace(/(\d)(?=(\d{3})+$)/g, "$1,") : b) + c;
+    });
+  };
 
   // ------------------------------------------------------------------------
   return root;
