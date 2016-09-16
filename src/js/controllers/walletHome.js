@@ -308,9 +308,11 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     lodash.each($scope.index.tokenBalances, function(token) {
       var label = token.tokenName;
       var bvam = {};
-      if (listBvam[token.tokenName]) {
-          bvam = listBvam[token.tokenName];
+      if (typeof listBvam[token.tokenName] == 'undefined') {
+          return false;
       }
+
+      bvam = listBvam[token.tokenName];
       if (bvam.short_name || bvam.name) {
          if (bvam.short_name) {
              label = bvam.short_name;

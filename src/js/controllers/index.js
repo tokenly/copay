@@ -166,7 +166,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       
       //set supported bvam display labels
       self.bvamDisplayLabels = {
-            "owner": "Issuer",
+            "owner": {"label": "Issuer", "link": false},
             "website": {"label": "Website", "link": true},
             "expiration_date": "Expiration"
             //add other fields here as needed
