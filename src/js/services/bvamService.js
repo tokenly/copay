@@ -106,9 +106,6 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
             output[meta] = bvamEntry.metadata[meta];
         }
     }
-    console.log('asdaqsdasdasdasd');
-    console.log(output);
-    console.log(bvamEntry);
     if(!output.name){
         output.name = output.asset;
     }
