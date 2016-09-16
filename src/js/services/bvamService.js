@@ -136,6 +136,14 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
 
     bvamEntry.fullName = bvamEntry.metadata.name;
 
+    // resolve the issuer short name
+    bvamEntry.ownerSummary = '';
+    if (bvamEntry.metadata.owner != null) {
+      var bvamOwner = bvamEntry.metadata.owner;
+      if (bvamOwner.full_name != null) { bvamEntry.ownerSummary = bvamOwner.full_name; }
+      if (bvamOwner.organization != null) { bvamEntry.ownerSummary += (bvamEntry.ownerSummary.length ? ", " : "") + bvamOwner.organization; }
+    }
+
     return bvamEntry;
   }
 

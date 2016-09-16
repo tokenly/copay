@@ -325,24 +325,24 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     var listBvam = $scope.index.bvamData;
     lodash.each($scope.index.tokenBalances, function(token) {
       if(token.quantitySat > 0){
-          var label = token.tokenName;
-          var bvam = {};
-          if (typeof listBvam[token.tokenName] != 'undefined') {
-              bvam = listBvam[token.tokenName];
-              if (bvam.shortName || bvam.asset) {
-                 if (bvam.shortName) {
-                     label = bvam.shortName;
-                 }
-                 else {
-                     label = bvam.name;
-                 }
-                 if (token.tokenName != label) {
-                     label = label + ' (' + token.tokenName + ')';
-                 }
-              }
-            }
-        sendableTokens[token.tokenName] = label;
+        var label = token.tokenName;
+        var bvam = {};
+        if (typeof listBvam[token.tokenName] != 'undefined') {
+          bvam = listBvam[token.tokenName];
+          if (bvam.shortName || bvam.asset) {
+             if (bvam.shortName) {
+                 label = bvam.shortName;
+             }
+             else {
+                 label = bvam.name;
+             }
+             if (token.tokenName != label) {
+                 label = label + ' (' + token.tokenName + ')';
+             }
+          }
         }
+        sendableTokens[token.tokenName] = label;
+      }
     });
 
     return sendableTokens;

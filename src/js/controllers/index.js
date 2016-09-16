@@ -166,7 +166,6 @@ angular.module('copayApp.controllers').controller('indexController', function($r
       
       //set supported bvam display labels
       self.bvamDisplayLabels = {
-            "owner": {"label": "Issuer", "link": false},
             "website": {"label": "Website", "link": true},
             "expiration_date": "Expiration"
             //add other fields here as needed
@@ -1574,8 +1573,9 @@ angular.module('copayApp.controllers').controller('indexController', function($r
             $rootScope.$digest();
 
             self.loadBvam(function(err, bvamData) {
-              if (err) { return $log.error(err); }
+              if (err) { return $log.error("=BVAM= "+err); }
               self.bvamData = bvamData;
+              console.log('=BVAM= self.bvamData updated to ',self.bvamData);
               $rootScope.$digest();
             })
           });

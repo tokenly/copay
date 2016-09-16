@@ -597,6 +597,10 @@
                 <div class="info--title">Balance</div>
                 <span>{{ delimitNumber(focusToken.quantityFloat) }}</span>
             </div>
+            <div ng-if="tokenBvam.ownerSummary" class="info--slot">
+              <div class="info--title">Owner</div>
+              <span>{{ tokenBvam.ownerSummary }}</span>
+            </div>
             <div ng-repeat="(bvam_field, bvam_label) in index.bvamDisplayLabels">
                 <div ng-if="tokenBvam.metadata[bvam_field] != null && tokenBvam.metadata[bvam_field].trim() != ''" class="info--slot">
                   <div class="info--title">
