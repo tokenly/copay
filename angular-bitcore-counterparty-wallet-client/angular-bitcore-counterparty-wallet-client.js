@@ -84196,10 +84196,21 @@ var exports = {};
 exports.createSendScriptHex = function(asset_name, amountSatoshis, utxoId) {
 
     var unencoded_datachunk = buildUnencodedSendData(asset_name, amountSatoshis);
-
     var datachunk_encoded = xcp_rc4(utxoId, unencoded_datachunk);
-
     var lengthHex = padprefix(bigInt(Math.ceil(datachunk_encoded.length / 2)).toString(16),2);
+
+    //      \/ OP_RETURN  \/ length   \/ send data
+    return "6a"         + lengthHex + datachunk_encoded;
+}
+
+
+exports.createIssuanceScriptHex = function(asset_name, description, amountSatoshis, divisible, utxoId) {
+
+    var unencoded_datachunk = buildUnencodedIssuanceData(asset_name, description, amountSatoshis, divisible);
+    console.log('unencoded_datachunk', unencoded_datachunk);
+    var datachunk_encoded = xcp_rc4(utxoId, unencoded_datachunk);
+    var lengthHex = padprefix(bigInt(Math.ceil(datachunk_encoded.length / 2)).toString(16),2);
+
     //      \/ OP_RETURN  \/ length   \/ send data
     return "6a"         + lengthHex + datachunk_encoded;
 }
@@ -84217,6 +84228,46 @@ function buildUnencodedSendData(asset_name, amountSatoshis) {
     var amount_hex = padprefix((amountSatoshis).toString(16), 16);
 
     var data = prefix + type_id + asset_id_hex + amount_hex; 
+
+    return data;
+}
+
+function buildUnencodedIssuanceData(asset_name, description, amountSatoshis, divisible) {
+
+    var prefix  = "434e545250525459"; //CNTRPRTY
+    var type_id = "00000014"; // 20 - issuance
+
+    var asset_id_hex           = padprefix(assetNameToAssetIdHex(asset_name), 16);
+    var quantity_hex           = padprefix((''+amountSatoshis).toString(16), 16);
+    var divisible_hex          = padprefix((''+(divisible ? 1 : 0)).toString(16), 2);
+    var callable_info_hex      = '000000000000000000'; // legacy callable info
+    var description_length_hex = padprefix((''+description.length).toString(16), 2);
+    var description_hex        = bin2hex(description);
+
+    // unencoded_datachunk 434e54525052545900000014000000000004fadf0000000undefined00000000000000000000undefined30
+
+
+    var data = prefix + type_id + asset_id_hex + quantity_hex + divisible_hex + callable_info_hex + description_length_hex + description_hex;
+
+    return data;
+}
+
+function buildUnencodedBroadcastData($timestamp, $value, $fee_fraction, $message) {
+
+    var prefix  = "434e545250525459"; //CNTRPRTY
+    var type_id = "0000001e"; // 30 - broadcast
+
+    var asset_id_hex           = padprefix(assetNameToAssetIdHex(asset_name), 16);
+    var quantity_hex           = padprefix((''+amountSatoshis).toString(16), 16);
+    var divisible_hex          = padprefix((''+(divisible ? 1 : 0)).toString(16), 2);
+    var callable_info_hex      = '000000000000000000'; // legacy callable info
+    var description_length_hex = padprefix((''+description.length).toString(16), 2);
+    var description_hex        = bin2hex(description);
+
+    // unencoded_datachunk 434e54525052545900000014000000000004fadf0000000undefined00000000000000000000undefined30
+
+
+    var data = prefix + type_id + asset_id_hex + quantity_hex + divisible_hex + callable_info_hex + description_length_hex + description_hex;
 
     return data;
 }

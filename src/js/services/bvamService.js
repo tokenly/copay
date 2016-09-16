@@ -74,7 +74,7 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
       lodash.forEach(bvamInfoArray, function(bvamEntry) {
         // build it
         var assetName = bvamEntry.asset
-        bvamResultsMap[assetName] = bvamEntry;
+        bvamResultsMap[assetName] = processBvamDataForDisplay(bvamEntry);
 
         // cache it
         cacheEntry(assetName, bvamEntry);
@@ -92,25 +92,51 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
 
   function processBvamDataForDisplay(rawBvamEntry) {
     var bvamEntry = lodash.clone(rawBvamEntry);
-    if(bvamEntry.length == 0){
-        return {};
-    }
-    if(typeof bvamEntry.assetInfo == 'undefined'){
-        var output = bvamEntry;
-    }
-    else{
-        var output = bvamEntry.assetInfo;
-    }
-    if(bvamEntry.metadata){
-        for(var meta in bvamEntry.metadata){
-            output[meta] = bvamEntry.metadata[meta];
+
+    if (bvamEntry.metadata.images) {
+      var smallSize=0, largeSize=0;
+      for (var i = 0; i < bvamEntry.metadata.images.length; i++) {
+        var imageEntry = bvamEntry.metadata.images[i]
+        if (imageEntry.size == 'svg') {
+          bvamEntry.smallImage = imageEntry.data;
+          bvamEntry.largeImage = imageEntry.data;
+          break;
         }
-    }
-    if(!output.name){
-        output.name = output.asset;
+        var size = 0;
+        switch (imageEntry.size) {
+          case '48x48':   size=48;  break;
+          case '64x64':   size=64;  break;
+          case '128x128': size=128; break;
+          case '256x256': size=256; break;
+        }
+        if (size == 48) {
+          bvamEntry.smallImage = imageEntry.data;
+        }
+
+        if (size > largeSize) {
+          bvamEntry.largeImage = imageEntry.data;
+          largeSize = size;
+        }
+      }
     }
 
-    return output;
+    // resolve the names
+    bvamEntry.shortName = bvamEntry.metadata.short_name;
+    bvamEntry.shortNameWasTruncated = false;
+    if (bvamEntry.shortName == null) {
+      bvamEntry.shortName = bvamEntry.metadata.name;
+      if (bvamEntry.shortName.length > 24) {
+        bvamEntry.shortName = bvamEntry.shortName.substr(0, 22);
+        bvamEntry.shortNameWasTruncated = true;
+      }
+    }
+    if (bvamEntry.shortName == null) {
+      bvamEntry.shortName = bvamEntry.asset;
+    }
+
+    bvamEntry.fullName = bvamEntry.metadata.name;
+
+    return bvamEntry;
   }
 
   function isExpired(cacheEntry) {
