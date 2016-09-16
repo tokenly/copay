@@ -329,9 +329,9 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
           var bvam = {};
           if (typeof listBvam[token.tokenName] != 'undefined') {
               bvam = listBvam[token.tokenName];
-              if (bvam.short_name || bvam.name) {
-                 if (bvam.short_name) {
-                     label = bvam.short_name;
+              if (bvam.shortName || bvam.asset) {
+                 if (bvam.shortName) {
+                     label = bvam.shortName;
                  }
                  else {
                      label = bvam.name;
@@ -360,12 +360,12 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     if (quantityFloat < 0) { quantityFloat = 0; }
     var bvam = token ? ($scope.index.bvamData[token.tokenName] || {}) : {};
     var availableLabel = token.tokenName;
-    if (bvam.short_name || bvam.name) {
-        if (bvam.short_name) {
-            availableLabel = bvam.short_name;
+    if (bvam.shortName || bvam.asset) {
+        if (bvam.shortName) {
+            availableLabel = bvam.shortName;
         }
         else {
-            availableLabel = bvam.name;
+            availableLabel = bvam.asset;
         }
     }    
     $scope.availableTokenBlanceStr = quantityFloat+" "+availableLabel;

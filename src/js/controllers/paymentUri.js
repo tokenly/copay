@@ -48,7 +48,7 @@ angular.module('copayApp.controllers').controller('paymentUriController',
               self.bvamData = bvamData;
             });
             var listBvam = self.bvamData[uri.extras.asset] || {};
-            uri.extras.asset = listBvam.short_name || listBvam.name || uri.extras.asset;
+            uri.extras.asset = listBvam.asset || uri.extras.asset;
         }        
 
         if (uri.amount) {
