@@ -6,6 +6,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   var isWP = platformInfo.isWP;
   var isAndroid = platformInfo.isAndroid;
   var isChromeApp = platformInfo.isChromeApp;
+  var CP_DUST_SIZE = 5430;
 
   var self = this;
   $rootScope.shouldHideMenuBar = false;
@@ -29,7 +30,20 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   ret.isWindowsPhoneApp = platformInfo.isWP;
   ret.countDown = null;
   ret.sendMaxInfo = {};
-
+  
+  self.defaultDust = parseFloat((CP_DUST_SIZE / ret.unitToSatoshi).toFixed(ret.unitToSatoshi.toString().length));
+  $scope._dust = self.defaultDust;
+  $scope.dust_too_low = false;
+  
+  this.checkDustSize = function(value) {
+    if(value < self.defaultDust){
+        $scope.dust_too_low = true;
+    }
+    else{
+        $scope.dust_too_low = false;  
+    }
+  };
+  
   // tokens
   console.log('configWallet=', configWallet);
   console.log('profileService.focusedClient=', profileService.focusedClient);
@@ -598,6 +612,17 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       } else {
         amount = parseInt(form.amount.$modelValue);
       }
+      
+      var use_dust = CP_DUST_SIZE;
+      if (form.dust_size) {
+          use_dust = form.dust_size.$modelValue;
+          use_dust = parseInt((use_dust * self.unitToSatoshi).toFixed(0));
+          if (use_dust < CP_DUST_SIZE) {
+            var msg = 'Your BTC dust size is too low.';
+            $log.warn(msg);
+            return self.setSendError(gettext(msg));
+          }
+      }
 
       console.log('=SEND= token='+token+' divisible='+divisible+'');
 
@@ -606,7 +631,8 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
         token:     token,
         amount:    amount,
         divisible: divisible,
-        message:   comment
+        message:   comment,
+        dust: use_dust
       });
 
       var txp = {};
@@ -625,6 +651,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       txp.payProUrl = paypro ? paypro.url : null;
       txp.excludeUnconfirmedUtxos = configWallet.spendUnconfirmed ? false : true;
       txp.feeLevel = walletSettings.feeLevel || 'normal';
+      txp.dust_size = use_dust;
 
       ongoingProcess.set('creatingTx', true);
       walletService.createTx(client, txp, function(err, createdTxp) {

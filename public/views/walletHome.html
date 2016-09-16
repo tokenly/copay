@@ -460,6 +460,12 @@
                     <a class="postfix button black" ng-click="home.hideAlternative()"> {{ home.alternativeIsoCode }}</a>
                   </div>
                 </div>
+                  <div ng-show="_token != 'BTC'">
+                    <label for="dust_size"><span translate>BTC Dust Amount</span> <strong ng-show="dust_too_low" class="text-warning">(too low)</strong></label>
+                    <div class="input">
+                        <input type="number" id="dust_size" name="dust_size" ng-change="home.checkDustSize(_dust)" ng-model="_dust" />
+                    </div>
+                  </div>
               </div>
             </div>
             <div class="row" ng-hide="home.hideNote">

@@ -57,8 +57,6 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
       }
 
-
-      
       var newTokenBalance = tokenBalancesMap[tokenName]
       if (pendingTokenBalance.isReceive) {
         // receive
@@ -158,8 +156,12 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     var divisible          = oldOutput.divisible;
 
     // build the dust send
+    var use_dust = CP_DUST_SIZE;
+    if (txp.dust_size && txp.dust_size > use_dust) {
+        use_dust = txp.dust_size; //custom dust size, but must be greater than default
+    }
     var dustSendOutput = {
-      amount: CP_DUST_SIZE,
+      amount: use_dust,
       toAddress: destinationAddress,
       message: undefined
     }

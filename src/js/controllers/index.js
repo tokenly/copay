@@ -639,6 +639,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     self.totalBalanceStr = profileService.formatAmount(self.totalBalanceSat) + ' ' + self.unitName;
     self.lockedBalanceStr = profileService.formatAmount(self.lockedBalanceSat) + ' ' + self.unitName;
     self.availableBalanceStr = profileService.formatAmount(self.availableBalanceSat) + ' ' + self.unitName;
+    
 
     if (self.pendingAmount) {
       self.pendingAmountStr = profileService.formatAmount(self.pendingAmount) + ' ' + self.unitName;
