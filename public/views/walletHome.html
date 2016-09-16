@@ -343,15 +343,6 @@
      </div>
       <div class="pr p25b">
         <h4 class="title m0" ng-show="!index.updating">
-          <available-balance ng-show="!index.shouldHideBalance"></available-balance>
-          <span
-            ng-show="home.lockedCurrentFeePerKb || home.lockAmount"
-            class="text-gray" translate>Send Max</span>
-          <a
-            ng-show="index.availableBalanceSat > 0 && !home.lockedCurrentFeePerKb  && !home.lockAmount"
-            ng-click="home.sendMax(index.availableBalanceSat)"
-             translate>Send Max
-          </a>
           <div ng-show="!home.paymentExpired && home._paypro">
             <span translate>Payment expires</span>
             <time> {{home.remainingTimeStr}}</time>
@@ -385,7 +376,17 @@
                 </div>
               </div>
             </div>
-
+            <div class="title m0" ng-show="!index.updating">
+              <available-balance ng-show="!index.shouldHideBalance"></available-balance>
+              <span
+                ng-show="home.lockedCurrentFeePerKb || home.lockAmount"
+                class="text-gray" translate>Send Max</span>
+              <a
+                ng-show="index.availableBalanceSat > 0 && !home.lockedCurrentFeePerKb  && !home.lockAmount"
+                ng-click="home.sendMax(index.availableBalanceSat)"
+                 translate>Send Max
+              </a>   
+            </div>
             <div ng-hide="home._paypro">
               <div class="row collapse">
                 <label for="address" class="left" >
