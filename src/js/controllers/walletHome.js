@@ -814,11 +814,14 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     
     if (dust_size) {
         this.lockDustSize = true;
-        if (dust_size < this.defaultDust) {
-            dust_size = this.defaultDust;
+        if (dust_size < self.defaultDust) {
+            dust_size = self.defaultDust;
         }
-        $scope._dust = dust_size;
     }
+    else {
+        dust_size = self.defaultDust;
+    }
+    $scope._dust = dust_size;
   };
 
   this.resetForm = function() {
