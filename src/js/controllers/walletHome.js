@@ -84,6 +84,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   
   $rootScope.$on('Local/WalletSwitched', function(event) {
     $scope.closeFocusToken();
+    $scope._dust = self.defaultDust;
   });  
   
   $scope.send_label = null;
@@ -520,18 +521,6 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
         configurable: true
       });    
       
-    Object.defineProperty($scope,
-      "_dust", {
-        get: function() {
-          return $scope.__dust;
-        },
-        set: function(newValue) {
-          $scope.__dust = newValue;
-          self.resetError();
-        },
-        enumerable: true,
-        configurable: true
-      });           
 
     // [temporary] token property
     $scope.token = '';
@@ -825,6 +814,9 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     
     if (dust_size) {
         this.lockDustSize = true;
+        if (dust_size < this.defaultDust) {
+            dust_size = this.defaultDust;
+        }
         $scope._dust = dust_size;
     }
   };
@@ -873,6 +865,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
           form.dust.$setViewValue(this.defaultDust);
           form.dust.$render();
       }
+
       $scope._dust = this.defaultDust;
     }
     $timeout(function() {
