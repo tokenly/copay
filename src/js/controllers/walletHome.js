@@ -31,7 +31,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   ret.countDown = null;
   ret.sendMaxInfo = {};
   
-  self.defaultDust = parseFloat((CP_DUST_SIZE / ret.unitToSatoshi).toFixed(ret.unitToSatoshi.toString().length));
+  self.defaultDust = parseFloat((CP_DUST_SIZE / walletSettings.unitToSatoshi).toFixed(walletSettings.unitToSatoshi.toString().length));
   $scope._dust = self.defaultDust;
   $scope.dust_too_low = false;
   
@@ -84,7 +84,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   
   $rootScope.$on('Local/WalletSwitched', function(event) {
     $scope.closeFocusToken();
-    $scope._dust = self.defaultDust;
+    $scope._dust = parseFloat((CP_DUST_SIZE / walletSettings.unitToSatoshi).toFixed(walletSettings.unitToSatoshi.toString().length));
   });  
   
   $scope.send_label = null;
@@ -862,14 +862,8 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
           form.token.$render();
       }
       $scope._token = 'BTC';
-      
-      if (form.dust) {
-          form.dust.$pristine = tru;
-          form.dust.$setViewValue(this.defaultDust);
-          form.dust.$render();
-      }
 
-      $scope._dust = this.defaultDust;
+      $scope._dust = parseFloat((CP_DUST_SIZE / walletSettings.unitToSatoshi).toFixed(walletSettings.unitToSatoshi.toString().length));
     }
     $timeout(function() {
       $rootScope.$digest();
