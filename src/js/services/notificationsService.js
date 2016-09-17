@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.services')
-  .factory('notificationService', function profileServiceFactory($filter, notification, lodash, configService, gettext) {
+  .factory('notificationService', function profileServiceFactory($filter, lodash, configService, gettext, notification) {
 
     var root = {};
 
@@ -46,7 +46,7 @@ angular.module('copayApp.services')
     };
 
 
-    root.newBWCNotification = function(notificationData, walletId, walletName) {
+    root.newBWCNotification = function(notificationData, walletId, walletName, focusedClient) {
       var last = root.getLast(walletId);
       root.storeLast(notificationData, walletId);
 
@@ -90,10 +90,32 @@ angular.module('copayApp.services')
             });
           break;
         case 'NewIncomingTx':
-          notification.funds(gettext('Funds received'),
-            name, {
-              color: color
-            });
+            //check if this address belongs to us
+            var is_ours = false;
+            var tx_history = false;
+            if (focusedClient) {
+                focusedClient.getTxHistory({includeExtendedInfo: true}, function(err, txs){
+                    tx_history = txs;
+                });
+            }
+            setTimeout(function(){
+                if (tx_history) {
+                    for (var tx in tx_history) {
+                        tx = tx_history[tx];
+                        if (tx.txid == notificationData.data.txid && tx.inputs[0].address == notificationData.data.address) {
+                            is_ours = true;
+                        }
+                    }
+                }
+                if (is_ours == true) {
+                    console.log('skipping notification');
+                    return; //skip notification
+                }
+                notification.funds(gettext('Funds received'),
+                    name, {
+                      color: color
+                });
+            }, 800);
           break;
         case 'ScanFinished':
           notification.success(gettext('Scan Finished'),

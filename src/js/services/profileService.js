@@ -2,7 +2,7 @@
 angular.module('copayApp.services')
   .factory('profileService', function profileServiceFactory($rootScope, $timeout, $filter, $log, sjcl, lodash, storageService, bwcService, bcpwcService, configService, notificationService, pushNotificationsService, gettext, gettextCatalog, bwcError, uxLanguage, bitcore, platformInfo, walletService) {
 
-
+    var self = this;
     var isChromeApp = platformInfo.isChromeApp;
     var isCordova = platformInfo.isCordova;
     var isWP = platformInfo.isWP;
@@ -98,7 +98,7 @@ angular.module('copayApp.services')
       client.on('notification', function(n) {
         $log.debug('BWC Notification:', n);
         notificationService.newBWCNotification(n,
-          walletId, client.credentials.walletName);
+          walletId, client.credentials.walletName, client);
 
         if (root.focusedClient.credentials.walletId == walletId) {
           $rootScope.$emit(n.type, n);
