@@ -518,7 +518,20 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
         },
         enumerable: true,
         configurable: true
-      });      
+      });    
+      
+    Object.defineProperty($scope,
+      "_dust", {
+        get: function() {
+          return $scope.__dust;
+        },
+        set: function(newValue) {
+          $scope.__dust = newValue;
+          self.resetError();
+        },
+        enumerable: true,
+        configurable: true
+      });           
 
     // [temporary] token property
     $scope.token = '';
@@ -782,7 +795,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     });
   };
 
-  this.setForm = function(to, amount, comment, asset) {
+  this.setForm = function(to, amount, comment, asset, dust_size) {
     var form = $scope.sendForm;
     if (to) {
       form.address.$setViewValue(to);
@@ -809,6 +822,11 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
        $scope._token = asset;   
        this.setTokenName(asset);
     }
+    
+    if (dust_size) {
+        this.lockDustSize = true;
+        $scope._dust = dust_size;
+    }
   };
 
   this.resetForm = function() {
@@ -820,10 +838,11 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     this.lockAddress = false;
     this.lockAmount = false;
     this.lockSendToken = false;
+    this.lockDustSize = false;
     
     $scope.send_label = null;
 
-    this._amount = this._address = null; this._token = null;
+    this._amount = this._address = null; this._token = null; this._dust = null;
 
     var form = $scope.sendForm;
 
@@ -848,6 +867,13 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
           form.token.$render();
       }
       $scope._token = 'BTC';
+      
+      if (form.dust) {
+          form.dust.$pristine = tru;
+          form.dust.$setViewValue(this.defaultDust);
+          form.dust.$render();
+      }
+      $scope._dust = this.defaultDust;
     }
     $timeout(function() {
       $rootScope.$digest();
@@ -969,11 +995,15 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     var satToUnit = 1 / this.unitToSatoshi;
     
     var isCounterparty = uri.includes('counterparty:');
+    var use_dust = uri.includes('dust=');
     var uri = uri.replace('counterparty:', 'bitcoin:');    
     var extraParams = [];
     if (this.isCounterparty) {
       extraParams.push('asset');
     }    
+    if (use_dust) {
+        extraParams.push('dust');
+    }
 
     // URI extensions for Payment Protocol with non-backwards-compatible request
     if ((/^bitcoin:\?r=[\w+]/).exec(uri)) {
@@ -999,6 +1029,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       var addr = parsed.address ? parsed.address.toString() : '';
       var message = parsed.message;
       var asset = parsed.extras.asset || 'BTC';
+      var dust_size = CP_DUST_SIZE;
 
       if (asset == 'BTC') {
           var amount = parsed.amount ?
@@ -1006,17 +1037,22 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       }
       else {
           var amount = (parsed.amount / 100000000).toFixed(8) || 0;
+          if (parsed.extras.dust) {
+              parsed.extras.dust = parseInt((parseFloat(parsed.extras.dust) * 100000000).toFixed(0)); //convert from BTC to satoshis
+              dust_size = parseFloat((parsed.extras.dust * satToUnit).toFixed(self.unitDecimals));
+              this.checkDustSize(dust_size);
+          }
       }
 
       if (parsed.r) {
         this.setFromPayPro(parsed.r, function(err) {
           if (err && addr && amount) {
-            self.setForm(addr, amount, message, asset);
+            self.setForm(addr, amount, message, asset, dust_size);
             return addr;
           }
         });
       } else {
-        this.setForm(addr, amount, message, asset);
+        this.setForm(addr, amount, message, asset, dust_size);
         return addr;
       }
     }

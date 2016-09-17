@@ -20,12 +20,16 @@ angular.module('copayApp.controllers').controller('paymentUriController',
       var query = [];
       this.origURI = $stateParams.url;
       this.isCounterparty = $stateParams.url.includes('counterparty:');
+      this.use_dust = $stateParams.url.includes('dust=');
       this.bitcoinURI = $stateParams.url.replace('counterparty:', 'bitcoin:');
       var URI = bitcore.URI;
       
       var extraParams = [];
       if (this.isCounterparty) {
           extraParams.push('asset');
+      }
+      if (this.use_dust) {
+          extraParams.push('dust');
       }
       var isUriValid = URI.isValid(this.bitcoinURI, extraParams);
       if (!isUriValid) {
@@ -49,6 +53,7 @@ angular.module('copayApp.controllers').controller('paymentUriController',
             });
             var listBvam = self.bvamData[uri.extras.asset] || {};
             uri.extras.asset = listBvam.asset || uri.extras.asset;
+
         }        
 
         if (uri.amount) {
