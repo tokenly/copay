@@ -77,7 +77,7 @@ angular.module('copayApp.controllers').controller('clicksignUriController',
 			did_sign = signed;
 		});
 		if (did_sign) {
-			var callback = this.callback;
+			var callback = this.callback.trim();
 			var encode_sig = encodeURIComponent(did_sign);
 			var has_query = false;
 			if (callback.split('?').length > 1) {
@@ -90,6 +90,7 @@ angular.module('copayApp.controllers').controller('clicksignUriController',
 				callback = callback + '?signature=' + encode_sig;
 			}
             callback = callback + '&address=' + address.address;
+            callback = callback.replace(/"/g,""); //fix for weird Windows bug
 			//post back to defined callback URL
             $http({
                method: 'POST',
