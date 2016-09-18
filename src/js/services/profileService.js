@@ -20,6 +20,8 @@ angular.module('copayApp.services')
     root.walletClients = {};
     root.focusedCounterpartyClient = null;
     root.counterpartyWalletClients = {};
+    
+    
 
     root.Utils = bwcService.getUtils();
     root.formatAmount = function(amount, fullPrecision) {
@@ -435,7 +437,25 @@ angular.module('copayApp.services')
     root.createWallet = function(opts, cb) {
       doCreateWallet(opts, function(err, walletClient, secret) {
         if (err) return cb(err);
-
+        //set a random color for the wallet:
+        var colorList = [
+                '#DD4B39',
+                '#F48E5A',
+                '#FAA77F',
+                '#F4D15A',
+                '#9EDD72',
+                '#29BB9C',
+                '#019477',
+                '#77DADA',
+                '#4A90E2',
+                '#484ED3',
+                '#9B59B6',
+                '#E856EF',
+                '#E05273',
+                '#7A8C9E',
+              ];
+        var config = configService.getSync();
+        config.colorFor[walletClient.credentials.walletId] = colorList[Math.floor(Math.random()*colorList.length)];
         root.addAndBindWalletClient(walletClient, {
           bwsurl: opts.bwsurl
         }, cb);

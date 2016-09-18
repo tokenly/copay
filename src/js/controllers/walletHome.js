@@ -820,8 +820,6 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
        this.setTokenName(asset);
     }
     
-    console.log('DUSTY DERP');
-    console.log(dust_size);
     if (dust_size) {
         var defaultDust = this.getDefaultDustValue();
         this.lockDustSize = true;
