@@ -25,6 +25,7 @@ angular.module('copayApp.controllers').controller('preferencesGlobalController',
         });
       }
       $scope.spendUnconfirmed = config.wallet.spendUnconfirmed;
+      $scope.advancedTransactions = config.advancedTransactions;
       $scope.glideraEnabled = config.glidera.enabled;
       $scope.coinbaseEnabled = config.coinbase.enabled;
       $scope.pushNotifications = config.pushNotifications.enabled;
@@ -46,6 +47,16 @@ angular.module('copayApp.controllers').controller('preferencesGlobalController',
       };
       configService.set(opts, function(err) {
         $rootScope.$emit('Local/SpendUnconfirmedUpdated', $scope.spendUnconfirmed);
+        if (err) $log.debug(err);
+      });
+    };
+    
+    $scope.setAdvancedTransactions = function() {
+      var opts = {
+        advancedTransactions: $scope.advancedTransactions
+      };        
+      configService.set(opts, function(err) {
+        $rootScope.$emit('Local/AdvancedTransactionsUpdated', $scope.advancedTransactions);
         if (err) $log.debug(err);
       });
     };

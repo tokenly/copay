@@ -48,6 +48,10 @@
   <ion-toggle ng-model="spendUnconfirmed" toggle-class="toggle-balanced" ng-change="spendUnconfirmedChange()">
     <span class="toggle-label" translate>Use Unconfirmed Funds</span>
   </ion-toggle>
+  
+  <ion-toggle ng-model="advancedTransactions" toggle-class="toggle-balanced" ng-change="setAdvancedTransactions()">
+    <span class="toggle-label" translate>Enabled Advanced Transactions Mode</span>
+  </ion-toggle>  
 
   <div ng-show="usePushNotifications && PNEnabledByUser">
     <h4></h4>

@@ -406,6 +406,11 @@ angular.module('copayApp.controllers').controller('indexController', function($r
   self.setSpendUnconfirmed = function(spendUnconfirmed) {
     self.spendUnconfirmed = spendUnconfirmed || configService.getSync().wallet.spendUnconfirmed;
   };
+  
+  self.setAdvancedTransactions = function(advancedTransactions) {
+      console.log('ADVANCED TRANSACTIONS ENABLED');
+    self.advancedTransactions = advancedTransactions || configService.getSync().advancedTransactions;
+  };  
 
   self.updateBalance = function() {
     var fc = profileService.focusedClient;
@@ -1516,6 +1521,11 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     self.setSpendUnconfirmed(spendUnconfirmed);
     self.updateAll();
   });
+  
+  $rootScope.$on('Local/AdvancedTransactionsUpdated', function(event, advancedTransactions) {
+    self.setAdvancedTransactions(advancedTransactions);
+    self.updateAll();
+  });  
 
   $rootScope.$on('Local/GlideraUpdated', function(event, accessToken) {
     self.initGlidera(accessToken);
