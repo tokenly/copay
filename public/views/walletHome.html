@@ -547,7 +547,7 @@
                   <!-- TODO: -->
                   <!-- <i ng-if="listBvam.validated" class="asset--ssl ssl--secure fi-lock"></i> -->
                   <!-- <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i> -->
-                  <i ng-if="listBvam.validated" class="bvam--validated fi-lock"></i>
+                  <i ng-if="listBvam.validated" class="bvam--validated fi-check"></i>
                 </div>
                 <div class="asset--sym" ng-if="listBvam.shortName != token.tokenName">{{ token.tokenName }}</div>
               </div>
@@ -656,7 +656,10 @@
                   <h4>BVAM Validation</h4>
                   <div class="bvam-attribute-entry info--slot">
                     <div class="info--title">Validated</div>
-                    <span ng-class="{'is-valid': tokenBvam.validated}">{{ tokenBvam.validated ? 'Yes' : 'No' }}</span>
+                    <span ng-class="{'is-valid': tokenBvam.validated}">
+                        {{ tokenBvam.validated ? 'Yes' : 'No' }}
+                        <a ng-if="tokenBvam.validated" href="http://bvam.tokenly.com/api/v1/asset/{{ tokenBvam.asset }}" class="ion-information-circled more-info" title="View BVAM details" target="_blank"></a>
+                      </span>
                   </div>
                 </div>
             </div>            
