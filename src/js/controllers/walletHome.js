@@ -1214,6 +1214,34 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   }
 
   // ------------------------------------------------------------------------
+  // search filter
+  $scope.tokenSearchFilter = function (token, offset, allTokens) {
+    var searchParam = ''+$scope.assetSearch;
+
+    // empty search matches all
+    if (searchParam == null || searchParam.length == 0) { return true; }
+    if (token == null) { return false; }
+
+    var searchParam = (''+searchParam).toLowerCase();
+
+    if (searchParam != null && searchParam.length > 0) {
+      var bvam = $scope.index.bvamData[token.tokenName];
+      if (bvam != null) {
+        if (lcSubstringMatch(bvam.shortName, searchParam)) { return true; }
+        if (lcSubstringMatch(bvam.fullName, searchParam)) { return true; }
+      }
+    }
+    
+    // match the asset name by default
+    return lcSubstringMatch(token.tokenName, searchParam);
+  }
+
+  // returns true if 
+  function lcSubstringMatch(haystack, needle) {
+    return !((''+haystack).toLowerCase().indexOf((''+needle).toLowerCase()) == -1);
+  }
+
+  // ------------------------------------------------------------------------
 
   $scope.limitLength             = 360;
   $scope.metaDescriptionExpanded = false;

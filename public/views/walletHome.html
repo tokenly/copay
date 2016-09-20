@@ -534,7 +534,7 @@
             No tokens found
           </div>
         </div>
-        <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:assetSearch:tokenName" ng-click="setFocusToken(token)">
+        <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:tokenSearchFilter" ng-click="setFocusToken(token)">
           <div class="asset--content" ng-if="(token.quantityFloat && token.quantityFloat > 0) || (token.hasSendPending || token.hasReceivePending)">
             {{listBvam = index.bvamData[token.tokenName] || {};""}}
             <div class="asset--block asset--primary">
