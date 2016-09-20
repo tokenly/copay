@@ -148,7 +148,7 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
   }
 
   root.buildAllBVAMAttributes = function(bvamToken) {
-    console.log('buildAllBVAMAttributes', bvamToken);
+    // console.log('buildAllBVAMAttributes', bvamToken);
     var formattedEntries = [];
     if (bvamToken == null) { return formattedEntries; }
 
