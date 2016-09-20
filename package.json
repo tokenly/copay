@@ -31,14 +31,14 @@
   },
   "dom_storage_quota": 200,
   "id": "jid1-x7bV5evAaI1P9Q",
-  "homepage": "https://github.com/tokenly/copay",
+  "homepage": "https://github.com/tokenly/pockets",
   "license": "MIT",
   "repository": {
-    "url": "git://github.com/tokenly/copay.git",
+    "url": "git://github.com/tokenly/pockets.git",
     "type": "git"
   },
   "bugs": {
-    "url": "https://github.com/tokenly/copay/issues"
+    "url": "https://github.com/tokenly/pockets/issues"
   },
   "dependencies": {
     "counterparty-utils": "https://github.com/tokenly/counterparty-utils.git",
