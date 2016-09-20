@@ -335,19 +335,17 @@
 
     -->
     <div id="send" class="send tab-view" ng-init="_token='BTC'">
-     <div class="row">
-        <div class="large-12 columns">
-            <h2 ng-if="index.isSingleAddress" class="text-center m10t" translate>Send Tokens</h2>
-            <h2 ng-if="!index.isSingleAddress"  class="text-center m10t" translate>Send Bitcoin</h2>
-        </div>
-     </div>
+      <h4 class="title">
+          <span ng-if="index.isSingleAddress" class="text-center m10t" translate>Send Tokens</span>
+          <span ng-if="!index.isSingleAddress"  class="text-center m10t" translate>Send Bitcoin</span>
+      </h4>
       <div class="pr p25b">
-        <h4 class="title m0" ng-show="!index.updating">
-          <div ng-show="!home.paymentExpired && home._paypro">
+        <div ng-show="!home.paymentExpired && home._paypro">
+          <h4 class="title m0" ng-show="!index.updating">
             <span translate>Payment expires</span>
             <time> {{home.remainingTimeStr}}</time>
-          </div>
-        </h4>
+          </h4>
+        </div>
         <div class="camera-icon" ng-show="index.isComplete">
           <qr-scanner on-scan="home.onQrCodeScanned(data)"></qr-scanner>
         </div>
@@ -359,7 +357,7 @@
       </div>
       <div class="row m20t">
         <div class="large-12 large-centered columns">
-          <form name="sendForm"   novalidate>
+          <form name="sendForm"  novalidate>
             <h2 class="send-label" ng-if="home.send_label">{{ home.send_label }}</h2>
             <!-- token -->
             <div>
@@ -376,17 +374,6 @@
                 </div>
               </div>
             </div>
-            <div class="title m0" ng-show="!index.updating">
-              <available-balance ng-show="!index.shouldHideBalance"></available-balance>
-              <span
-                ng-show="home.lockedCurrentFeePerKb || home.lockAmount"
-                class="text-gray" translate>Send Max</span>
-              <a
-                ng-show="index.availableBalanceSat > 0 && !home.lockedCurrentFeePerKb  && !home.lockAmount"
-                ng-click="home.sendMax(index.availableBalanceSat)"
-                 translate>Send Max
-              </a>   
-            </div>
             <div ng-hide="home._paypro">
               <div class="row collapse">
                 <label for="address" class="left" >
@@ -402,17 +389,19 @@
                   </small>
                 </span>
               </div>
-
-              <div class="input">
-                <input ng-show="sendForm.address.$invalid" class="m0" type="text" id="address" name="address" ng-disabled=" home.lockAddress" ng-attr-placeholder="{{'Bitcoin address'|translate}}" ng-model="_address" valid-address required ng-focus="home.formFocus('address')" ng-blur="home.formFocus(false)">
-                <div class="addressbook-input" ng-show="!sendForm.address.$invalid && _address">
-                  {{index.addressbook[_address] || _address}}
+              
+              <div class="row collapse">
+                <div class="input">
+                  <input ng-show="sendForm.address.$invalid" class="m0" type="text" id="address" name="address" ng-disabled=" home.lockAddress" ng-attr-placeholder="{{'Bitcoin address'|translate}}" ng-model="_address" valid-address required ng-focus="home.formFocus('address')" ng-blur="home.formFocus(false)">
+                  <div class="addressbook-input" ng-show="!sendForm.address.$invalid && _address">
+                    {{index.addressbook[_address] || _address}}
+                  </div>
+                  <a class="postfix size-12 m0 text-gray"
+                  ng-style="{'color':index.backgroundColor}"
+                  ng-click="home.openAddressbookModal(index.otherWallets, _address)">
+                    <i class="icon-wallet text-bold size-18"></i>
+                  </a>
                 </div>
-                <a class="postfix size-12 m0 text-gray"
-                ng-style="{'color':index.backgroundColor}"
-                ng-click="home.openAddressbookModal(index.otherWallets, _address)">
-                  <i class="icon-wallet text-bold size-18"></i>
-                </a>
               </div>
             </div>
             <div ng-show="home._paypro">
@@ -449,6 +438,9 @@
                     <input type="number" id="amount" ng-disabled=" home.lockAmount" name="amount" ng-attr-placeholder="{{'Amount in'|translate}} {{home.unitName}}" ng-model="_amount" valid-amount required autocomplete="off" ng-focus="home.formFocus('amount')" ng-blur="home.formFocus(false)" ignore-mouse-wheel>
                     <input type="number" id="alternative"  name="alternative"  ng-model="_alternative" style="display:none">
                     <a class="postfix button" ng-show="_token == 'BTC'" ng-style="{'background-color':index.backgroundColor}" ng-click="home.showAlternative()">{{home.unitName}}</a>
+                    <div class="input-note">
+                      <a ng-show="index.availableBalanceSat > 0 && !home.lockedCurrentFeePerKb  && !home.lockAmount" ng-click="home.sendMax(index.availableBalanceSat)" class="tu" translate>Send Max</a>
+                    </div>
                   </div>
                 </div>
                 <div ng-show="home.canShowAlternative()">

@@ -34,7 +34,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     'title': gettext('Activity'),
     'icon': {
       false: 'icon-activity',
-      true: 'icon-activity-active'
+      true: 'icon-activity'
     },
     'link': 'walletHome'
   }, {
