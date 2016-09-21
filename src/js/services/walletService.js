@@ -104,25 +104,25 @@ angular.module('copayApp.services').factory('walletService', function($log, loda
         if (isTokenProposal) {
           txp = counterpartyService.buildTrialTokenSendProposalScripts(originalTxp);
         }
-        //assign counterparty data to customData
-        txp.customData = {isCounterparty: txp.isCounterparty, counterparty: txp.counterparty};  
         console.log('[walletService] client.createTxProposal txp.noShuffleOutputs', txp.noShuffleOutputs);
         client.createTxProposal(txp, function(err, createdTxp) {
-          if (err) return cb(err);
-          else {
+          if (err) { return cb(err); }
 
-            if (isTokenProposal) {
-              counterpartyService.recreateRealTokenSendProposal(client, originalTxp, txp, createdTxp, function(err, recreatedTxp) {
-                if (err) return cb(err);
-                
-                return cb(null, recreatedTxp);
-              });
-              return
-            }
+          // assign counterparty data to customData after plain bitcoin transaction has been verified
+          txp.customData = {isCounterparty: txp.isCounterparty, counterparty: txp.counterparty};  
 
-            $log.debug('Transaction created');
-            return cb(null, createdTxp);
+          if (isTokenProposal) {
+            counterpartyService.recreateRealTokenSendProposal(client, originalTxp, txp, createdTxp, function(err, recreatedTxp) {
+              if (err) return cb(err);
+              
+              return cb(null, recreatedTxp);
+            });
+            return
           }
+
+          $log.debug('Transaction created');
+          return cb(null, createdTxp);
+
         });
       });
     }
