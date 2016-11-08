@@ -20,7 +20,11 @@
             <img src="img/icon-sent-history.svg" alt="sync" width="50">
             <p class="m0 text-gray size-14" translate>Sent</p>
           </div>
-          <div ng-show="btx.action == 'moved'">
+          <div ng-show="btx.isCounterparty && btx.customData.counterparty.type == 'issuance'">
+            <img src="img/icon-sent-history.svg" alt="sync" width="50">
+            <p class="m0 text-gray size-14" translate>Issuance</p>
+          </div>
+          <div ng-show="!btx.isCounterparty && btx.action == 'moved'">
             <img src="img/icon-moved.svg" alt="sync" width="50">
             <p class="m0 text-gray size-14" translate>Moved</p>
           </div>
@@ -96,7 +100,7 @@
           </span>
         </li>
 
-        <li class="line-b p10" ng-if="btx.isCounterparty">
+        <li class="line-b p10" ng-if="btx.isCounterparty && btx.customData.counterparty.type != 'issuance'">
           <span ng-show="btx.action == 'received'" class="text-gray" translate>Dust Received</span>
           <span ng-show="btx.action != 'received'" class="text-gray" translate>Dust Sent</span>
           <span class="right enable_text_select">{{ delimitNumber(btx.amountStr) }}</span>

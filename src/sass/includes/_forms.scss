@@ -15,6 +15,12 @@ input {
     font-size: 13px;
     border-bottom: 1px solid #E9EDF0;
   }
+
+
+  &.ng-not-empty {
+    color: #4a4a4a;
+  }
+
 }
 
 textarea {

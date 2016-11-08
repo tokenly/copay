@@ -3,7 +3,8 @@
 angular.module('copayApp.services').factory('bvamService', function($rootScope, $log, storageService, lodash) {
   var root = {};
 
-  var OLD_CACHE_TIME = 86400000 ; // 24 hours;
+  var OLD_CACHE_TIME                           = 7200000; // 2 hours
+  var OLD_UNVALIDATED_NUMERIC_ASSET_CACHE_TIME = 1800000; // 30 minutes
 
   var bvamCache = {}
   var last = 0;
@@ -88,6 +89,29 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
     })
   }
 
+  root.cacheTemporaryBVAM = function(bvamEntry) {
+    console.log('cacheTemporaryBVAM bvamEntry',bvamEntry);
+    cacheEntry(bvamEntry.asset, bvamEntry, {temp: true});
+    saveCache();
+
+    $rootScope.$emit('Local/RefreshBvam');
+  }
+
+  root.pushBVAMToProvider = function(counterpartyClient, bvamData, cb) {
+    bvamData.meta = {
+      bvam_version: "1.0.0",
+      generated_by: "Tokenly Pockets"
+    };
+
+    counterpartyClient.addBvamData(bvamData, function(err, bvamResponse) {
+      console.log('=BVAM= pushBVAMToProvider bvamResponse=', bvamResponse);
+      console.log('=BVAM= pushBVAMToProvider err=', err);
+
+      if (err) { return cb(err); }
+      cb(null, bvamResponse);
+    });
+  }
+
   // ------------------------------------------------------------------------
 
   function processBvamDataForDisplay(rawBvamEntry) {
@@ -109,7 +133,7 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
           case '128x128': size=128; break;
           case '256x256': size=256; break;
         }
-        if (size == 48) {
+        if (smallSize == 0 || size < smallSize) {
           bvamEntry.smallImage = imageEntry.data;
         }
 
@@ -214,17 +238,28 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
 
   function isExpired(cacheEntry) {
     console.log('=BVAM= cacheEntry.time', cacheEntry.time);
-    if (Date.now() - cacheEntry.time >= OLD_CACHE_TIME) {
+
+    var oldCacheTime = OLD_CACHE_TIME;
+    var bvamEntry = cacheEntry.data;
+    var isTemp = (bvamEntry.meta && bvamEntry.meta.temp);
+    if (!isTemp && !bvamEntry.validated && bvamEntry.asset.substr(0,1) == 'A') {
+      oldCacheTime = OLD_UNVALIDATED_NUMERIC_ASSET_CACHE_TIME;
+    }
+
+    if (Date.now() - cacheEntry.time >= oldCacheTime) {
       return true;
     }
+
 
     return false;
   }
   
-  function cacheEntry(asset, bvamEntry) {
+  function cacheEntry(asset, bvamEntry, meta) {
+    if (meta == null) { meta = {}; }
     bvamCache[asset] = {
       time: Date.now(),
-      data: bvamEntry
+      data: bvamEntry,
+      meta: meta,
     }
   }
 

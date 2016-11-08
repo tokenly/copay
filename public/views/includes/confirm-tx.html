@@ -1,10 +1,17 @@
-{{tokenBvam = index.bvamData[tx.counterparty.token] || {};""}}
+{{tokenBvam = index.bvamData[tx.counterparty.token] || tx.counterparty.bvam || {};""}}
+{{tokenShortName = tokenBvam.shortName || tokenBvam.name || tx.counterparty.token;""}}
 <div class="m20t">
   <label class="size-14 text-center">
     <span ng-if="!tx.isCounterparty" translate>Send bitcoin</span>
-    <span ng-if="tx.isCounterparty">
-        <span translate>Send {{ tokenBvam.shortName || tx.counterparty.token }}</span>
-        <div ng-if="tokenBvam.shortName != tx.counterparty.token">
+    <span ng-if="tx.isCounterparty && tx.counterparty.type == 'send'">
+        <span translate>Send {{ tokenShortName || tx.counterparty.token }}</span>
+        <div ng-if="tokenShortName && tokenShortName != tx.counterparty.token">
+            <small><strong>({{ tx.counterparty.token }})</strong></small>
+        </div>
+    </span>
+    <span ng-if="tx.isCounterparty && tx.counterparty.type == 'issuance'">
+        <span translate>Issue Token {{ tokenShortName || tx.counterparty.token }}</span>
+        <div ng-if="tokenShortName && tokenShortName != tx.counterparty.token">
             <small><strong>({{ tx.counterparty.token }})</strong></small>
         </div>
     </span>
@@ -12,15 +19,15 @@
 </div>
 <div class="text-center">
   <div ng-if="tx.isCounterparty">
-    <span>{{ delimitNumber(tx.counterparty.quantityFloat) }} {{ tokenBvam.shortName || tx.counterparty.token }}</span>
+    <span>{{ delimitNumber(tx.counterparty.quantityFloat) }} {{ tokenShortName || tx.counterparty.token }}</span>
   </div>
   <div ng-if="!tx.isCounterparty">
     <div class="size-36">{{ tx.amountStr }}</div>
     <div class="size-12 label gray radius" ng-show="tx.alternativeAmountStr">{{tx.alternativeAmountStr}}</div>
   </div>
-  <i class="db fi-arrow-down size-24 m10v"></i>
+  <i ng-if="!tx.isCounterparty || tx.counterparty.type == 'send'" class="db fi-arrow-down size-24 m10v"></i>
   <div class="payment-proposal-to" ng-click="copyToClipboard(tx.toAddress, $event)">
-    <div ng-if="tx.isCounterparty">
+    <div ng-if="tx.isCounterparty && tx.counterparty.type == 'send'">
       <contact class="dib enable_text_select ellipsis m5t m5b m15l size-14" address="{{tx.toAddress}}"></contact>
     </div>
     <div ng-if="!tx.isCounterparty">
@@ -41,7 +48,7 @@
       {{feeRateStr}} of the transaction
     </div>
   </div>
-  <div class="m10t size-12" ng-if="tx.isCounterparty">
+  <div class="m10t size-12" ng-if="tx.isCounterparty && tx.counterparty.type == 'send'">
     <div>
       <span translate>Dust</span></span>:
       <span class="text-bold">{{tx.amountStr}}</span>

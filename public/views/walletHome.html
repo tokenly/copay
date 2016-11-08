@@ -180,7 +180,8 @@
                 <div class="m10r left">
                   <img src="img/icon-receive-history.svg" alt="sync" width="40" ng-show="btx.action == 'received'">
                   <img src="img/icon-sent-history.svg" alt="sync" width="40" ng-show="btx.action == 'sent'">
-                  <img src="img/icon-moved.svg" alt="sync" width="40" ng-show="btx.action == 'moved'">
+                  <img src="img/icon-moved.svg" alt="sync" width="40" ng-show="btx.action == 'moved'  && !btx.isCounterparty && btx.customData.counterparty.type != 'issuance'">
+                  <img src="img/icon-sent-history.svg" alt="sync" width="40" ng-show="btx.isCounterparty && btx.customData.counterparty.type == 'issuance'">
                 </div>
                 <div class="m10t">
                   <span ng-show="btx.action == 'received'">
@@ -197,7 +198,13 @@
                       <span ng-if="!btx.message && !btx.note.body && !index.addressbook[btx.addressTo]" translate> Sent</span>
                     </span>
                   </span>
-                  <span ng-show="btx.action == 'moved'">
+                  <span ng-show="btx.isCounterparty && btx.customData.counterparty.type == 'issuance'">
+                    <span class="ellipsis">
+                      <span ng-if="btx.note.body">{{btx.note.body}}</span>
+                      <span ng-if="!btx.note.body" translate>Issuance</span>
+                    </span>
+                  </span>
+                  <span ng-show="btx.action == 'moved' && !btx.isCounterparty && btx.customData.counterparty.type != 'issuance'">
                     <span class="ellipsis">
                       <span ng-if="btx.note.body">{{btx.note.body}}</span>
                       <span ng-if="!btx.note.body" translate>Moved</span>
@@ -505,10 +512,19 @@
       </div> -->
       <div class="assets">
         <div class="assets--filters">
-          <div class="input-group">
-            <!-- <i class="input--icon fi-magnifying-glass"></i> -->
-            <input class="input--search" type="text" placeholder="Search {{ index.countNonZeroTokens() }} unique tokens..." ng-model="assetSearch">
-          </div>
+
+          <div class="row collapse text-center">
+            <div class="large-6 medium-6 small-12 columns">
+                <!-- <i class="input--icon fi-magnifying-glass"></i> -->
+                <input class="input--search" type="text" placeholder="Search {{ index.countNonZeroTokens() }} unique tokens..." ng-model="assetSearch">
+            </div>
+
+            <div class="large-6 medium-6 small-12 columns">
+              <div class="asset-issue-token right">
+                <button class="button black round tiny" ng-click="launchIssuance()"><i class="icon-plus-circle"></i> <span>Create Token</span></button>
+              </div>
+            </div>
+
           <!-- TODO:
           <div class="input-group">
             <input class="input--tags" type="text" placeholder="TAGS">
@@ -516,6 +532,8 @@
           <div class="input-group">
             <input class="input--expiration" type="text" placeholder="EXPIRATION">
           </div> -->
+
+          </div>
         </div>
 
         <div class="assets--loading">
@@ -526,6 +544,8 @@
             No tokens found
           </div>
         </div>
+
+
         <div class="asset" ng-show="index.tokenBalancesEverLoaded" ng-repeat="token in index.tokenBalances | filter:tokenSearchFilter" ng-click="setFocusToken(token)">
           <div class="asset--content" ng-if="(token.quantityFloat && token.quantityFloat > 0) || (token.hasSendPending || token.hasReceivePending)">
             {{listBvam = index.bvamData[token.tokenName] || {};""}}
@@ -541,7 +561,7 @@
                   <!-- <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i> -->
                   <i ng-if="listBvam.validated" class="bvam--validated fi-check"></i>
                 </div>
-                <div class="asset--sym" ng-if="listBvam.shortName != token.tokenName">{{ token.tokenName }}</div>
+                <div class="asset--sym" ng-if="listBvam.shortName != token.tokenName && token.tokenName.substr(0,1) != 'A'">{{ token.tokenName }}</div>
               </div>
 
               <div class="asset--balance">

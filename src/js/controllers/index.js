@@ -947,6 +947,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
   }, 1000);
 
   self.getTxsFromServer = function(client, skip, endingTxid, limit, cb) {
+    console.log('getTxsFromServer skip='+skip+' endingTxid='+endingTxid+' limit='+limit+'');
     var res = [];
 
     client.getTxHistory({
@@ -1487,6 +1488,14 @@ angular.module('copayApp.controllers').controller('indexController', function($r
     self.debounceUpdateHistory();
   });
 
+  $rootScope.$on('Local/RefreshBvam', function(event) {
+    self.loadBvam(function(err, bvamData) {
+      if (err) { return $log.error(err); }
+      self.bvamData = bvamData;
+      $rootScope.$digest();
+    });
+  });
+
   $rootScope.$on('Local/ClearBvam', function(event) {
     $log.debug('The bvam cache has been deleted');
     self.bvamData = {};
@@ -1825,6 +1834,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
 
     function openConfirmationPopup(txp, cb) {
 
+      console.log('txp', txp);
       $scope.tx = txFormatService.processTx(txp);
       self.confirmationPopup = $ionicPopup.show({
         templateUrl: 'views/includes/confirm-tx.html',

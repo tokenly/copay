@@ -5,7 +5,8 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
   var CACHED_CONFIRMATIONS_LENGTH = 6;
   var CP_DUST_SIZE = 5430;
-  var OP_RETURN_PLACEHOLDER = '6a3800000000000000000000000000000000000000000000000000000000';
+  var OP_RETURN_SEND_PLACEHOLDER     = '6a3800000000000000000000000000000000000000000000000000000000';
+  var OP_RETURN_ISSUANCE_PLACEHOLDER = '6a4e434e54525052545900000000d806c1d5000080321c637440010000000000000000002943727970746f2d526577617264732050726f6772616d20687474703a2f2f6c7462636f696e2e636f6d0000';
 
   root.isEnabled = function() {
     return configService.getSync().counterpartyTokens.enabled;
@@ -17,7 +18,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     counterpartyClient.getBalances(address, function(err, balanceEntries) {
       if (err) return cb(err)
 
-      var tokenNames = [];
+      // var tokenNames = [];
       var tokenBalances = [];
       var entry;
       for (var i = 0; i < balanceEntries.length; i++) {
@@ -26,8 +27,14 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
           amountStr: ""+delimitNumber(entry.quantityFloat)
         }));
 
-        tokenNames.push(entry.asset);
+        // tokenNames.push(entry.asset);
       }
+
+      // debug asset
+      if (configService.debug()) {
+        tokenBalances.push(buildNewTokenBalanceEntry({asset: 'DEBUGASSET', quantityFloat: 2.1, quantity: 210000000, divisible: true, amountStr: '2.1'}));
+      }
+
 
       // console.log('=CPTY= balances for address '+address, tokenBalances);
       cb(null, tokenBalances);
@@ -89,7 +96,8 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     for (var i = 0; i < txHistory.length; i++) {
       var txObject = txHistory[i];
       if (txObject.isCounterparty && txObject.counterparty.mempool) {
-        var isReceive = (txObject.counterparty.direction == "credit");
+        var isIssuance = (txObject.issuer == null) ? false : true;
+        var isReceive = isIssuance || (txObject.counterparty.direction == "credit");
         var quantity = txObject.counterparty.quantity;
         var quantityFloat = txObject.counterparty.quantityFloat;
         var asset = txObject.counterparty.asset;
@@ -138,41 +146,85 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
 
 
-  root.isTokenSendProposal = function(txp, cb) {
-    if (txp.outputs != null && txp.outputs[0].token != null && txp.outputs[0].token != 'BTC') {
+  root.isTokenSendProposal = function(txp) {
+    if (txp.outputs != null && txp.outputs[0] != null && txp.outputs[0].token != null && txp.outputs[0].token != 'BTC') {
       return true;
     }
 
     return false;
   }
 
-  root.buildTrialTokenSendProposalScripts = function(txp) {
-    console.log('=CPTY= buildTrialTokenSendProposalScripts',txp);
+  root.tokenProposalType = function(txp) {
+    if (txp.counterpartyType != null) { return txp.counterpartyType; }
+    if (root.isTokenSendProposal(txp)) { return 'send'; }
+    return null;
+  }
+  
+  root.buildTrialTokenSendProposalScripts = function(txp, tokenProposalType) {
+    console.log('=CPTY= buildTrialTokenSendProposalScripts tokenProposalType='+tokenProposalType+' txp=',txp);
 
     var newTxp = lodash.assign({}, txp);
+    var SATOSHI = 100000000;
 
     var oldOutput = txp.outputs[0];
-    var destinationAddress = oldOutput.toAddress;
-    var divisible          = oldOutput.divisible;
 
-    // build the dust send
-    var use_dust = CP_DUST_SIZE;
-    if (txp.dust_size && txp.dust_size > use_dust) {
-        use_dust = txp.dust_size; //custom dust size, but must be greater than default
-    }
-    var dustSendOutput = {
-      amount: use_dust,
-      toAddress: destinationAddress,
-      message: undefined
+    if (tokenProposalType == 'send') {
+      var destinationAddress = oldOutput.toAddress;
+      var divisible          = oldOutput.divisible;
+
+      // build the dust send
+      var use_dust = CP_DUST_SIZE;
+      if (txp.dust_size && txp.dust_size > use_dust) {
+          use_dust = txp.dust_size; //custom dust size, but must be greater than default
+      }
+      var dustSendOutput = {
+        amount: use_dust,
+        toAddress: destinationAddress,
+        message: undefined
+      }
+
+      // a fake OP_RETURN for building the script
+      var opReturnOutput = {
+        amount: 0,
+        script: OP_RETURN_SEND_PLACEHOLDER
+      }
+
+      newTxp.outputs = [dustSendOutput, opReturnOutput];
+
+      var quantityFloat = divisible ? (oldOutput.amount / SATOSHI) : oldOutput.amount;
+      newTxp.counterparty = {
+        type:          tokenProposalType,
+        token:         oldOutput.token,
+        quantity:      oldOutput.amount,
+        quantityFloat: quantityFloat,
+        amountStr:     ""+delimitNumber(quantityFloat),
+        divisible:     divisible,
+      };
+    } else if (tokenProposalType == 'issuance') {
+      // a fake OP_RETURN for building the script
+      var opReturnOutput = {
+        amount: 0,
+        script: OP_RETURN_ISSUANCE_PLACEHOLDER
+      }
+
+      newTxp.outputs = [opReturnOutput];
+
+      var divisible     = oldOutput.divisible;
+      var quantityFloat = divisible ? (oldOutput.amount / SATOSHI) : oldOutput.amount;
+      newTxp.counterparty = {
+        type:          tokenProposalType,
+        token:         oldOutput.token,
+        quantity:      oldOutput.amount,
+        description:   oldOutput.description,
+        quantityFloat: quantityFloat,
+        amountStr:     ""+delimitNumber(quantityFloat),
+        divisible:     divisible,
+      };
+    } else {
+      // undefined
+      console.err('undefined token proposal type: '+tokenProposalType)
     }
 
-    // a fake OP_RETURN for building the script
-    var opReturnOutput = {
-      amount: 0,
-      script: OP_RETURN_PLACEHOLDER
-    }
-
-    newTxp.outputs = [dustSendOutput, opReturnOutput];
     newTxp.validateOutputs = false;
     newTxp.noShuffleOutputs = true;
 
@@ -181,34 +233,37 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
     // save the counterparty data
     newTxp.isCounterparty = true;
-    var SATOSHI = 100000000;
-    var quantityFloat = divisible ? (oldOutput.amount / SATOSHI) : oldOutput.amount;
-    newTxp.counterparty = {
-      token:         oldOutput.token,
-      quantity:      oldOutput.amount,
-      quantityFloat: quantityFloat,
-      amountStr:     ""+delimitNumber(quantityFloat),
-      divisible:     divisible,
-    };
 
     return newTxp;
   }
 
   root.recreateRealTokenSendProposal = function(client, originalTxp, trialTxp, trialCreatedTxp, cb) {
+    console.log('=CPTY= recreateRealTokenSendProposal originalTxp=', originalTxp);
     console.log('=CPTY= recreateRealTokenSendProposal trialCreatedTxp=', trialCreatedTxp);
+
+    var tokenProposalType = root.tokenProposalType(originalTxp);
 
     var newTxp = lodash.assign({}, trialTxp);
 
-    if (trialCreatedTxp.outputs[1] != null && trialCreatedTxp.outputs[1].amount === 0) {
+    if (tokenProposalType) {
       var oldOutput   = originalTxp.outputs[0];
       var token       = oldOutput.token;
       var quantitySat = oldOutput.amount;
       var divisible   = oldOutput.divisible;
 
       // build the real OP_RETURN script
-      console.log('=CPTY= recreateRealTokenSendProposal '+quantitySat+' '+token+' '+trialCreatedTxp.inputs[0].txid+'');
-      newTxp.outputs[1].script = counterpartyUtils.createSendScriptHex(token, quantitySat, trialCreatedTxp.inputs[0].txid);
-      console.log('=CPTY= recreateRealTokenSendProposal script is '+newTxp.outputs[1].script+'');
+      if (tokenProposalType == 'send') {
+        console.log('=CPTY= recreateRealTokenSendProposal '+quantitySat+' '+token+' '+trialCreatedTxp.inputs[0].txid+'');
+        newTxp.outputs[1].script = counterpartyUtils.createSendScriptHex(token, quantitySat, trialCreatedTxp.inputs[0].txid);
+        console.log('=CPTY= recreateRealTokenSendProposal script is '+newTxp.outputs[1].script+'');
+      } else if (tokenProposalType == 'issuance') {
+        console.log('=CPTY= recreateRealTokenIssuanceProposal '+quantitySat+' '+token+' '+trialCreatedTxp.inputs[0].txid+'');
+        // asset_name, description, amountSatoshis, divisible, utxoId
+        var description = oldOutput.description;
+        var divisible   = oldOutput.divisible;
+        newTxp.outputs[0].script = counterpartyUtils.createIssuanceScriptHex(token, quantitySat, divisible, description, trialCreatedTxp.inputs[0].txid);
+        console.log('=CPTY= recreateRealTokenIssuanceProposal script is '+newTxp.outputs[0].script+'');
+      }
 
       // for realz
       newTxp.dryRun = false;
@@ -282,21 +337,57 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
   }
 
   function applyCounterpartyTransactionsToTXHistory(cpTransactions, txHistory, address) {
-    var cpTransactionsMap = lodash.indexBy(cpTransactions, function(cpTx) {
-      if (cpTx.mempool === true && cpTx.tx_hash != null) {
-        return cpTx.tx_hash;
+    var cpTransactionsMap = {};
+    lodash.each(cpTransactions, function(cpTx) {
+      var action = 'unknown';
+      if (cpTx.action != null) {
+        action = cpTx.action;
       }
 
-      return cpTx.event;
+      var hash = cpTx.event;
+      if (cpTx.mempool === true && cpTx.tx_hash != null) {
+        hash = cpTx.tx_hash;
+      }
+
+      if (cpTransactionsMap[hash] != null) {
+        // already exists - append
+        cpTransactionsMap[hash].transactions.push(cpTx);
+      } else {
+        cpTransactionsMap[hash] = {transactions: [cpTx]};
+      }
     });
+    console.log('cpTransactionsMap', cpTransactionsMap);
 
     var cpTxHistory = [];
+    var cpTransaction = null;
     for (var i = 0; i < txHistory.length; i++) {
       var txEntry = txHistory[i];
-      cpTxHistory.push(applyCounterpartyTransaction(cpTransactionsMap[txEntry.txid], txEntry, address));
+      cpTransaction = (cpTransactionsMap[txEntry.txid] != null) ? mergeCounterpartyTransactions(cpTransactionsMap[txEntry.txid].transactions) : null;
+      cpTxHistory.push(applyCounterpartyTransaction(cpTransaction, txEntry, address));
     }
 
     return cpTxHistory;
+  }
+
+  // choose the best one for the wallet history
+  function mergeCounterpartyTransactions(cpTransactions) {
+    if (cpTransactions.length == 0) {
+      return cpTransactions[0];
+    }
+
+    var mergedTransaction = null;
+    lodash.each(cpTransactions, function(cpTransaction) {
+      if (cpTransaction.calling_function != null && cpTransaction.calling_function == 'issuance') {
+        mergedTransaction = cpTransaction;
+        return;
+      }
+
+      if (mergedTransaction == null) {
+        mergedTransaction = cpTransaction;
+      }
+    });
+
+    return mergedTransaction;
   }
 
   function applyCounterpartyTransaction(cpTransaction, txEntry, address) {
@@ -408,5 +499,21 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     "tx_hash": "f6eeb2364ac0f2f96bb0021980c384d990d0c7b7fb208d4ddc012ca778c89fa2"
 }
 
+// counterparty (mempool issuance)
+{
+    "asset": "A96111100000000002",
+    "call_date": 0,
+    "call_price": 0.0,
+    "callable": false,
+    "description": "TUWRvRv9pGczUvEAQBHjad1Gua4L",
+    "divisible": true,
+    "fee_paid": 0,
+    "issuer": "1Aq4MVsUzPNQsKmiLL9Fy2pKvfJ9WWkStw",
+    "locked": false,
+    "quantity": 10000000000,
+    "source": "1Aq4MVsUzPNQsKmiLL9Fy2pKvfJ9WWkStw",
+    "transfer": false,
+    "tx_hash": "43b27159f355647f4d9ab7ffe9f2bc14e455fa4373d4d486e5354ef11feb20e2"
+}
 
 */

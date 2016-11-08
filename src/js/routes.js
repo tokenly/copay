@@ -562,6 +562,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
             templateUrl: 'views/clicksignUri.html'
           },
         }
+      })
+      .state('issuance', {
+        url: '/issuance',
+        needProfile: true,
+        views: {  
+          'main': {
+            templateUrl: 'views/issuance.html'
+          },
+        }
       });
   })
   .run(function($rootScope, $state, $location, $log, $timeout, $ionicPlatform, lodash, platformInfo, profileService, uxLanguage, go, gettextCatalog) {

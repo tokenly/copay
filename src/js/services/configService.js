@@ -77,7 +77,9 @@ angular.module('copayApp.services').factory('configService', function(storageSer
       counterpartyService: {
         url: 'https://pockets-service.tokenly.com/counterparty/api'
       }
-    }
+    },
+
+    DEBUG: false
   };
 
   if (defaultConfig.counterpartyTokens.enabled) {
@@ -87,6 +89,12 @@ angular.module('copayApp.services').factory('configService', function(storageSer
 
   var configCache = null;
 
+  root.ifDebugReturn = function(returnIfTrue, returnIfFalse) {
+    return defaultConfig.DEBUG ? returnIfTrue : returnIfFalse;
+  }
+  root.debug = function() {
+    return !!defaultConfig.DEBUG;
+  }
 
   root.getSync = function() {
     if (!configCache)

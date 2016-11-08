@@ -41,9 +41,9 @@
     "url": "https://github.com/tokenly/pockets/issues"
   },
   "dependencies": {
-    "counterparty-utils": "https://github.com/tokenly/counterparty-utils.git",
-    "bitcore-wallet-client": "https://github.com/tokenly/bitcore-wallet-client.git",
     "bitcore-counterparty-wallet-client": "https://github.com/tokenly/bitcore-counterparty-wallet-client.git",
+    "bitcore-wallet-client": "https://github.com/tokenly/bitcore-wallet-client.git",
+    "counterparty-utils": "https://github.com/tokenly/counterparty-utils.git#69f6661",
     "coveralls": "^2.11.9",
     "express": "^4.11.2",
     "fs": "0.0.2",

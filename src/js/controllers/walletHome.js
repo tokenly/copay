@@ -1093,6 +1093,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     var self = this;
     $scope.btx = lodash.cloneDeep(btx);
     $scope.self = self;
+    console.log('openTxModal btx', btx);
 
     $ionicModal.fromTemplateUrl('views/modals/tx-details.html', {
       scope: $scope,
@@ -1239,6 +1240,10 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   // returns true if 
   function lcSubstringMatch(haystack, needle) {
     return !((''+haystack).toLowerCase().indexOf((''+needle).toLowerCase()) == -1);
+  }
+
+  $scope.launchIssuance = function(token) {
+    go.path('issuance');
   }
 
   // ------------------------------------------------------------------------

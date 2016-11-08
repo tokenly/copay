@@ -1,6 +1,8 @@
 var bcpwcModule = angular.module('bcpwcModule', []);
 var Client = require('../node_modules/bitcore-counterparty-wallet-client');
 var counterpartyUtils = require('../node_modules/counterparty-utils');
+// var naif_base64 = require('angular-base64-upload');
+
 
 bcpwcModule.constant('MODULE_VERSION', '1.0.0');
 
@@ -46,3 +48,5 @@ bcpwcModule.provider("counterpartyUtils", function() {
   }
   return provider;
 });
+
+angular.module('copayApp.base64upload', [naif_base64])

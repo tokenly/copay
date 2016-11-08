@@ -1,0 +1,245 @@
+<div
+  class="topbar-container"
+  ng-include="'views/includes/topbar.html'"
+  ng-init="titleSection='Issue a Token'; goBackToState = 'walletHome'; noColor = true">
+</div>
+
+
+<div id="IssuanceContent" class="content p20v" ng-controller="issuanceController as issuance">
+  <form name="issuanceForm" ng-submit="issuance.submitForm(issuanceForm)" novalidate>
+    <div class="box-notification m20b issuance-error" ng-show="issuance.error">
+      <span class="text-warning">
+        There was an error
+      </span>
+      <span class="text-warning">
+        {{issuance.error|translate}}
+      </span>
+    </div>
+    <div class="row">
+      <div class="large-12 columns">
+
+        <div class="row collapse">
+          <h3>Issuance Information</h3>
+        </div>
+
+        <!-- Amount -->
+        <div class="row collapse">
+          <label for="amount" class="left"><span translate>Amount</span>
+            <small translate ng-show="issuanceForm.amount.$pristine">Required</small>
+          </label>
+          <span class="has-error right size-12" ng-show="issuanceForm.amount.$invalid
+            && !issuanceForm.amount.$pristine">
+            <span class="icon-input"><i class="fi-x"></i></span>
+            <span translate>Amount is not valid</span>
+          </span>
+          <small class="icon-input right" ng-show="issuanceForm.amount.$valid
+            && !issuanceForm.amount.$pristine"><i class="fi-check"></i></small>
+        </div>
+        <div class="input">
+          <input id="name" type="text" placeholder="100" name="amount" ng-model="amount" valid-amount required>
+        </div>
+
+
+        <!-- Divisible -->
+        <div class="row collapse">
+          <label for="divisible" class="left"><span translate>Divisible</span>
+            <small translate ng-show="issuanceForm.divisible.$pristine">Required</small>
+          </label>
+        </div>
+        <div class="input">
+          <ion-radio class="line-b size-12 radio-label" ng-repeat="d in [{l:'Yes',v:1},{l:'No',v:0}]" ng-value="d.v" ng-model="divisible">{{d.l}}
+          </ion-radio>
+        </div>
+
+        <div>&nbsp;</div>
+        <div class="row collapse">
+          <h3>Basic Token Information</h3>
+        </div>
+
+
+        <!-- Asset ID -->
+        <div class="row collapse">
+          <label for="asset" class="left"><span translate>Asset ID</span>
+            <small translate ng-show="issuanceForm.asset.$pristine">Required</small>
+          </label>
+          <span class="has-error right size-12" ng-show="issuanceForm.asset.$invalid
+            && !issuanceForm.asset.$pristine">
+            <span class="icon-input"><i class="fi-x"></i></span>
+            <span translate>Asset ID is not valid</span>
+          </span>
+          <small class="icon-input right" ng-show="issuanceForm.asset.$valid
+            && !issuanceForm.asset.$pristine"><i class="fi-check"></i></small>
+        </div>
+        <div class="input">
+          <input id="asset" type="text" placeholder="MYTOKEN" name="asset" ng-model="asset" valid-issuance-asset required>
+        </div>
+        <div class="row collapse" ng-show="isNamedAsset">
+          <div class="explanation">
+            <span ng-if="hasXCP">Issuing a named asset will use 0.5 XCP.</span>
+            <span ng-if="!hasXCP">Issuing a named asset requires 0.5 XCP in this wallet.  You do not have enough XCP.</span>
+          </div>
+        </div>
+
+
+
+        <!-- Asset Name -->
+        <div class="row collapse">
+          <label for="name" class="left"><span translate>Name</span>
+            <small translate ng-show="issuanceForm.name.$pristine">Required</small>
+          </label>
+        </div>
+        <div class="input">
+          <input id="name" type="text" placeholder="My Token Full Name" name="name" ng-model="name" required>
+        </div>
+
+
+
+        <!-- Short Name -->
+        <div class="row collapse">
+          <label for="shortName" class="left"><span translate>Short Name</span></label>
+        </div>
+        <div class="input">
+          <input id="shortName" type="text" placeholder="My Token" name="shortName" ng-model="shortName">
+        </div>
+
+
+
+        <!-- Description -->
+        <div class="row collapse">
+          <label for="description" class="left"><span translate>Description</span></label>
+        </div>
+        <div class="input">
+          <textarea rows="5" id="description" type="text" placeholder="A long description of the token." name="description" ng-model="description"></textarea>
+        </div>
+
+
+        <!-- Website -->
+        <div class="row collapse">
+          <label for="website" class="left"><span translate>Website</span></label>
+          <span class="has-error right size-12" ng-show="issuanceForm.website.$invalid
+            && !issuanceForm.website.$pristine">
+            <span class="icon-input"><i class="fi-x"></i></span>
+            <span translate>Website URL is not valid</span>
+          </span>
+          <small class="icon-input right" ng-show="issuanceForm.website.$valid
+            && !issuanceForm.website.$pristine"><i class="fi-check"></i></small>
+        </div>
+        <div class="input">
+          <input id="website" type="text" placeholder="https://tokensite.com" name="website" ng-model="website" valid-url>
+        </div>
+
+
+        <!-- Image -->
+        <div class="row collapse">
+          <label for="name" class="left"><span translate>Assign an Image</span></label>
+        </div>
+        <div class="input" ng-show="!primaryImage">
+          <input class="choose-image-file" type="file" accept="image/gif,image/png,image/jpeg,image/svg+xml" name="primaryImage" ng-model="primaryImage" base-sixty-four-input>
+        </div>
+        <div class="image-preview" ng-if="primaryImage">
+          <div class="image">
+            <img id="UploadedImagePreview" ng-src="data:{{primaryImage.filetype}};base64,{{primaryImage.base64}}">
+          </div>
+          <div class="caption">
+              {{primaryImage.filetype}} / {{primaryImage.filesize / 1000}} KB
+          </div>
+          <div class="text-center">
+            <button ng-click="removeImage()" class="button black m0 round tiny"><i class="icon-trash"></i> <span>Remove Image</span></button>
+          </div>
+        </div>
+        <div class="row collapse" ng-show="!primaryImage">
+          <div class="explanation">
+            Images must be of type svg, gif, png or jpeg and be 20Kb or less.  Pixel images must be 46, 64 128 or 256 pixels in height and width.
+          </div>
+        </div>
+
+
+        <!-- Expiration Date -->
+        <div class="row collapse">
+          <label for="expirationDate" class="left"><span translate>Expiration Date</span></label>
+        </div>
+        <div class="input">
+          <input id="expirationDate" type="text" placeholder="2020-10-11" name="expirationDate" ng-model="expirationDate">
+        </div>
+
+
+        <!-- Terms and Conditions -->
+        <div class="row collapse">
+          <label for="termsAndConditions" class="left"><span translate>Terms and Conditions</span></label>
+        </div>
+        <div class="input">
+          <textarea rows="5" id="termsAndConditions" type="text" placeholder="Terms and conditions for the token." name="termsAndConditions" ng-model="termsAndConditions"></textarea>
+        </div>
+
+        <div>&nbsp;</div>
+        <div class="row collapse">
+          <h3>Token Ownership Information</h3>
+        </div>
+
+        <!-- Owner Full Name -->
+        <div class="row collapse">
+          <label for="fullName" class="left"><span translate>Owner Full Name</span></label>
+        </div>
+        <div class="input">
+          <input id="fullName" type="text" placeholder="My Token" name="fullName" ng-model="fullName">
+        </div>
+
+        <!-- Support Email Address -->
+        <div class="row collapse">
+          <label for="supportEmail" class="left"><span translate>Support Email Address</span></label>
+        </div>
+        <div class="input">
+          <input id="supportEmail" type="email" placeholder="My Token" name="supportEmail" ng-model="supportEmail">
+        </div>
+
+        <!-- Owner Title -->
+        <div class="row collapse">
+          <label for="title" class="left"><span translate>Owner Title</span></label>
+        </div>
+        <div class="input">
+          <input id="title" type="text" placeholder="Chief Token Wonk" name="title" ng-model="title">
+        </div>
+
+        <!-- Owner Organization -->
+        <div class="row collapse">
+          <label for="organization" class="left"><span translate>Owner Organization</span></label>
+        </div>
+        <div class="input">
+          <input id="organization" type="text" placeholder="Acme, Inc." name="organization" ng-model="organization">
+        </div>
+
+        <!-- Owner Website -->
+        <div class="row collapse">
+          <label for="owner_website" class="left"><span translate>Owner Website</span></label>
+        </div>
+        <div class="input">
+          <input id="owner_website" type="text" placeholder="https://acmeinc.com" name="owner_website" ng-model="owner_website" valid-url>
+        </div>
+
+
+        <!-- Owner Address -->
+        <div class="row collapse">
+          <label for="address" class="left"><span translate>Owner Address</span></label>
+        </div>
+        <div class="input">
+          <input id="address" type="text" placeholder="123 Anywhere St. Fairfax, VA 12345-6789" name="address" ng-model="address">
+        </div>
+
+
+        <!-- Owner Phone -->
+        <div class="row collapse">
+          <label for="phone" class="left"><span translate>Owner Phone</span></label>
+        </div>
+        <div class="input">
+          <input id="phone" type="text" placeholder="+1 123-456-7890" name="phone" ng-model="phone">
+        </div>
+
+
+        <div>&nbsp;</div>
+        <button translate type="submit" class="button expand black m0 round"
+          ng-disabled="issuanceForm.$invalid">Issue</button>
+      </div> <!-- large-12 columns -->
+    </div> <!-- row -->
+  </form>
+</div>
+<div class="extra-margin-bottom"></div>
