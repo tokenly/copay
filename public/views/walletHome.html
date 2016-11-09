@@ -223,10 +223,15 @@
                   (possible double spend)
                   </span>
                   <span  ng-if="btx.action != 'invalid'">
-                    <span ng-show="btx.isCounterparty">
+                    <span ng-show="btx.isCounterparty && !(btx.customData.counterparty.type == 'issuance' && btx.counterparty.quantity == 0)">
                         {{ listBvam = index.bvamData[btx.counterparty.asset] || {};"" }}
-                        {{ delimitNumber(btx.counterparty.quantityFloat) }} {{ listBvam.shortName || btx.counterparty.asset }}
+                        <span ng-if="btx.customData.counterparty.type == 'issuance'">Issued</span> {{ delimitNumber(btx.counterparty.quantityFloat) }} <span ng-if="btx.customData.counterparty.type == 'issuance'">of</span> {{ listBvam.shortName || btx.counterparty.asset }}
                     </span>
+                    <span ng-show="btx.isCounterparty && (btx.customData.counterparty.type == 'issuance' && btx.counterparty.quantity == 0)">
+                        {{ listBvam = index.bvamData[btx.customData.counterparty.token] || {};"" }}
+                        Updated Token {{ listBvam.shortName || btx.customData.counterparty.token || btx.counterparty.asset }}
+                    </span>
+
                     <span ng-hide="btx.isCounterparty">{{ delimitNumber(btx.amountStr) }}</span>
                   </span>
                 </span>
@@ -555,13 +560,13 @@
               </div>
               <div class="asset--name">
                 <div>
-                  <span class="asset--short">{{ listBvam.shortName }}<span ng-if="listBvam.shortNameWasTruncated">&hellip;</span></span>
+                  <span ng-if="listBvam.shortName != null" class="asset--short">{{ listBvam.shortName }}<span ng-if="listBvam.shortNameWasTruncated">&hellip;</span></span>
                   <!-- TODO: -->
                   <!-- <i ng-if="listBvam.validated" class="asset--ssl ssl--secure fi-lock"></i> -->
                   <!-- <i ng-if="!asset.ssl" class="asset--ssl ssl--unsecure fi-unlock"></i> -->
                   <i ng-if="listBvam.validated" class="bvam--validated fi-check"></i>
                 </div>
-                <div class="asset--sym" ng-if="listBvam.shortName != token.tokenName && token.tokenName.substr(0,1) != 'A'">{{ token.tokenName }}</div>
+                <div class="asset--sym" ng-if="listBvam.shortName == null || (listBvam.shortName != token.tokenName && token.tokenName.substr(0,1) != 'A')">{{ token.tokenName }}</div>
               </div>
 
               <div class="asset--balance">
@@ -609,6 +614,7 @@
 
 
           <button class="button primary round expand" ng-style="{'background-color':index.backgroundColor}" translate ng-click="sendFocusToken()">Send</button>
+          <button ng-if="focusedTokenIssuedByAddress" class="button primary round expand" ng-style="{'background-color':index.backgroundColor}" translate ng-click="issueMoreOffocusedToken()">Issue More / Update Details</button>
 
           <div class="asset--info">
             <div ng-if="tokenBvam.asset" class="info--slot">

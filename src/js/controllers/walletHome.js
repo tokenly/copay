@@ -55,22 +55,34 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
   
   $scope.advancedTransactions = config.advancedTransactions;
   
-  this.defineFocusToken = function(token) {
-    $scope.focusToken = token;
-  }
-
   $scope.isFocused = function() {
     return $scope.focusToken !== undefined;
   };
 
+
   $scope.setFocusToken = function(token) {
-    $scope.focusToken = token;
+    $scope.focusToken = lodash.clone(token);
+
     $scope.focusedTokenBvamAttributes = bvamService.buildAllBVAMAttributes($scope.index.bvamData[token.tokenName]);
+
+    $scope.focusedTokenIssuedByAddress = false;
+    var tokenBvam = $scope.index.bvamData[token.tokenName]
+    if (tokenBvam && tokenBvam.assetInfo && tokenBvam.assetInfo.issuer) {
+      var client = profileService.focusedClient;
+      if (client || client.isComplete()) {
+        addressService.getAddress(client.credentials.walletId, false, function(err, addr) {
+          if (err) { return; }
+          $scope.focusedTokenIssuedByAddress = (addr == tokenBvam.assetInfo.issuer);
+        });
+      }
+    }
   };
+  this.defineFocusToken = $scope.setFocusToken;
 
   $scope.closeFocusToken = function() {
     $scope.focusToken = undefined;
   };
+
 
   $scope.sendFocusToken = function() {
     $scope._token = $scope.focusToken.tokenName;
@@ -78,6 +90,10 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
     var sendItem = $scope.index.menu.find(function(item){ return item.link == 'send' });
     $scope.index.setTab(sendItem, false, 0, true);
     $scope.closeFocusToken();
+  };
+
+  $scope.issueMoreOffocusedToken = function() {
+    go.pathWithParameters('issuance', {token: $scope.focusToken.tokenName});
   };
 
   $rootScope.delimitNumber = function(n) {

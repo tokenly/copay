@@ -1,13 +1,37 @@
 'use strict';
 
 angular.module('copayApp.controllers').controller('issuanceController',
-  function($scope, $rootScope, $timeout, $window, go, notification, lodash, ongoingProcess, profileService, walletService, addressService, bvamService, gettextCatalog, bwcError, configService, fingerprintService, txStatus) {
+  function($scope, $rootScope, $timeout, $window, $stateParams, go, notification, lodash, ongoingProcess, profileService, walletService, addressService, bvamService, gettextCatalog, bwcError, configService, fingerprintService, txStatus) {
 
     var self = this;
 
+    $scope.toggleIssueAdditionalChange = function() {
+      $scope.issueAdditional = !$scope.issueAdditional;
+      console.log('toggleIssueAdditionalChange '+$scope.issueAdditional);
+    }
+
+    $scope.toggleDivisibleChange = function() {
+      $scope.divisible = !$scope.divisible;
+      console.log('toggleDivisibleChange '+$scope.divisible);
+    }
 
     this.init = function() {
       self.resetForm();
+      var token = $stateParams.token == null ? null : $stateParams.token;
+      if (token) {
+        bvamService.getBvamCache(token, function(err, bvamData) {
+          $scope.existingBvamData = bvamData;
+          if (bvamData) {
+            setExistingIssuanceToken(token);
+            self.populateFormWithExistingBvamData(bvamData);
+          } else {
+            // token Bvam not found
+            self.populateFormForNewToken();
+          }
+        });
+      } else {
+        self.populateFormForNewToken();
+      }
     }
 
     function applyError(err) {
@@ -25,6 +49,14 @@ angular.module('copayApp.controllers').controller('issuanceController',
       $scope.primaryImage = null;
     }
 
+    function setExistingIssuanceToken(token) {
+      $scope.existingIssuanceToken = lodash.clone(token);
+      return $scope.existingIssuanceToken;
+    }
+    function clearExistingIssuanceToken(token) {
+      $scope.existingIssuanceToken = null;
+    }
+
 
     this.submitForm = function(form) {
       if (form && form.$invalid) {
@@ -38,13 +70,29 @@ angular.module('copayApp.controllers').controller('issuanceController',
 
       var bvamData = {};
 
-      var amount = Math.round(form.amount.$modelValue * SATOSHI);
-      var divisible = $scope.divisible
+      var amount;
+      if ($scope.existingIssuanceToken && !$scope.issueAdditional) {
+        amount = 0;
+      } else {
+        amount = Math.round(form.amount.$modelValue * SATOSHI);
+      }
+
+      var divisible;
+      if ($scope.existingIssuanceToken && $scope.existingBvamData) {
+        // divisible can't change
+        divisible = $scope.existingBvamData.assetInfo.divisible
+      } else {
+        divisible = $scope.divisible
+      }
 
 
-      if (form.asset.$modelValue != null && form.asset.$modelValue.length > 0) {
+      if ($scope.existingIssuanceToken) {
+        // asset can't change
+        bvamData.asset = $scope.existingIssuanceToken;
+      } else if (form.asset.$modelValue != null && form.asset.$modelValue.length > 0) {
         bvamData.asset = form.asset.$modelValue;
       }
+
       if (form.name.$modelValue != null && form.name.$modelValue.length > 0) {
         bvamData.name = form.name.$modelValue;
       }
@@ -114,8 +162,8 @@ angular.module('copayApp.controllers').controller('issuanceController',
       }
 
 
-      console.log('bvamData', bvamData);
-      self._handleBvam(bvamData, amount, divisible);
+      console.log('amount='+amount+' divisible='+divisible+' bvamData', bvamData);
+      self._handleBvamAndPushTransaction(bvamData, amount, divisible);
     }
 
     $scope.$watch('asset', checkNamedAssetStatus);
@@ -173,7 +221,7 @@ angular.module('copayApp.controllers').controller('issuanceController',
       return cb(null,{filename:'foohash.json'});
     }
 
-    this._handleBvam = function(bvamData, amount, divisible) {
+    this._handleBvamAndPushTransaction = function(bvamData, amount, divisible) {
       ongoingProcess.set('processingBvam', true);
       $timeout(function() {
 
@@ -360,13 +408,15 @@ angular.module('copayApp.controllers').controller('issuanceController',
     // ------------------------------------------------------------------------
 
     this.resetForm = function() {
-      $scope.isNamedAsset = false;
-      $scope.hasXCP = false;
+      $scope.isNamedAsset    = false;
+      $scope.hasXCP          = false;
+      $scope.issueAdditional = false;
 
-      this.populateInitialFormValues();
+      $scope.existingIssuanceToken = null;
+      $scope.existingBvamData      = null;
     }
     
-    this.populateInitialFormValues = function() {
+    this.populateFormForNewToken = function() {
       var formValues = {}
 
       formValues.divisible = 1;
@@ -374,24 +424,12 @@ angular.module('copayApp.controllers').controller('issuanceController',
       // initial random asset
       formValues.asset = this.newRandomAssetName();
 
-      // DEBUG
-      if (configService.debug()) {
-        formValues.amount      = 1;
-        formValues.name        = "Debug Asset One";
-        formValues.shortName   = "Debug One";
-        formValues.asset       = "DEBUGASSET";
-        formValues.description = "A debug asset for Tokenly Pockets";
-        formValues.website     = "https://debug.tokenly.com/";
-      }
-
       lodash.forEach(formValues, function(value, name) {
         $scope[name] = value;
       })
     };
 
     // between "00095428956661682201" and "18446744073709551615"
-    // between "95 42895 66616 82201" 
-    //  and "18446 74407 37095 51615"
     this.newRandomAssetName = function() {
       var r = function(low, high) { return Math.floor(Math.random() * (high - low)) + low; }
       var pad5 = function(number) {
@@ -408,6 +446,51 @@ angular.module('copayApp.controllers').controller('issuanceController',
       return assetName;
     }
 
+    this.populateFormWithExistingBvamData = function(bvamData) {
+      var formValues = {}
+      console.log('populateFormWithExistingBvamData bvamData', bvamData);
+      var metadata = bvamData.metadata;
+
+      formValues.asset = bvamData.asset;
+      formValues.divisible = bvamData.assetInfo.divisible ? 1 : 0;
+
+      formValues.name               = (metadata.name != null)                                          ? metadata.name                 : null;
+      formValues.shortName          = (metadata.short_name != null)                                    ? metadata.short_name           : null;
+      formValues.description        = (metadata.description != null)                                   ? metadata.description          : null;
+      formValues.website            = (metadata.website != null)                                       ? metadata.website              : null;
+      formValues.expirationDate     = (metadata.expiration_date != null)                               ? metadata.expiration_date      : null;
+      formValues.termsAndConditions = (metadata.terms_and_conditions != null)                          ? metadata.terms_and_conditions : null;
+
+      formValues.fullName           = (metadata.owner != null && metadata.owner.full_name != null)     ? metadata.owner.full_name      : null;
+      formValues.supportEmail       = (metadata.owner != null && metadata.owner.support_email != null) ? metadata.owner.support_email  : null;
+      formValues.title              = (metadata.owner != null && metadata.owner.title != null)         ? metadata.owner.title          : null;
+      formValues.organization       = (metadata.owner != null && metadata.owner.organization != null)  ? metadata.owner.organization   : null;
+      formValues.owner_website      = (metadata.owner != null && metadata.owner.website != null)       ? metadata.owner.website        : null;
+      formValues.address            = (metadata.owner != null && metadata.owner.address != null)       ? metadata.owner.address        : null;
+      formValues.phone              = (metadata.owner != null && metadata.owner.phone != null)         ? metadata.owner.phone          : null;
+
+      // image
+      if (metadata.images) {
+        formValues.primaryImage = parseImage(metadata.images[0]);
+      }
+
+
+      lodash.forEach(formValues, function(value, name) {
+        $scope[name] = value;
+      })
+    }
+
+    function parseImage(imageObj) {
+      
+      var match = /^data:(.+?);base64,(.+?)$/g.exec(""+imageObj.data);
+
+      var primaryImage = {};
+      primaryImage.filetype = match[1];
+      primaryImage.base64 = match[2];
+      primaryImage.filesize = 3 * Math.ceil(primaryImage.base64.length / 4);
+
+      return primaryImage;
+    }
 
     // ------------------------------------------------------------------------
     this.init();

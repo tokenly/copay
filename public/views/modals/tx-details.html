@@ -30,9 +30,13 @@
           </div>
 
           <div class="size-36" ng-click="copyToClipboard(btx.amountStr, $event)">
-            <span ng-if="btx.isCounterparty" class="enable_text_select">
+            <span class="enable_text_select" ng-show="btx.isCounterparty && (btx.customData.counterparty.type == 'issuance' && btx.counterparty.quantity == 0)">
+                {{ tokenBvam = index.bvamData[btx.customData.counterparty.token] || {};"" }}
+                Updated Token {{ tokenBvam.shortName || btx.customData.counterparty.token || btx.counterparty.asset }}
+            </span>
+            <span class="enable_text_select" ng-show="btx.isCounterparty && !(btx.customData.counterparty.type == 'issuance' && btx.counterparty.quantity == 0)">
                 {{ tokenBvam = index.bvamData[btx.counterparty.asset] || {};"" }}
-                {{ delimitNumber(btx.counterparty.quantityFloat) }} {{ tokenBvam.shortName || btx.counterparty.asset }}
+                <span ng-if="btx.customData.counterparty.type == 'issuance'">Issued</span> {{ delimitNumber(btx.counterparty.quantityFloat) }} <span ng-if="btx.customData.counterparty.type == 'issuance'">of</span> {{ tokenBvam.shortName || btx.counterparty.asset }}
                 <a href="#" class="ion-chevron-right" ng-click="openTokenInfo(btx.counterparty.asset)"></a>
                 <div ng-if="tokenBvam.shortName != btx.counterparty.asset">
                     <small><strong>({{ btx.counterparty.asset }})</strong></small>

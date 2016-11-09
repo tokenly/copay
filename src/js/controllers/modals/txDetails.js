@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('txDetailsController', function($rootScope, $log, $scope, $filter, $ionicPopup, $location, gettextCatalog, profileService, configService, lodash) {
+angular.module('copayApp.controllers').controller('txDetailsController', function($rootScope, $log, $scope, $filter, $ionicPopup, $location, $timeout, gettextCatalog, profileService, configService, lodash) {
 
   var self = $scope.self;
   var fc = profileService.focusedClient;
@@ -26,7 +26,7 @@ angular.module('copayApp.controllers').controller('txDetailsController', functio
             }
         });
         $scope.index.setTab('inventory', false, 0, true);
-        setTimeout(function() {
+        $timeout(function() {
             $scope.home.defineFocusToken(token);
         }, 200);
   };

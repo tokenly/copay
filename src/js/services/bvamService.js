@@ -21,11 +21,23 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
     console.log('=BVAM= loadedBvamCache', loadedBvamCache);
     if (loadedBvamCache) {
       bvamCache = lodash.assign(loadedBvamCache, bvamCache);
+      $rootScope.$emit('Local/BvamCacheLoaded', lodash.clone(bvamCache));
     }
   });
 
+  root.getBvamCache = function(tokenNames, cb) {
+    if (bvamCache) {
+      return root.getBvamData(null, tokenNames, cb, false, true);
+    }
 
-  root.getBvamData = function(counterpartyClient, tokenNames, cb, forceRefresh) {
+    $rootScope.$on('Local/BvamCacheLoaded', function(newBvamCache) {
+      return root.getBvamData(null, tokenNames, cb, false, true);
+    });
+
+    return
+  };
+
+  root.getBvamData = function(counterpartyClient, tokenNames, cb, forceRefresh, forceCache) {
     console.log('=BVAM= getBvamData tokenNames:', tokenNames);
 
     forceRefresh = !!forceRefresh;
@@ -53,7 +65,7 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
       tokenName = tokenNames[i];
 
       if (bvamCache[tokenName] != null && !forceRefresh) {
-        if (!isExpired(bvamCache[tokenName])) {
+        if (forceCache || !isExpired(bvamCache[tokenName])) {
           bvamResultsMap[tokenName] = processBvamDataForDisplay(bvamCache[tokenName].data);
           continue;
         }
@@ -65,6 +77,10 @@ angular.module('copayApp.services').factory('bvamService', function($rootScope, 
     // return immediately if nothing else is left to look up
     console.log('=BVAM= tokenNamesToLookup:', tokenNamesToLookup);
     if (tokenNamesToLookup.length == 0) {
+      return returnResults();
+    }
+
+    if (forceCache) {
       return returnResults();
     }
 

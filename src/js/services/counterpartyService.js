@@ -424,6 +424,11 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
         cpData.direction = cpData.destination == address ? "credit" : "debit"
       }
 
+      // always treate issuances as credits
+      if (cpData.action == 'issuance fee') {
+        cpData.direction = 'credit';
+      }
+
     } else {
       // did not find this counterparty transaction
       if (isRecentOrUnvalidatedCounterpartyTransaction(txEntry)) {

@@ -1,7 +1,7 @@
 <div
   class="topbar-container"
   ng-include="'views/includes/topbar.html'"
-  ng-init="titleSection='Issue a Token'; goBackToState = 'walletHome'; noColor = true">
+  ng-init="titleSection='Issue or Update Token'; goBackToState = 'walletHome'; noColor = true">
 </div>
 
 
@@ -22,33 +22,42 @@
           <h3>Issuance Information</h3>
         </div>
 
-        <!-- Amount -->
-        <div class="row collapse">
-          <label for="amount" class="left"><span translate>Amount</span>
-            <small translate ng-show="issuanceForm.amount.$pristine">Required</small>
-          </label>
-          <span class="has-error right size-12" ng-show="issuanceForm.amount.$invalid
-            && !issuanceForm.amount.$pristine">
-            <span class="icon-input"><i class="fi-x"></i></span>
-            <span translate>Amount is not valid</span>
-          </span>
-          <small class="icon-input right" ng-show="issuanceForm.amount.$valid
-            && !issuanceForm.amount.$pristine"><i class="fi-check"></i></small>
+        <!-- Issue Additional -->
+        <div ng-if="existingIssuanceToken">
+          <ion-toggle ng-model="issueAdditional" toggle-class="toggle-balanced" ng-change="toggleIssueAdditionalChange()" class="bct">
+            <span class="toggle-label">
+              <span class="db">Issue Additional Tokens</span>
+            </span>
+          </ion-toggle>
         </div>
-        <div class="input">
-          <input id="name" type="text" placeholder="100" name="amount" ng-model="amount" valid-amount required>
+
+        <!-- Amount -->
+        <div ng-if="!existingIssuanceToken || issueAdditional == 1">
+          <div class="row collapse">
+            <label for="amount" class="left"><span ng-if="existingIssuanceToken">Additional </span><span translate>Amount to Issue</span>
+              <small translate ng-show="issuanceForm.amount.$pristine">Required</small>
+            </label>
+            <span class="has-error right size-12" ng-show="issuanceForm.amount.$invalid
+              && !issuanceForm.amount.$pristine">
+              <span class="icon-input"><i class="fi-x"></i></span>
+              <span translate>Amount is not valid</span>
+            </span>
+            <small class="icon-input right" ng-show="issuanceForm.amount.$valid
+              && !issuanceForm.amount.$pristine"><i class="fi-check"></i></small>
+          </div>
+          <div class="input">
+            <input id="name" type="text" placeholder="100" name="amount" ng-model="amount" valid-amount required>
+          </div>
         </div>
 
 
         <!-- Divisible -->
-        <div class="row collapse">
-          <label for="divisible" class="left"><span translate>Divisible</span>
-            <small translate ng-show="issuanceForm.divisible.$pristine">Required</small>
-          </label>
-        </div>
-        <div class="input">
-          <ion-radio class="line-b size-12 radio-label" ng-repeat="d in [{l:'Yes',v:1},{l:'No',v:0}]" ng-value="d.v" ng-model="divisible">{{d.l}}
-          </ion-radio>
+        <div ng-if="!existingIssuanceToken">
+          <ion-toggle ng-model="divisible" toggle-class="toggle-balanced" ng-change="toggleDivisibleChange()" class="bct">
+            <span class="toggle-label">
+              <span class="db">Divisible</span>
+            </span>
+          </ion-toggle>
         </div>
 
         <div>&nbsp;</div>
@@ -71,7 +80,7 @@
             && !issuanceForm.asset.$pristine"><i class="fi-check"></i></small>
         </div>
         <div class="input">
-          <input id="asset" type="text" placeholder="MYTOKEN" name="asset" ng-model="asset" valid-issuance-asset required>
+          <input id="asset" type="text" placeholder="MYTOKEN" name="asset" ng-model="asset" valid-issuance-asset ng-readonly="existingIssuanceToken" required>
         </div>
         <div class="row collapse" ng-show="isNamedAsset">
           <div class="explanation">
@@ -236,8 +245,12 @@
 
 
         <div>&nbsp;</div>
-        <button translate type="submit" class="button expand black m0 round"
-          ng-disabled="issuanceForm.$invalid">Issue</button>
+        <button ng-if="existingIssuanceToken && issueAdditional" translate type="submit" class="button expand black m0 round"
+          ng-disabled="issuanceForm.$invalid">Issue and Update</button>
+        <button ng-if="existingIssuanceToken && !issueAdditional" translate type="submit" class="button expand black m0 round"
+          ng-disabled="issuanceForm.$invalid">Update Token</button>
+        <button ng-if="!existingIssuanceToken" translate type="submit" class="button expand black m0 round"
+          ng-disabled="issuanceForm.$invalid">Issue New Token</button>
       </div> <!-- large-12 columns -->
     </div> <!-- row -->
   </form>

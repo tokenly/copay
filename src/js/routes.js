@@ -564,7 +564,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       })
       .state('issuance', {
-        url: '/issuance',
+        url: '/issuance/:token',
         needProfile: true,
         views: {  
           'main': {

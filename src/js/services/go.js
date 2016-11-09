@@ -16,6 +16,10 @@ angular.module('copayApp.services').factory('go', function($window, $ionicSideMe
     return $state.is(name);
   };
 
+  root.pathWithParameters = function(path, params) {
+    $state.transitionTo(path, params);
+  }
+
   root.path = function(path, cb) {
     $state.transitionTo(path)
       .then(function() {
