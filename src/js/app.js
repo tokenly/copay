@@ -6,6 +6,7 @@ var modules = [
   'monospaced.qrcode',
   'gettext',
   'ionic',
+  'ion-datetime-picker',
   'ngLodash',
   'ngSanitize',
   'ngCsv',

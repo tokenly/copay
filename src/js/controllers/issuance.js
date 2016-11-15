@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('copayApp.controllers').controller('issuanceController',
-  function($scope, $rootScope, $timeout, $window, $stateParams, go, notification, lodash, ongoingProcess, profileService, walletService, addressService, bvamService, gettextCatalog, bwcError, configService, fingerprintService, txStatus) {
+  function($scope, $rootScope, $timeout, $window, $stateParams, go, notification, lodash, ongoingProcess, profileService, walletService, addressService, bvamService, gettext, gettextCatalog, bwcError, configService, fingerprintService, txStatus) {
 
     var self = this;
 
@@ -45,8 +45,11 @@ angular.module('copayApp.controllers').controller('issuanceController',
     }
 
     $scope.removeImage = function() {
-      console.log('$scope.removeImage');
       $scope.primaryImage = null;
+    }
+
+    $scope.clearExpirationDate = function() {
+      $scope.expirationDate = null;
     }
 
     function setExistingIssuanceToken(token) {
@@ -105,8 +108,8 @@ angular.module('copayApp.controllers').controller('issuanceController',
       if (form.website.$modelValue != null && form.website.$modelValue.length > 0) {
         bvamData.website = form.website.$modelValue;
       }
-      if (form.expirationDate.$modelValue != null && form.expirationDate.$modelValue.length > 0) {
-        bvamData.expiration_date = form.expirationDate.$modelValue;
+      if ($scope.expirationDate != null) {
+        bvamData.expiration_date = $scope.expirationDate.toISOString();
       }
       if (form.termsAndConditions.$modelValue != null && form.termsAndConditions.$modelValue.length > 0) {
         bvamData.terms_and_conditions = form.termsAndConditions.$modelValue;
@@ -448,26 +451,25 @@ angular.module('copayApp.controllers').controller('issuanceController',
 
     this.populateFormWithExistingBvamData = function(bvamData) {
       var formValues = {}
-      console.log('populateFormWithExistingBvamData bvamData', bvamData);
       var metadata = bvamData.metadata;
 
       formValues.asset = bvamData.asset;
       formValues.divisible = bvamData.assetInfo.divisible ? 1 : 0;
 
-      formValues.name               = (metadata.name != null)                                          ? metadata.name                 : null;
-      formValues.shortName          = (metadata.short_name != null)                                    ? metadata.short_name           : null;
-      formValues.description        = (metadata.description != null)                                   ? metadata.description          : null;
-      formValues.website            = (metadata.website != null)                                       ? metadata.website              : null;
-      formValues.expirationDate     = (metadata.expiration_date != null)                               ? metadata.expiration_date      : null;
-      formValues.termsAndConditions = (metadata.terms_and_conditions != null)                          ? metadata.terms_and_conditions : null;
+      formValues.name               = (metadata.name != null)                                          ? metadata.name                      : null;
+      formValues.shortName          = (metadata.short_name != null)                                    ? metadata.short_name                : null;
+      formValues.description        = (metadata.description != null)                                   ? metadata.description               : null;
+      formValues.website            = (metadata.website != null)                                       ? metadata.website                   : null;
+      formValues.expirationDate     = (metadata.expiration_date != null)                               ? new Date(metadata.expiration_date) : null;
+      formValues.termsAndConditions = (metadata.terms_and_conditions != null)                          ? metadata.terms_and_conditions      : null;
 
-      formValues.fullName           = (metadata.owner != null && metadata.owner.full_name != null)     ? metadata.owner.full_name      : null;
-      formValues.supportEmail       = (metadata.owner != null && metadata.owner.support_email != null) ? metadata.owner.support_email  : null;
-      formValues.title              = (metadata.owner != null && metadata.owner.title != null)         ? metadata.owner.title          : null;
-      formValues.organization       = (metadata.owner != null && metadata.owner.organization != null)  ? metadata.owner.organization   : null;
-      formValues.owner_website      = (metadata.owner != null && metadata.owner.website != null)       ? metadata.owner.website        : null;
-      formValues.address            = (metadata.owner != null && metadata.owner.address != null)       ? metadata.owner.address        : null;
-      formValues.phone              = (metadata.owner != null && metadata.owner.phone != null)         ? metadata.owner.phone          : null;
+      formValues.fullName           = (metadata.owner != null && metadata.owner.full_name != null)     ? metadata.owner.full_name           : null;
+      formValues.supportEmail       = (metadata.owner != null && metadata.owner.support_email != null) ? metadata.owner.support_email       : null;
+      formValues.title              = (metadata.owner != null && metadata.owner.title != null)         ? metadata.owner.title               : null;
+      formValues.organization       = (metadata.owner != null && metadata.owner.organization != null)  ? metadata.owner.organization        : null;
+      formValues.owner_website      = (metadata.owner != null && metadata.owner.website != null)       ? metadata.owner.website             : null;
+      formValues.address            = (metadata.owner != null && metadata.owner.address != null)       ? metadata.owner.address             : null;
+      formValues.phone              = (metadata.owner != null && metadata.owner.phone != null)         ? metadata.owner.phone               : null;
 
       // image
       if (metadata.images) {

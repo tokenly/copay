@@ -166,9 +166,13 @@
         <!-- Expiration Date -->
         <div class="row collapse">
           <label for="expirationDate" class="left"><span translate>Expiration Date</span></label>
+          <a ng-if="expirationDate" ng-click="clearExpirationDate()" class="right"><i class="icon-trash"></i></a>
         </div>
-        <div class="input">
-          <input id="expirationDate" type="text" placeholder="2020-10-11" name="expirationDate" ng-model="expirationDate">
+        <div class="item">
+          <div class="input" ion-datetime-picker ng-model="expirationDate" am-pm>
+              {{expirationDate | date: "MMM d, y h:mm:ss a (Z)"}}
+              <span class="none" ng-if="!expirationDate">None</span>
+          </div>
         </div>
 
 

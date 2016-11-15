@@ -20,7 +20,8 @@
     "ng-lodash": "0.2.3",
     "qrcode-decoder-js": "*",
     "trezor-connect": "~1.0.1",
-    "ng-csv": "~0.3.6"
+    "ng-csv": "~0.3.6",
+    "ion-datetime-picker": "^0.4.1"
   },
   "resolutions": {
     "angular": "1.5.3"

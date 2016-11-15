@@ -1,0 +1,13 @@
+.ion-datetime-picker .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.ion-datetime-picker input[type="number"], .ion-datetime-picker input[type="text"] {
+  border: inherit;
+  margin: 0;
+}

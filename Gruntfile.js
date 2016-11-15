@@ -156,14 +156,17 @@ module.exports = function(grunt) {
           'bower_components/jquery/dist/jquery.js',
           'bower_components/roundSlider/dist/roundslider.min.js',
           'bower_components/angular-gridster/dist/angular-gridster.min.js',
-          'bower_components/javascript-detect-element-resize/detect-element-resize.js'
+          'bower_components/javascript-detect-element-resize/detect-element-resize.js',
+          'bower_components/ion-datetime-picker/release/ion-datetime-picker.min.js'
         ],
         dest: 'public/lib/ui-components.js'
       },
       ui_components_css: {
         src: [
           'bower_components/roundSlider/dist/roundslider.min.css',
-          'bower_components/angular-gridster/dist/angular-gridster.min.css'
+          'bower_components/angular-gridster/dist/angular-gridster.min.css',
+          'bower_components/ion-datetime-picker/release/ion-datetime-picker.min.css',
+          'src/extra-css/ion-datetime-picker-fixes.css'
         ],
         dest: 'public/css/ui-components.css',
       },
