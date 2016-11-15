@@ -4,6 +4,7 @@ angular.module('copayApp.controllers').controller('issuanceController',
   function($scope, $rootScope, $timeout, $window, $stateParams, go, notification, lodash, ongoingProcess, profileService, walletService, addressService, bvamService, gettext, gettextCatalog, bwcError, configService, fingerprintService, txStatus) {
 
     var self = this;
+    var checkingAssetAvailabilityTimeout = null;
 
     $scope.toggleIssueAdditionalChange = function() {
       $scope.issueAdditional = !$scope.issueAdditional;
@@ -13,6 +14,61 @@ angular.module('copayApp.controllers').controller('issuanceController',
     $scope.toggleDivisibleChange = function() {
       $scope.divisible = !$scope.divisible;
       console.log('toggleDivisibleChange '+$scope.divisible);
+    }
+
+    $scope.checkAssetExists = function() {
+      var assetModel = this.issuanceForm.asset
+      if (assetModel.$modelValue == null) {
+        assetModel.$setViewValue(self.newRandomAssetName());
+        assetModel.$render();
+      }
+    }
+    
+    $scope.checkAssetAvailability = function() {
+      if (isNamedAsset(''+$scope.asset)) {
+        if (checkingAssetAvailabilityTimeout) {
+          $timeout.cancel(checkingAssetAvailabilityTimeout);
+          checkingAssetAvailabilityTimeout = null;
+        }
+
+        // console.log('begin wait...');
+        checkingAssetAvailabilityTimeout = $timeout(function() {
+          // console.log('begin checking asset availability...');
+          $scope.checkingAssetAvailability = true;
+          $scope.assetIsAvailable = true;
+
+          (function(assetToCheck) {
+            profileService.focusedCounterpartyClient.getBvamInfo([assetToCheck], function(err, bvamInfoArray) {
+              $scope.checkingAssetAvailability = false;
+              // console.log('end checking asset availability for '+assetToCheck+'... bvamInfoArray:', bvamInfoArray);
+
+              if (assetToCheck != $scope.asset) {
+                // checked wrong asset
+                console.log('checked wrong asset...');
+                $scope.$digest();
+                return;
+              }
+
+              if (err) {
+                console.error(err);
+                $scope.assetIsAvailable = false;
+                $scope.$digest();
+                return;
+              }
+
+              // handle availability check
+              $scope.assetIsAvailable = true;
+              if (bvamInfoArray.length > 0 && bvamInfoArray[0].asset == assetToCheck) {
+                $scope.assetIsAvailable = false;
+              }
+              $scope.$digest();
+              
+            });
+          })($scope.asset);
+
+        }, 250);
+      }
+
     }
 
     this.init = function() {
@@ -417,6 +473,10 @@ angular.module('copayApp.controllers').controller('issuanceController',
 
       $scope.existingIssuanceToken = null;
       $scope.existingBvamData      = null;
+
+      $scope.checkingAssetAvailability = false;
+      $scope.assetIsAvailable          = null;
+      checkingAssetAvailabilityTimeout = null;
     }
     
     this.populateFormForNewToken = function() {

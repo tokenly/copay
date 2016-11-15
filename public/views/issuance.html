@@ -80,12 +80,18 @@
             && !issuanceForm.asset.$pristine"><i class="fi-check"></i></small>
         </div>
         <div class="input">
-          <input id="asset" type="text" placeholder="MYTOKEN" name="asset" ng-model="asset" valid-issuance-asset ng-readonly="existingIssuanceToken" required>
+          <div ng-if="checkingAssetAvailability" class="right size-24" style="position: absolute; right: 10px; top: -2px;">
+            <i class="icon-activity"></i>
+          </div>
+          <input id="asset" type="text" placeholder="MYTOKEN" name="asset" ng-model="asset" valid-issuance-asset ng-readonly="existingIssuanceToken" ng-change="checkAssetAvailability()" ng-blur="checkAssetExists(this)" required>
         </div>
         <div class="row collapse" ng-show="isNamedAsset">
-          <div class="explanation">
+          <div class="explanation" ng-if="assetIsAvailable && !checkingAssetAvailability">
             <span ng-if="hasXCP">Issuing a named asset will use 0.5 XCP.</span>
             <span ng-if="!hasXCP">Issuing a named asset requires 0.5 XCP in this wallet.  You do not have enough XCP.</span>
+          </div>
+          <div class="explanation" ng-if="!assetIsAvailable">
+            <span ng-class="{'text-warning': true, 'text-warning-dimmed': checkingAssetAvailability}">This asset ID is not available.  Please choose another.</span>
           </div>
         </div>
 
