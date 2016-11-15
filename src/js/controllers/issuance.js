@@ -419,7 +419,7 @@ angular.module('copayApp.controllers').controller('issuanceController',
     this.populateFormForNewToken = function() {
       var formValues = {}
 
-      formValues.divisible = 1;
+      formValues.divisible = true;
 
       // initial random asset
       formValues.asset = this.newRandomAssetName();
