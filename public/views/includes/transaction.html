@@ -1,3 +1,7 @@
+{{ isIssuance = (tx.customData.isCounterparty && tx.customData.counterparty.type == 'issuance');"" }}
+{{ isIssuanceChange = isIssuance && (btx.counterparty.quantity == 0);"" }}
+{{ listBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
+{{ shortName = listBvam.shortName || (isIssuance ? tx.customData.counterparty.shortName : null) || tx.customData.counterparty.token;"" }}
 <div class="row collapse last-transactions-content line-b"
   ng-class="{'text-gray':!tx.pendingForUs}"
   ng-click="home.openTxpModal(tx, index.copayers, !!index.glideraStatus)">
@@ -14,8 +18,14 @@
         <span class="ellipsis" ng-show="!index.addressbook[tx.toAddress] && tx.message">
           {{tx.message}}
         </span>
-        <span ng-show="!index.addressbook[tx.toAddress] && !tx.message" translate>
+        <span ng-show="!isIssuance && !index.addressbook[tx.toAddress] && !tx.message" translate>
           Sending
+        </span>
+        <span ng-show="isIssuance && !isIssuanceChange && !tx.message" translate>
+          Issuance
+        </span>
+        <span ng-show="isIssuanceChange && !tx.message" translate>
+          Token Update
         </span>
       </div>
       <div ng-show="tx.merchant">
@@ -26,10 +36,12 @@
   </div>
   <div class="large-5 medium-5 small-5 columns text-right">
     <span class="size-16">
-        <span ng-show="tx.customData != null && tx.customData.isCounterparty">
-            -
-            {{ listBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
-            {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ listBvam.shortName || tx.customData.counterparty.token }}          
+        <span ng-show="tx.customData != null && tx.customData.isCounterparty && !isIssuanceChange">
+            <span ng-if="!isIssuance">-</span>
+            {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ shortName || tx.customData.counterparty.token }}          
+        </span>
+        <span ng-show="isIssuanceChange">
+            {{ shortName || tx.customData.counterparty.token }}          
         </span>
         <span ng-show="tx.customData == null || !tx.customData.isCounterparty">
             - {{tx.amountStr}}

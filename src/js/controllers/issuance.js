@@ -336,6 +336,7 @@ angular.module('copayApp.controllers').controller('issuanceController',
           amount:      amount,
           description: issuanceDescription,
           divisible:   divisible,
+          shortName:   bvamData.short_name || bvamData.name,
           message:     null
         }];
         txp.message = '';

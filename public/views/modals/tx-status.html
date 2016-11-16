@@ -1,3 +1,4 @@
+{{ isIssuance = (tx.customData.isCounterparty && tx.customData.counterparty.type == 'issuance');"" }}
 <ion-modal-view ng-controller="txStatusController">
   <div ng-if="type == 'broadcasted'" class="popup-txsent text-center">
     <i class="small-centered columns fi-check" ng-style="{'color':color, 'border-color':color}"></i>
@@ -52,10 +53,11 @@
     </div>
   </div>
 
-  <div ng-if="type=='rejected'" class="popup-txrejected">
+  <div ng-if="type=='rejected'" class="popup-txrejected" style="margin-top: 46px;">
     <i class="fi-x small-centered columns" ng-style="{'color':color, 'border-color':color}"></i>
     <div class="text-center size-18 tu text-bold p20" ng-style="{'color':color}">
-      <span translate>Payment Rejected</span>
+      <span ng-if="isIssuance">Issuance Rejected</span>
+      <span ng-if="!isIssuance" translate>Payment Rejected</span>
     </div>
     <div class="text-center">
       <a class="button outline light-gray round tiny" ng-click="cancel()" translate>OKAY</a>

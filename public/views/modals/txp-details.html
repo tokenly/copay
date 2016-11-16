@@ -1,3 +1,7 @@
+{{ tokenBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
+{{ isIssuance = (tx.customData.isCounterparty && tx.customData.counterparty.type == 'issuance');"" }}
+{{ isIssuanceChange = isIssuance && (btx.counterparty.quantity == 0);"" }}
+{{ shortName = tokenBvam.shortName || (isIssuance ? tx.customData.counterparty.shortName : null) || tx.customData.counterparty.token;"" }}
 <ion-modal-view ng-controller="txpDetailsController">
   <ion-header-bar align-title="center" class="tab-bar" ng-style="{'background-color':color}">
     <div class="left-small">
@@ -13,24 +17,31 @@
       <div class="payment-proposal-head" ng-style="{'background-color':color}">
         <div class="size-36">
             <span ng-if="tx.customData != null && tx.customData.isCounterparty" class="enable_text_select">
-                {{ tokenBvam = index.bvamData[tx.customData.counterparty.token] || {};"" }}
-                {{ delimitNumber(tx.customData.counterparty.quantityFloat) }} {{ tokenBvam.shortName || tx.customData.counterparty.token }}
-                <div ng-if="tokenBvam.shortName != tx.customData.counterparty.token">
+                <span ng-if="isIssuanceChange">Updating Token</span>
+                <span ng-if="isIssuance && !isIssuanceChange">Issuing</span>
+                <span ng-if="!isIssuanceChange">{{ delimitNumber(tx.customData.counterparty.quantityFloat) }}</span>
+
+                {{ shortName || tx.customData.counterparty.token }}
+                <div ng-if="shortName != tx.customData.counterparty.token">
                     <small><strong>({{ tx.customData.counterparty.token }})</strong></small>
                 </div>
+
             </span>    
             <span ng-if="tx.customData == null || !tx.customData.isCounterparty">
                 {{tx.amountStr}}
             </span>
         </div>
         <div class="size-14 text-light" ng-show="tx.alternativeAmountStr && (tx.customData == null || !tx.customData.isCounterparty)">{{tx.alternativeAmountStr}}</div>
-        <i class="db fi-arrow-down size-24 m10v"></i>
-        <span class="payment-proposal-to" ng-click="copyToClipboard(tx.toAddress, $event)">
-          <i class="fi-bitcoin left"></i>
-          <contact ng-if="!tx.hasMultiplesOutputs" class="dib enable_text_select ellipsis m5t m5b size-14" address="{{tx.toAddress}}">{{tx.toAddress}}</contact>
-          <span ng-if="tx.hasMultiplesOutputs && (tx.customData == null || !tx.customData.isCounterparty)" translate>Multiple recipients</span>
-          <contact ng-if="!tx.hasMultiplesOutputs || (tx.customData != null && tx.customData.isCounterparty)" address="{{tx.outputs[0].toAddress}}"></contact>
-        </span>
+
+        <div ng-if="!isIssuance">
+          <i class="db fi-arrow-down size-24 m10v"></i>
+          <span class="payment-proposal-to" ng-click="copyToClipboard(tx.toAddress, $event)">
+            <i class="fi-bitcoin left"></i>
+            <contact ng-if="!tx.hasMultiplesOutputs" class="dib enable_text_select ellipsis m5t m5b size-14" address="{{tx.toAddress}}">{{tx.toAddress}}</contact>
+            <span ng-if="tx.hasMultiplesOutputs && (tx.customData == null || !tx.customData.isCounterparty)" translate>Multiple recipients</span>
+            <contact ng-if="!tx.hasMultiplesOutputs || (tx.customData != null && tx.customData.isCounterparty)" address="{{tx.outputs[0].toAddress}}"></contact>
+          </span>
+        </div>
       </div>
 
       <div class="oh">
@@ -95,7 +106,7 @@
           ng-repeat="output in tx.outputs" ng-include="'views/includes/output.html'">
         </div>
         
-        <li ng-show="tx.customData != null && tx.customData.isCounterparty" class="line-b p10 oh"
+        <li ng-show="!isIssuance" class="line-b p10 oh"
           ng-click="copyToClipboard(tx.outputs[0].addressTo, $event)">
           <span class="text-gray" translate>Destination</span>
           <span class="right">
@@ -104,7 +115,7 @@
           </span>
         </li>
         
-        <li class="line-b p10" ng-if="tx.customData != null && tx.customData.isCounterparty">
+        <li class="line-b p10" ng-if="tx.customData != null && tx.customData.isCounterparty && !isIssuance">
           <span ng-show="btx.action == 'received'" class="text-gray" translate>Dust Received</span>
           <span ng-show="btx.action != 'received'" class="text-gray" translate>Dust Sent</span>
           <span class="right enable_text_select">{{ delimitNumber(tx.amountStr) }}</span>

@@ -225,7 +225,9 @@
                   <span  ng-if="btx.action != 'invalid'">
                     <span ng-show="btx.isCounterparty && !(btx.customData.counterparty.type == 'issuance' && btx.counterparty.quantity == 0)">
                         {{ listBvam = index.bvamData[btx.counterparty.asset] || {};"" }}
-                        <span ng-if="btx.customData.counterparty.type == 'issuance'">Issued</span> {{ delimitNumber(btx.counterparty.quantityFloat) }} <span ng-if="btx.customData.counterparty.type == 'issuance'">of</span> {{ listBvam.shortName || btx.counterparty.asset }}
+                        {{ isIssuance = (btx.customData.isCounterparty && btx.customData.counterparty.type == 'issuance');"" }}
+                        {{ shortName = listBvam.shortName || (isIssuance ? btx.customData.counterparty.shortName : null) || btx.customData.counterparty.token;"" }}
+                        <span ng-if="btx.customData.counterparty.type == 'issuance'">Issued</span> {{ delimitNumber(btx.counterparty.quantityFloat) }} <span ng-if="btx.customData.counterparty.type == 'issuance'">of</span> {{ shortName }}
                     </span>
                     <span ng-show="btx.isCounterparty && (btx.customData.counterparty.type == 'issuance' && btx.counterparty.quantity == 0)">
                         {{ listBvam = index.bvamData[btx.customData.counterparty.token] || {};"" }}

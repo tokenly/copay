@@ -219,6 +219,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
         quantityFloat: quantityFloat,
         amountStr:     ""+delimitNumber(quantityFloat),
         divisible:     divisible,
+        shortName:     oldOutput.shortName,
       };
     } else {
       // undefined
