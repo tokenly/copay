@@ -1,44 +1,18 @@
-.content
-  .explanation
-    font-weight: 300
-    color: #333
-    font-size: 0.8rem
-    line-height: 0.8rem
-    margin-top: -8px
-    margin-bottom: 16px
+.sidebar-svg {
+  width: 22px;
+  margin: 7px 20px 0px 6px;
+  float: left;
+}
 
-.image-preview
+.wallet-svg {
+  width: 29px;
+  margin: 0 0 0 -2px;
+}
 
-    .image
-        max-width: 128px
-        max-height: 128px
-        margin: 0 auto
-    .caption
-        text-align: center
-        color: #999
-        font-size: 0.7rem
-        margin-bottom: 12px
-
-
-input.choose-image-file
-    color: transparent
-    background: transparent
-    line-height: 1rem
-
-.issuance-error
-    font-weight: bold
-    font-size: 1rem
-    text-align: center
-    padding-top: 24px
-    padding-bottom: 24px
-
-#IssuanceContent
-    div.input
-        font-size: 13px
-        color: #4a4a4a
-        .none
-            color: #999
-
-    .text-warning-dimmed
-        color: #d2a8a7
-
+.content .avatar-wallet, .sidebar .avatar-wallet, .modal-content .avatar-wallet {
+  height: 25px;
+  width: 36px;
+  font-size: 1rem;
+  margin-top: 3px;
+  padding-top: 0;
+}
