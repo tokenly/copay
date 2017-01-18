@@ -49,7 +49,7 @@
                 <a ng-click="selectWallet(w.id, w.name)" class="db oh">
                   <div class="avatar-wallet"
                     ng-style="{'background-color':w.color}">
-                    <i class="icon-wallet size-21"></i>
+                    <img class="wallet-svg" src="img/tokenly-wallet_icon.svg">
                   </div>
                   <div class="ellipsis name-wallet text-bold">{{w.name || w.id}}
                     <span class="has-error right text-light size-12" ng-show="errorSelectedWallet[w.id]">

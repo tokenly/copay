@@ -1,0 +1,44 @@
+.content
+  .explanation
+    font-weight: 300
+    color: #333
+    font-size: 0.8rem
+    line-height: 0.8rem
+    margin-top: -8px
+    margin-bottom: 16px
+
+.image-preview
+
+    .image
+        max-width: 128px
+        max-height: 128px
+        margin: 0 auto
+    .caption
+        text-align: center
+        color: #999
+        font-size: 0.7rem
+        margin-bottom: 12px
+
+
+input.choose-image-file
+    color: transparent
+    background: transparent
+    line-height: 1rem
+
+.issuance-error
+    font-weight: bold
+    font-size: 1rem
+    text-align: center
+    padding-top: 24px
+    padding-bottom: 24px
+
+#IssuanceContent
+    div.input
+        font-size: 13px
+        color: #4a4a4a
+        .none
+            color: #999
+
+    .text-warning-dimmed
+        color: #d2a8a7
+

@@ -439,20 +439,18 @@ angular.module('copayApp.services')
         if (err) return cb(err);
         //set a random color for the wallet:
         var colorList = [
-                '#DD4B39',
-                '#F48E5A',
-                '#FAA77F',
-                '#F4D15A',
-                '#9EDD72',
-                '#29BB9C',
-                '#019477',
-                '#77DADA',
-                '#4A90E2',
-                '#484ED3',
-                '#9B59B6',
-                '#E856EF',
-                '#E05273',
-                '#7A8C9E',
+                '#C24100',
+                '#18602B',
+                '#6F4284',
+                '#DF7C00',
+                '#5DB54A',
+                '#13C4D1',
+                '#754C24',
+                '#9DB6CE',
+                '#FF80B4',
+                '#EDC600',
+                '#4170A0',
+                '#4B4A4B',
               ];
         var config = configService.getSync();
         config.colorFor[walletClient.credentials.walletId] = colorList[Math.floor(Math.random()*colorList.length)];
