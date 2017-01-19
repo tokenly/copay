@@ -342,7 +342,8 @@ angular.module('copayApp.directives')
         negative: "="
       },
       controller: function($scope) {
-        $scope.logo_url = $scope.negative ? 'img/tokenly-logo-negative.svg' : 'img/tokenly-logo-dark.svg';
+        // $scope.logo_url = $scope.negative ? 'img/tokenly-logo-negative.svg' : 'img/tokenly-logo-dark.svg';
+        $scope.logo_url = 'img/tokenly-icon_grey.svg';
       },
       replace: true,
       template: '<img class="logo" ng-src="{{ logo_url }}" alt="Copay">'
