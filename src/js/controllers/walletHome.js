@@ -842,7 +842,10 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
         if (dust_size < defaultDust) {
             dust_size = defaultDust;
         }
-        $scope._dust = dust_size;
+        var satToUnit = 1 / this.unitToSatoshi;
+        dust_size = (dust_size / satToUnit);
+        dust_size = parseFloat((dust_size * satToUnit).toFixed(self.unitDecimals));              
+        $scope._dust = dust_size; 
     }
   };
 
@@ -1015,7 +1018,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       extraParams.push('asset');
     }    
     if (use_dust) {
-        extraParams.push('dust');
+      extraParams.push('dust');
     }
 
     // URI extensions for Payment Protocol with non-backwards-compatible request
@@ -1042,7 +1045,7 @@ angular.module('copayApp.controllers').controller('walletHomeController', functi
       var addr = parsed.address ? parsed.address.toString() : '';
       var message = parsed.message;
       var asset = parsed.extras.asset || 'BTC';
-      var dust_size = CP_DUST_SIZE;
+      var dust_size = this.getDefaultDustValue();
 
       if (asset == 'BTC') {
           var amount = parsed.amount ?
