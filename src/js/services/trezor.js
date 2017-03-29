@@ -111,6 +111,23 @@ angular.module('copayApp.services')
       });
 
 
+      // rebuild a counterparty transaction
+      if (txp.isCounterparty) {
+        // dust output
+        tmpOutputs = [];
+        tmpOutputs.push({
+          toAddress: txp.toAddress,
+          amount: txp.outputs[0].amount,
+          script_type: toScriptType,
+        })
+
+        // add OP_RETURN
+        tmpOutputs.push({
+          amount: 0,
+          script_type: 'PAYTOOPRETURN', // don't know if this is text name is supported by trezor connect
+          op_return_data: txp.outputs[1].script, // don't know the format (hex? with script data?) or if this is the correct name
+        });
+      }
 
       if (txp.addressType == 'P2PKH') {
 
@@ -211,7 +228,8 @@ angular.module('copayApp.services')
       }
 
       // Shuffle outputs for improved privacy
-      if (tmpOutputs.length > 1) {
+      //   never shuffle counterparty transactions
+      if (tmpOutputs.length > 1 && !txp.isCounterparty) {
         outputs = new Array(tmpOutputs.length);
         lodash.each(txp.outputOrder, function(order) {
           outputs[order] = tmpOutputs.shift();
