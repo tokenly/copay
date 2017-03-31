@@ -79,7 +79,7 @@ angular.module('copayApp.services')
       if (txp.type && txp.type != 'simple') {
         return callback('Only TXPs type SIMPLE are supported in TREZOR');
       } else if (txp.outputs) {
-        if (txp.outputs.length > 1)
+        if (txp.outputs.length > 1 && !txp.customData.isCounterparty)
           return callback('Only single output TXPs are supported in TREZOR');
       } else {
           return callback('Unknown TXP at TREZOR');
@@ -112,22 +112,25 @@ angular.module('copayApp.services')
 
 
       // rebuild a counterparty transaction
-      if (txp.isCounterparty) {
+      if (txp.customData && txp.customData.isCounterparty) {
         // dust output
         tmpOutputs = [];
         tmpOutputs.push({
-          toAddress: txp.toAddress,
+          address: txp.toAddress,
           amount: txp.outputs[0].amount,
           script_type: toScriptType,
         })
-
+        
         // add OP_RETURN
         tmpOutputs.push({
           amount: 0,
           script_type: 'PAYTOOPRETURN', // don't know if this is text name is supported by trezor connect
-          op_return_data: txp.outputs[1].script, // don't know the format (hex? with script data?) or if this is the correct name
+          op_return_data: txp.outputs[1].script.substring(4),
         });
+        
       }
+      
+      $log.debug('TREZOR TRANSACTION....', tmpOutputs);
 
       if (txp.addressType == 'P2PKH') {
 
@@ -229,7 +232,7 @@ angular.module('copayApp.services')
 
       // Shuffle outputs for improved privacy
       //   never shuffle counterparty transactions
-      if (tmpOutputs.length > 1 && !txp.isCounterparty) {
+      if (tmpOutputs.length > 1 && !txp.customData.isCounterparty) {
         outputs = new Array(tmpOutputs.length);
         lodash.each(txp.outputOrder, function(order) {
           outputs[order] = tmpOutputs.shift();
