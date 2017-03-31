@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "bitcore-counterparty-wallet-client": "https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-    "bitcore-wallet-client": "https://github.com/tokenly/bitcore-wallet-client.git#1aae522",
+    "bitcore-wallet-client": "https://github.com/tokenly/bitcore-wallet-client.git#ab02abb5a94254c5411824f160917bcc2e6fb609",
     "counterparty-utils": "https://github.com/tokenly/counterparty-utils.git#69f6661",
     "coveralls": "^2.11.9",
     "express": "^4.11.2",
