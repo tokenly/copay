@@ -232,7 +232,7 @@ angular.module('copayApp.services')
 
       // Shuffle outputs for improved privacy
       //   never shuffle counterparty transactions
-      if (tmpOutputs.length > 1 && !txp.customData.isCounterparty) {
+      if (tmpOutputs.length > 1 && (txp.customData != null && !txp.customData.isCounterparty)) {
         outputs = new Array(tmpOutputs.length);
         lodash.each(txp.outputOrder, function(order) {
           outputs[order] = tmpOutputs.shift();
