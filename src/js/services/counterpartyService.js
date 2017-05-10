@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').factory('counterpartyService', function(counterpartyUtils, bvamService, configService, lodash, $timeout) {
+angular.module('copayApp.services').factory('counterpartyService', function(counterpartyUtils, bvamService, configService, lodash, $timeout, $q) {
   var root = {};
 
   var CACHED_CONFIRMATIONS_LENGTH = 6;
@@ -130,21 +130,43 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       var txObject = txHistory[i];
       if (isRecentOrUnvalidatedCounterpartyTransaction(txObject)) {
         txIdsForLookup.push(txObject.txid)
+      } else {
+        // console.log('=CPTY= treating transaction '+txObject.txid+' with '+(txObject.confirmations)+' confirmations as confirmed');
       }
     }
 
-    // lookup all txids
-    console.log('=CPTY= applyCounterpartyDataToTxHistory address='+address+' txHistory', txHistory, 'txIdsForLookup:', txIdsForLookup);
-    counterpartyClient.getTransactions(address, txIdsForLookup, function(err, cpTransactions) {
-      if (err) return cb(err)
-      console.log('=CPTY= applyCounterpartyDataToTxHistory cpTransactions:', cpTransactions);
-      var cpTxHistory = applyCounterpartyTransactionsToTXHistory(cpTransactions, txHistory, address)
-      cb(null, cpTxHistory);
-    })
+    // lookup all txids (50 at a time, consecutively)
+    // console.log('=CPTY= applyCounterpartyDataToTxHistory address='+address+' txHistory', txHistory, 'txIdsForLookup:', txIdsForLookup);
+    console.log('=CPTY= applyCounterpartyDataToTxHistory address='+address+' txIdsForLookup.length:', txIdsForLookup.length);
+    var cpTransactionsArray = []
+    var txIdsForLookupChunkOffset = 0
+    var txIdsForLookupChunks = lodash.chunk(txIdsForLookup, 50)
+    var resolveNextChunk = function() {
+      var txIdsForLookupChunk = txIdsForLookupChunks[txIdsForLookupChunkOffset];
+      // console.log('=CPTY= begin resolveNextChunk '+txIdsForLookupChunkOffset+' begin getTransactions');
+      counterpartyClient.getTransactions(address, txIdsForLookupChunk, function(err, cpTransactions) {
+        if (err) {
+          // console.log('=CPTY= end resolveNextChunk '+txIdsForLookupChunkOffset+' ERROR=', err);
+          return cb(err)
+        } else {
+          // console.log('=CPTY= end resolveNextChunk '+txIdsForLookupChunkOffset+' end getTransactions cpTransactions=', cpTransactions);
+          cpTransactionsArray.push(cpTransactions)
 
+          ++txIdsForLookupChunkOffset;
+          if (txIdsForLookupChunkOffset >= txIdsForLookupChunks.length) {
+            // done
+            // console.log('=CPTY= applyCounterpartyDataToTxHistory cpTransactionsArray:', cpTransactionsArray);
+            // console.log('=CPTY= applyCounterpartyDataToTxHistory allCPTransactions:', lodash.flatten(cpTransactionsArray));
+            var cpTxHistory = applyCounterpartyTransactionsToTXHistory(lodash.flatten(cpTransactionsArray), txHistory, address)
+            cb(null, cpTxHistory);
+          } else {
+            resolveNextChunk()
+          }
+        }
+      })
+    }
+    resolveNextChunk();
   }
-
-
 
   root.isTokenSendProposal = function(txp) {
     if (txp.outputs != null && txp.outputs[0] != null && txp.outputs[0].token != null && txp.outputs[0].token != 'BTC') {

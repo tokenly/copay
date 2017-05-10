@@ -768,6 +768,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
           skip = skip + requestLimit;
           console.log('=TX= newTxs:', newTxs);
 
+          console.log('=TX= Syncing TXs. Got:' + newTxs.length + ' Skip:' + skip, ' EndingTxid:', endingTxid, ' Continue:', shouldContinue);
           $log.debug('Syncing TXs. Got:' + newTxs.length + ' Skip:' + skip, ' EndingTxid:', endingTxid, ' Continue:', shouldContinue);
 
           if (!shouldContinue) {
@@ -830,8 +831,13 @@ angular.module('copayApp.controllers').controller('indexController', function($r
         }
 
         updateNotes(function() {
+          console.log('=TX= BEGIN applyCounterpartyData newHistory: ',newHistory);
           self.applyCounterpartyData(newHistory, function(err, newHistory) {
-            if (err) return cb(err);
+            console.log('=TX= END applyCounterpartyData newHistory', newHistory);
+            if (err) {
+              console.log('=TX= applyCounterpartyData ERROR', err);
+              return cb(err);
+            }
 
             var historyToSave = JSON.stringify(newHistory);
 
@@ -849,7 +855,7 @@ angular.module('copayApp.controllers').controller('indexController', function($r
             }
 
             return storageService.setTxHistory(historyToSave, walletId, function() {
-              $log.debug('Tx History saved.');
+              $log.debug('=TX= Tx History saved.', historyToSave);
 
               return cb();
             });
@@ -1941,12 +1947,15 @@ angular.module('copayApp.controllers').controller('indexController', function($r
   });
 
   self.applyCounterpartyData = function(txHistory, cb) {
+    console.log('=TX= applyCounterpartyData');
     if (!counterpartyService.isEnabled()) {
       return cb(null, txHistory);
     }
 
     // add tokens
+    console.log('=TX= calling getAddress', profileService.focusedClient.credentials.walletId);
     addressService.getAddress(profileService.focusedClient.credentials.walletId, false, function(err, address) {
+      console.log('=TX= getAddress', address, err);
       if (err) return cb(err);
 
       counterpartyService.applyCounterpartyDataToTxHistory(profileService.focusedCounterpartyClient, address, txHistory, function(err, txHistoryWithCPData) {
