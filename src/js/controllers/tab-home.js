@@ -175,18 +175,6 @@ angular.module('copayApp.controllers').controller('tabHomeController',
       }
     };
 
-    $scope.openWallet = function(wallet) {
-      if (!wallet.isComplete()) {
-        return $state.go('tabs.copayers', {
-          walletId: wallet.credentials.walletId
-        });
-      }
-
-      $state.go('tabs.wallet', {
-        walletId: wallet.credentials.walletId
-      });
-    };
-
     var updateTxps = function() {
       profileService.getTxps({
         limit: 3

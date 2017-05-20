@@ -1,4 +1,6 @@
-<ion-view>
+<ion-view ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content> 
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>{{'Delete Wallet' | translate}}</ion-nav-title>
     <ion-nav-back-button>
@@ -22,4 +24,5 @@
       </button>
     </div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

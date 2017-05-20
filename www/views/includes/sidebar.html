@@ -1,0 +1,50 @@
+<ion-side-menu side="left" id="left_bar" expose-aside-when="large">
+    
+<header>
+    <div class="logo_wrapper">
+        <!-- ngIf: !sidebar.isWindowsPhoneApp --><img class="logo" ng-src="img/app/tokenly-icon_grey.svg" alt="Tokenly Copay" ng-if="!sidebar.isWindowsPhoneApp" title="Token Pockets" src="img/app/tokenly-icon_grey.svg"><!-- end ngIf: !sidebar.isWindowsPhoneApp -->
+    </div>
+    <div class="header_content">
+        <span ng-controller="versionController as v">
+            <div class="app_name">Token Pockets</div>
+            <div class="app_subname ng-binding">Powered by Copay v{{ v.version }}</div> 
+        </span>
+    </div>
+</header>
+
+<div id="sidebar">
+    <ul class="sidebar_menu">
+        <li class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet">
+          <a href="#/tabs/home/">
+              <i class="icon big-icon-svg">
+                <img src="img/tab-icons/ico-home.svg" class="bg wallet" />
+              </i>
+              <span>Home</span>
+              <i class="icon bp-arrow-right"></i>
+          </a>
+        </li>
+        <li ng-repeat="wallet in wallets track by $index"
+           class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet"
+           ng-click="openWallet(wallet)">
+          <i class="icon big-icon-svg">
+            <img src="img/app/tokenly-wallet_icon.svg" ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}" class="bg wallet"/>
+          </i>
+          <span>
+            {{wallet.name || wallet.id}}
+          </span>
+          <i class="icon bp-arrow-right"></i>
+        </li>
+        <li class="divider"></li>
+        <li class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet">
+          <a href="#/tabs/settings">
+              <i class="icon big-icon-svg">
+                <img src="img/tab-icons/ico-settings.svg" class="bg wallet" />
+              </i>
+              <span>Global Settings</span>
+              <i class="icon bp-arrow-right"></i>
+          </a>
+        </li>                
+    </ul>
+</div>
+
+</ion-side-menu>

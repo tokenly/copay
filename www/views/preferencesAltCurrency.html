@@ -1,4 +1,6 @@
-<ion-view class="settings">
+<ion-view class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>   
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>
       {{'Alternative Currency'|translate}}
@@ -30,4 +32,5 @@
      distance="50%">
    </ion-infinite-scroll>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

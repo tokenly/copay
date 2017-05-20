@@ -1,6 +1,11 @@
-<ion-view id="tab-receive">
+<ion-view id="tab-receive" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>
+  <ion-side-menu-content>  
   <ion-nav-bar class="bar-royal">
-    <ion-nav-title>{{'Receive' | translate}}</ion-nav-title>
+    <ion-nav-title>
+        <button menu-toggle="left" id="menu_pull" class="button button-icon icon ion-navicon" ng-show="!!mobileView"></button>
+        {{'Receive' | translate}}
+    </ion-nav-title>
   </ion-nav-bar>
   <ion-content scroll="false">
     <article class="list card padding text-center" ng-if="!wallets[0]">
@@ -95,4 +100,5 @@
       <wallets id="wallet-slider" wallets="wallets" options="sliderOptions"></wallets>
     </article>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

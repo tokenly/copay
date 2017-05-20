@@ -11,7 +11,7 @@
     <ion-slide-page>
       <ion-content id="onboard-tour-secure" scroll="false">
         <div class="onboarding-topic" translate>Bitcoin is secure,<br/>digital money.</div>
-        <div class="onboarding-description" translate>You can spend bitcoin at millions of websites and stores worldwide.</div>
+        <div class="onboarding-description" translate>You can spend bitcoin at many websites and stores worldwide.</div>
         <div class="onboarding-illustration-secure"></div>
         <div class="cta-buttons">
           <div class="onboarding-tldr" translate>Just scan the code to pay.</div>
@@ -37,14 +37,30 @@
       </ion-content>
     </ion-slide-page>
     <ion-slide-page>
+      <ion-content id="onboard-tour-tokens" scroll="false">
+        <div class="onboarding-topic" translate>Tokens represent digital ownership</div>
+        <div class="onboarding-description" translate>Digital media licenses, collectable "trading cards", loyalty points, memberships and more.</div>
+        <div class="onboarding-description" translate>These live side by side with your bitcoin and can be spent &amp; traded in a similar way.</div>
+        <div>
+          (insert some fancy graphic here)
+        </div>
+        <div class="cta-buttons">
+          <div class="onboarding-tldr" translate>You may issue your own custom tokens within your wallet</div>
+          <button class="button button-standard button-secondary" ng-click="slideNext()" translate>
+            Very interesting
+          </button>
+        </div>
+      </ion-content>
+    </ion-slide-page>    
+    <ion-slide-page>
       <ion-content id="onboard-tour-control" scroll="false">
-        <div class="onboarding-topic" translate>You control your bitcoin.</div>
-        <div class="onboarding-description" translate>This app stores your bitcoin with cutting-edge security.</div>
+        <div class="onboarding-topic" translate>You control your bitcoin and tokens.</div>
+        <div class="onboarding-description" translate>This app stores your digital assets with cutting-edge security.</div>
         <div class="onboarding-illustration-control"></div>
         <div class="cta-buttons">
-          <div class="onboarding-tldr" translate>Not even BitPay can access it.</div>
+          <div class="onboarding-tldr" translate>Not even Tokenly can access it.</div>
           <button class="button button-standard button-primary" ng-click="createDefaultWallet()" translate>
-            Create bitcoin wallet
+            Create token wallet
           </button>
         </div>
       </ion-content>

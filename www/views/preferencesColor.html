@@ -1,4 +1,6 @@
-<ion-view id="settings-color" class="settings">
+<ion-view id="settings-color" class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content> 
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>
       {{'Wallet Color'|translate}}
@@ -11,4 +13,5 @@
       <span class="settings-color-block wallet-color-{{i}}"></span>
     </ion-radio>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

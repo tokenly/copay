@@ -1,4 +1,6 @@
-<ion-view id="advanced-settings" class="settings">
+<ion-view id="advanced-settings" class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>   
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>{{'Advanced Settings' | translate}}</ion-nav-title>
     <ion-nav-back-button>
@@ -30,4 +32,5 @@
       </ion-toggle>
     </div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

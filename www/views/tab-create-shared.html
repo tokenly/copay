@@ -1,4 +1,6 @@
-<ion-view class="settings">
+<ion-view class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content> 
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>{{'Create Shared Wallet' | translate}}</ion-nav-title>
     <ion-nav-back-button>
@@ -138,4 +140,5 @@
       </button>
     </form>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

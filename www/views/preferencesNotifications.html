@@ -1,4 +1,6 @@
-<ion-view id="tab-notifications" class="settings">
+<ion-view id="tab-notifications" class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>               
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>{{'Notifications' | translate}}</ion-nav-title>
     <ion-nav-back-button>
@@ -45,4 +47,5 @@
       </div>
     </div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

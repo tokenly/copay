@@ -1,16 +1,15 @@
-<ion-view id="walletDetails">
-
+<ion-view id="walletDetails" ion-side-menus  enable-menu-with-back-views="true" > 
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>        
   <ion-nav-bar ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}">
     <ion-nav-title>{{wallet.name}}</ion-nav-title>
-    <ion-nav-back-button>
-    </ion-nav-back-button>
+    <ion-nav-back-button></ion-nav-back-button>
     <ion-nav-buttons side="secondary">
       <button class="button back-button" ng-click="startSearch(); openSearchModal()" ng-if="txHistory.length > 4">
         <i class="icon ion-ios-search-strong tx-search"></i>
       </button>
     </ion-nav-buttons>
   </ion-nav-bar>
-
   <div class="bp-content" ng-class="{'status-bar': isCordova && isIOS}">
 
   <div class="amount-wrapper" ng-show="wallet && wallet.isComplete() && amountIsCollapsible" ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color':wallet.color}">
@@ -293,4 +292,5 @@
     </div>
   </ion-content>
 </div>
+</ion-side-menu-content>
 </ion-view>

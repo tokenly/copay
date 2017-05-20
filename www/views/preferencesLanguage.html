@@ -1,4 +1,6 @@
-<ion-view id="preferences-language" class="settings">
+<ion-view id="preferences-language" class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>              
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>
       {{'Language'|translate}}
@@ -26,4 +28,5 @@
       <a class="button button-standard button-primary" ng-click="openExternalLink()" translate>Contribute Translations</a>
     <div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

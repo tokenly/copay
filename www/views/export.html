@@ -1,4 +1,6 @@
-<ion-view id="export">
+<ion-view id="export" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content> 
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>{{'Export wallet' | translate}}</ion-nav-title>
     <ion-nav-back-button>
@@ -21,4 +23,5 @@
     <div ng-include="'views/tab-export-file.html'" ng-if="file.value"></div>
     <div ng-include="'views/tab-export-qrCode.html'" ng-if="!file.value"></div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

@@ -83,7 +83,7 @@ angular.module('copayApp.controllers').controller('tourController',
     }
 
     $scope.slideNext = function() {
-      if ($scope.data.index != 2) $scope.slider.slideNext();
+      if ($scope.data.index != 3) $scope.slider.slideNext();
       else $state.go('onboarding.welcome');
     }
   });

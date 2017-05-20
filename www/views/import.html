@@ -1,4 +1,6 @@
-<ion-view id="import" class="settings">
+<ion-view id="import" class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content> 
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>{{'Import Wallet' | translate}}</ion-nav-title>
     <ion-nav-back-button>
@@ -25,4 +27,5 @@
     <div ng-include="'views/tab-import-file.html'" ng-if="file"></div>
     <div ng-include="'views/tab-import-hardware.html'" ng-if="hardware"></div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

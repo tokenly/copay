@@ -1,4 +1,6 @@
-<ion-view id="settings-fee" class="settings">
+<ion-view id="settings-fee" class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>   
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>
       {{'Bitcoin Network Fee Policy'|translate}}
@@ -29,4 +31,5 @@
       </ion-radio>
     </div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>

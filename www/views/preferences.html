@@ -1,6 +1,9 @@
-<ion-view class="settings">
+<ion-view class="settings" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>                
   <ion-nav-bar class="bar-royal">
     <ion-nav-title>
+      <button menu-toggle="left" id="menu_pull" class="button button-icon icon ion-navicon" ng-show="!!tabHomeController.mobileView"></button>
       {{'Wallet Settings'|translate}}
     </ion-nav-title>
     <ion-nav-back-button>
@@ -73,4 +76,5 @@
       </a>
     </div>
   </ion-content>
+  </ion-side-menu-content>
 </ion-view>
