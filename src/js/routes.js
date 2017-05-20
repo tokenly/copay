@@ -439,6 +439,25 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+      .state('tabs.lockSetup', {
+        url: '/lockSetup',
+        views: {
+          'tab-settings@tabs': {
+            controller: 'lockSetupController',
+            templateUrl: 'views/lockSetup.html',
+          }
+        }
+      })
+      .state('tabs.pin', {
+        url: '/pin/:action',
+        views: {
+          'tab-settings@tabs': {
+            controller: 'pinController',
+            templateUrl: 'views/pin.html',
+            cache: false
+          }
+        }
+      })
 
       /*
        *
@@ -536,6 +555,15 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
+      .state('tabs.preferences.preferencesExternal', {
+        url: '/preferencesExternal',
+        views: {
+          'tab-settings@tabs': {
+            controller: 'preferencesExternalController',
+            templateUrl: 'views/preferencesExternal.html'
+          }
+        }
+      })
       .state('tabs.preferences.delete', {
         url: '/delete',
         views: {
@@ -603,19 +631,19 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
        *
        */
 
-      .state('tabs.receive.addresses', {
+      .state('tabs.settings.addresses', {
         url: '/addresses/:walletId/:toAddress',
         views: {
-          'tab-receive@tabs': {
+          'tab-settings@tabs': {
             controller: 'addressesController',
             templateUrl: 'views/addresses.html'
           }
         }
       })
-      .state('tabs.receive.allAddresses', {
+      .state('tabs.settings.allAddresses', {
         url: '/allAddresses/:walletId',
         views: {
-          'tab-receive@tabs': {
+          'tab-settings@tabs': {
             controller: 'addressesController',
             templateUrl: 'views/allAddresses.html'
           }
@@ -628,8 +656,17 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
        *
        */
 
-      .state('tabs.receive.amount', {
-        url: '/amount/:customAmount/:toAddress',
+      .state('tabs.paymentRequest', {
+        url: '/payment-request',
+        abstract: true,
+        params: {
+          id: null,
+          nextStep: 'tabs.paymentRequest.confirm'
+        }
+      })
+
+      .state('tabs.paymentRequest.amount', {
+        url: '/amount',
         views: {
           'tab-receive@tabs': {
             controller: 'amountController',
@@ -637,8 +674,8 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         }
       })
-      .state('tabs.receive.customAmount', {
-        url: '/customAmount/:toAmount/:toAddress',
+      .state('tabs.paymentRequest.confirm', {
+        url: '/confirm/:amount/:currency',
         views: {
           'tab-receive@tabs': {
             controller: 'customAmountController',
@@ -722,15 +759,6 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           'onboarding': {
             templateUrl: 'views/onboarding/collectEmail.html',
             controller: 'collectEmailController'
-          }
-        }
-      })
-      .state('onboarding.notifications', {
-        url: '/notifications/:walletId',
-        views: {
-          'onboarding': {
-            templateUrl: 'views/onboarding/notifications.html',
-            controller: 'notificationsController'
           }
         }
       })
@@ -1061,7 +1089,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         params: {
           id: null,
           currency: 'USD',
-          forceCurrency: true
+          useSendMax: null
         }
       })
       .state('tabs.bitpayCard.amount', {
@@ -1092,7 +1120,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         }
       });
   })
-  .run(function($rootScope, $state, $location, $log, $timeout, $ionicHistory, $ionicPlatform, $window, appConfigService, lodash, platformInfo, profileService, uxLanguage, gettextCatalog, openURLService, storageService, scannerService, /* plugins START HERE => */ coinbaseService, glideraService, amazonService, bitpayCardService) {
+  .run(function($rootScope, $state, $location, $log, $timeout, startupService, fingerprintService, $ionicHistory, $ionicPlatform, $window, appConfigService, lodash, platformInfo, profileService, uxLanguage, gettextCatalog, openURLService, storageService, scannerService, configService, emailService, /* plugins START HERE => */ coinbaseService, glideraService, amazonService, bitpayCardService, applicationService) {
 
     uxLanguage.init();
 
@@ -1124,17 +1152,18 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         var matchWelcome = $ionicHistory.currentStateName() == 'onboarding.welcome' ? true : false;
         var matchCollectEmail = $ionicHistory.currentStateName() == 'onboarding.collectEmail' ? true : false;
         var matchBackupRequest = $ionicHistory.currentStateName() == 'onboarding.backupRequest' ? true : false;
-        var matchNotifications = $ionicHistory.currentStateName() == 'onboarding.notifications' ? true : false;
         var backedUp = $ionicHistory.backView().stateName == 'onboarding.backup' ? true : false;
         var noBackView = $ionicHistory.backView().stateName == 'starting' ? true : false;
         var matchDisclaimer = $ionicHistory.currentStateName() == 'onboarding.disclaimer' && (backedUp || noBackView) ? true : false;
 
-        var fromOnboarding = matchCollectEmail | matchBackupRequest | matchNotifications | matchWelcome | matchDisclaimer;
+        var fromOnboarding = matchCollectEmail | matchBackupRequest | matchWelcome | matchDisclaimer;
 
         //views with disable backbutton
         var matchComplete = $ionicHistory.currentStateName() == 'tabs.rate.complete' ? true : false;
+        var matchLockedView = $ionicHistory.currentStateName() == 'lockedView' ? true : false;
+        var matchPin = $ionicHistory.currentStateName() == 'pin' ? true : false;
 
-        if ($ionicHistory.backView() && !fromTabs && !fromOnboarding && !matchComplete) {
+        if ($ionicHistory.backView() && !fromTabs && !fromOnboarding && !matchComplete && !matchPin && !matchLockedView) {
           $ionicHistory.goBack();
         } else
         if ($rootScope.backButtonPressedOnceToExit) {
@@ -1154,7 +1183,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       });
 
       $ionicPlatform.on('resume', function() {
-        // Nothing to do
+        applicationService.appLockModal('check');
       });
 
       $ionicPlatform.on('menubutton', function() {
@@ -1201,11 +1230,12 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
               // Clear history
               $ionicHistory.clearHistory();
             });
+            applicationService.appLockModal('check');
           });
-        }
-
-        // After everything have been loaded, initialize handler URL
+        };
+        // After everything have been loaded
         $timeout(function() {
+          emailService.init(); // Update email subscription if necessary
           openURLService.init();
         }, 1000);
       });

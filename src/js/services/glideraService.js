@@ -53,30 +53,6 @@ angular.module('copayApp.services').factory('glideraService', function($http, $l
     return 'USD';
   };
 
-  root.parseAmount = function(amount, currency) {
-    var config = configService.getSync().wallet.settings;
-    var satToBtc = 1 / 100000000;
-    var unitToSatoshi = config.unitToSatoshi;
-    var amountUnitStr;
-
-    // IF 'USD'
-    if (currency) {
-      amountUnitStr = $filter('formatFiatAmount')(amount) + ' ' + currency;
-    } else {
-      var amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
-      amountUnitStr = txFormatService.formatAmountStr(amountSat);
-      // convert unit to BTC
-      amount = (amountSat * satToBtc).toFixed(8);
-      currency = 'BTC';
-    }
-
-    return {
-      amount: amount, 
-      currency: currency, 
-      amountUnitStr: amountUnitStr
-    };
-  };
-
   root.getSignupUrl = function() {
     return credentials.HOST + '/register';
   }
@@ -151,7 +127,7 @@ angular.module('copayApp.services').factory('glideraService', function($http, $l
           });
         });
       });
-    }); 
+    });
   };
 
   var _get = function(endpoint, token) {
@@ -389,7 +365,7 @@ angular.module('copayApp.services').factory('glideraService', function($http, $l
 
       getPermissions(accessToken, credentials.NETWORK, true, function(err, permissions) {
         if (err) return cb(err);
-        
+
         storageService.getGlideraStatus(credentials.NETWORK, function(err, status) {
           if (lodash.isString(status)) status = JSON.parse(status);
           storageService.getGlideraTxs(credentials.NETWORK, function(err, txs) {
@@ -410,17 +386,21 @@ angular.module('copayApp.services').factory('glideraService', function($http, $l
   root.updateStatus = function(data) {
     storageService.getGlideraToken(credentials.NETWORK, function(err, accessToken) {
       if (err) return;
-      
+
       getPermissions(accessToken, credentials.NETWORK, false, function(err, permissions) {
         if (err) return;
         data.permissions = permissions;
 
         data.price = {};
-        root.buyPrice(accessToken, {qty: 1}, function(err, buy) {
+        root.buyPrice(accessToken, {
+          qty: 1
+        }, function(err, buy) {
           if (err) return;
           data.price['buy'] = buy.price;
         });
-        root.sellPrice(accessToken, {qty: 1}, function(err, sell) {
+        root.sellPrice(accessToken, {
+          qty: 1
+        }, function(err, sell) {
           if (err) return;
           data.price['sell'] = sell.price;
         });
@@ -429,12 +409,12 @@ angular.module('copayApp.services').factory('glideraService', function($http, $l
           if (err) return;
           data.status = status;
           storageService.setGlideraStatus(credentials.NETWORK, JSON.stringify(status), function() {});
-        }); 
-          
+        });
+
         root.getLimits(accessToken, function(err, limits) {
           data.limits = limits;
-        }); 
-            
+        });
+
         if (permissions.transaction_history) {
           root.getTransactions(accessToken, function(err, txs) {
             if (err) return;
@@ -455,8 +435,8 @@ angular.module('copayApp.services').factory('glideraService', function($http, $l
             data.personalInfo = info;
           });
         }
-      }); 
-    }); 
+      });
+    });
   };
 
   var register = function() {

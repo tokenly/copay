@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('buyGlideraController', function($scope, $log, $state, $timeout, $ionicHistory, lodash, glideraService, popupService, profileService, ongoingProcess, walletService, platformInfo) {
+angular.module('copayApp.controllers').controller('buyGlideraController', function($scope, $log, $state, $timeout, $ionicHistory, $ionicConfig, lodash, glideraService, popupService, profileService, ongoingProcess, walletService, platformInfo, txFormatService) {
 
   var amount;
   var currency;
@@ -35,9 +35,17 @@ angular.module('copayApp.controllers').controller('buyGlideraController', functi
     }
   };
 
+  $scope.$on("$ionicView.beforeLeave", function(event, data) {
+    $ionicConfig.views.swipeBackEnabled(true);
+  });
+
+  $scope.$on("$ionicView.enter", function(event, data) {
+    $ionicConfig.views.swipeBackEnabled(false);
+  });
+
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
-    $scope.isFiat = data.stateParams.currency ? true : false;
-    var parsedAmount = glideraService.parseAmount(
+    $scope.isFiat = data.stateParams.currency != 'bits' && data.stateParams.currency != 'BTC' ? true : false;
+    var parsedAmount = txFormatService.parseAmount(
       data.stateParams.amount, 
       data.stateParams.currency);
 
@@ -50,6 +58,11 @@ angular.module('copayApp.controllers').controller('buyGlideraController', functi
       onlyComplete: true,
       network: $scope.network
     });
+
+    if (lodash.isEmpty($scope.wallets)) {
+      showErrorAndBack('No wallets available');
+      return;
+    }
     $scope.wallet = $scope.wallets[0]; // Default first wallet
 
     ongoingProcess.set('connectingGlidera', true);

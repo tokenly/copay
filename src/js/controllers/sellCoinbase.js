@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('sellCoinbaseController', function($scope, $log, $state, $timeout, $ionicHistory, $ionicScrollDelegate, lodash, coinbaseService, popupService, profileService, ongoingProcess, walletService, appConfigService, configService) {
+angular.module('copayApp.controllers').controller('sellCoinbaseController', function($scope, $log, $state, $timeout, $ionicHistory, $ionicScrollDelegate, $ionicConfig, lodash, coinbaseService, popupService, profileService, ongoingProcess, walletService, appConfigService, configService, txFormatService) {
 
   var amount;
   var currency;
@@ -116,9 +116,17 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
     }
   };
 
+  $scope.$on("$ionicView.beforeLeave", function(event, data) {
+    $ionicConfig.views.swipeBackEnabled(true);
+  });
+
+  $scope.$on("$ionicView.enter", function(event, data) {
+    $ionicConfig.views.swipeBackEnabled(false);
+  });
+
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
-    $scope.isFiat = data.stateParams.currency ? true : false;
-    var parsedAmount = coinbaseService.parseAmount(
+    $scope.isFiat = data.stateParams.currency != 'bits' && data.stateParams.currency != 'BTC' ? true : false;
+    var parsedAmount = txFormatService.parseAmount(
       data.stateParams.amount, 
       data.stateParams.currency);
 
@@ -133,8 +141,15 @@ angular.module('copayApp.controllers').controller('sellCoinbaseController', func
     $scope.wallets = profileService.getWallets({
       m: 1, // Only 1-signature wallet
       onlyComplete: true,
-      network: $scope.network
+      network: $scope.network,
+      hasFunds: true,
+      minAmount: parsedAmount.amountSat
     });
+
+    if (lodash.isEmpty($scope.wallets)) {
+      showErrorAndBack('Insufficient funds');
+      return;
+    }
     $scope.wallet = $scope.wallets[0]; // Default first wallet
 
     ongoingProcess.set('connectingCoinbase', true);

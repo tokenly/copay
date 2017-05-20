@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('buyAmazonController', function($scope, $log, $state, $timeout, $filter, $ionicHistory, lodash, amazonService, popupService, profileService, ongoingProcess, configService, walletService, payproService, bwcError, externalLinkService, platformInfo) {
+angular.module('copayApp.controllers').controller('buyAmazonController', function($scope, $log, $state, $timeout, $filter, $ionicHistory, $ionicConfig, lodash, amazonService, popupService, profileService, ongoingProcess, configService, walletService, payproService, bwcError, externalLinkService, platformInfo) {
 
   var amount;
   var currency;
-  $scope.isCordova = platformInfo.isCordova;
+  $scope.isCordova = platformInfo.isCordova; 
 
   $scope.openExternalLink = function(url) {
     externalLinkService.open(url);
@@ -98,6 +98,14 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
     'leading': true
   });
 
+  $scope.$on("$ionicView.beforeLeave", function(event, data) {
+    $ionicConfig.views.swipeBackEnabled(true);
+  });
+
+  $scope.$on("$ionicView.enter", function(event, data) {
+    $ionicConfig.views.swipeBackEnabled(false);
+  });
+
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
     amount = data.stateParams.amount;
     currency = data.stateParams.currency;
@@ -112,8 +120,13 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
     $scope.network = amazonService.getNetwork();
     $scope.wallets = profileService.getWallets({
       onlyComplete: true,
-      network: $scope.network
+      network: $scope.network,
+      hasFunds: true
     });
+    if (lodash.isEmpty($scope.wallets)) {
+      showErrorAndBack('No wallets with funds');
+      return;
+    }
     $scope.wallet = $scope.wallets[0]; // Default first wallet
   });
 
@@ -140,7 +153,13 @@ angular.module('copayApp.controllers').controller('buyAmazonController', functio
       amazonService.createBitPayInvoice(dataSrc, function(err, dataInvoice) {
         if (err) {
           ongoingProcess.set('buyingGiftCard', false, statusChangeHandler);
-          showError('Error creating BitPay invoice', err);
+
+          if (err && err.message && err.message.match(/suspended/i)) {
+            showError('Service not available', 'Amazon Gift Card Service is not available at this moment. Please try back later.');
+          } else {
+            showError('Could not access Gift Card Service', err);
+          };
+
           return;
         }
 

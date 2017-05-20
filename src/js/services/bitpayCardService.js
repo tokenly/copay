@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').factory('bitpayCardService', function($log, $rootScope, $filter, lodash, storageService, bitauthService, platformInfo, moment, appIdentityService, bitpayService, nextStepsService, configService, txFormatService, appConfigService, rateService) {
+angular.module('copayApp.services').factory('bitpayCardService', function($log, $rootScope, $filter, lodash, storageService, bitauthService, platformInfo, moment, appIdentityService, bitpayService, nextStepsService, configService, txFormatService, appConfigService) {
   var root = {};
 
   var _setError = function(msg, e) {
@@ -37,33 +37,6 @@ angular.module('copayApp.services').factory('bitpayCardService', function($log, 
       }
     }
     return history;
-  };
-
-  root.parseAmount = function(amount, currency) {
-    var config = configService.getSync().wallet.settings;
-    var satToBtc = 1 / 100000000;
-    var unitToSatoshi = config.unitToSatoshi;
-    var amountUnitStr;
-    var amountSat;
-
-    // IF 'USD'
-    if (currency) {
-      amountUnitStr = $filter('formatFiatAmount')(amount) + ' ' + currency;
-      amountSat = rateService.fromFiat(amount, currency).toFixed(0);
-    } else {
-      amountSat = parseInt((amount * unitToSatoshi).toFixed(0));
-      amountUnitStr = txFormatService.formatAmountStr(amountSat);
-      // convert unit to BTC
-      amount = (amountSat * satToBtc).toFixed(8);
-      currency = 'BTC';
-    }
-
-    return {
-      amount: amount, 
-      currency: currency, 
-      amountSat: amountSat,
-      amountUnitStr: amountUnitStr
-    };
   };
 
   root.sync = function(apiContext, cb) {
@@ -301,6 +274,13 @@ angular.module('copayApp.services').factory('bitpayCardService', function($log, 
       category: 'bp002',
       description: ''
     },
+    '604': {
+      merchant: {
+        name: 'Foreign Transaction Fee',
+      },
+      category: 'bp002',
+      description: ''
+    },
     '606': {
       merchant: {
         name: 'International ATM Fee',
@@ -325,6 +305,13 @@ angular.module('copayApp.services').factory('bitpayCardService', function($log, 
     '37': {
       merchant: {
         name: 'ACH / Payroll Deposit',
+      },
+      category: 'bp002',
+      description: ''
+    },
+    '10036': {
+      merchant: {
+        name: 'Inactivity Fee (90 days)',
       },
       category: 'bp002',
       description: ''

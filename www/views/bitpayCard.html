@@ -23,7 +23,7 @@
 
           <a class="button button-primary button-small m5t size-14"
             style="padding: 0.5em 1em;"
-            ui-sref="tabs.bitpayCard.amount({nextStep: 'tabs.bitpayCard.topup'})">
+            ui-sref="tabs.bitpayCard.amount({nextStep: 'tabs.bitpayCard.topup'})" no-low-fee>
             <i class="icon ion-plus m10r" style="vertical-align: baseline;"></i>
             {{'Add Funds'|translate}}
           </a>
@@ -76,7 +76,7 @@
 
         <div class="col col-50">
           <div class="size-12 text-bold">
-            {{tx.merchant.name}}
+            {{tx.merchant.name || 'Unknown Merchant'}}
           </div>
           <div class="size-12 text-gray">
             <span ng-show="tx.merchant.city && tx.merchant.state">{{tx.merchant.city}}, {{tx.merchant.state}}</span>
