@@ -12,6 +12,7 @@ var modules = [
   'ngCsv',
   'angular-md5',
   'bwcModule',
+  'bcpwcModule',
   'bitauthModule',
   'copayApp.filters',
   'copayApp.services',

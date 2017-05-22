@@ -597,6 +597,65 @@ angular.module('copayApp.services')
     root.removeAmazonGiftCards = function(network, cb) {
       storage.remove('amazonGiftCards-' + network, cb);
     };
+    
+    
+    /** tokenly storage **/
+    
+    root.getBvamCache = function(cb) {
+      storage.get('bvam', function(err, loadedBvamString) {
+        if (err) return cb(err);
+        if (loadedBvamString == null) {
+          return cb(null, {});
+        }
+        var bvamCache;
+        try {
+          bvamCache = JSON.parse(loadedBvamString);
+        } catch (e) {
+          $log.error("failed to parse BVAM string: "+loadedBvamString);
+          bvamCache = {};
+        }
+        cb(null, bvamCache)
+      });
+    };
+
+    root.storeBvamCache = function(bvamCache, cb) {
+      $log.debug('=CACHE= Storing BVAM cache', bvamCache);
+      storage.set('bvam', JSON.stringify(bvamCache), cb);
+    };
+
+    root.removeBvamCache = function(cb) {
+      $log.debug('=CACHE= Removing BVAM cache');
+      storage.remove('bvam', cb);
+    };    
+    
+    root.getAddressLabels = function(cb) {
+      storage.get('addressLabels', function(err, addressLabelString) {
+        if (err) return cb(err);
+        if (addressLabelString == null) {
+          return cb(null, {});
+        }
+        var addressLabels;
+        try {
+          addressLabels = JSON.parse(addressLabelString);
+        } catch (e) {
+          $log.error("failed to parse addressLabels string: "+addressLabelString);
+          addressLabels = {};
+        }
+        cb(null, addressLabels)
+      });
+    };
+    
+    root.storeAddressLabels = function(addressLabels, cb) {
+      $log.debug('=CACHE= Storing address labels', addressLabels);
+      storage.set('addressLabels', JSON.stringify(addressLabels), cb);
+    };
+    
+    root.removeAddressLabels = function(cb) {
+      $log.debug('=CACHE= Removing address labels');
+      storage.remove('addressLabels', cb);
+    };    
+        
+    
 
     return root;
   });

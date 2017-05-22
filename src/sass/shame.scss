@@ -464,3 +464,215 @@ input[type=file] {
 .white-space-initial {
   white-space: initial;
 }
+
+
+/*** tokenly stuff ***/
+
+.ico-pockets{
+    background: url('../img/app/tokenly-icon_grey.svg') top left no-repeat;
+    opacity: 0.9;
+}
+
+.ico-pockets-open{
+    background: url('../img/app/tokenly-icon_grey.svg') top left no-repeat;
+    opacity: 1;
+}
+
+.pocket-tokens{
+    display: block;
+    margin-top: 20px;
+    clear: both;
+}
+
+.pocket-tokens.non-divisibles{
+
+}
+
+.pocket-tokens li{
+    list-style-type: none;
+    display: block;
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 20px;
+    text-align: center; 
+    width: 100px;
+    position: relative;   
+    height: 150px;
+}
+
+.pocket-tokens li:hover{
+    opacity: 0.8;
+}
+
+.pocket-tokens li > a{
+    display: block;
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+
+.pocket-token-emblem-divisible{
+    display: block;
+    box-sizing: border-box;
+    width: 75px;
+    height: 75px;
+    position: relative;
+    background: #07d041;
+    text-align: center;
+    padding: 10px;
+    padding-top: 26px;
+    border: solid 1px #ababab;
+    box-shadow: 2px 1px 2px #afafaf;
+    border-radius: 35px;
+    margin-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #fff;
+} 
+
+.pocket-token-emblem-non-divisible{
+    display: block;
+    box-sizing: border-box;
+    width: 75px;
+    height: 90px;
+    position: relative;
+    background: #07d041;
+    text-align: center;
+    padding: 10px;
+    padding-top: 26px;
+    border: solid 1px #ababab;
+    box-shadow: 2px 1px 2px #afafaf;
+    margin-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #fff;    
+} 
+
+.pocket-token-name{
+    font-size: 14px;
+}
+
+.pocket-token-quantity{
+    font-size: 12px;
+    line-height: 1;
+}
+
+.token-count{
+    color: #a5a5a5;
+    font-size: 14px;
+    font-style: italic;
+}
+
+#left_bar{
+    z-index: 1000!important;
+}
+
+.row .content{
+    padding: 15px 30px;
+}  
+
+.token-pocket{
+    
+}  
+
+.row .token-pocket:nth-child(odd){
+    background: #ececec;
+}
+
+.pull-right{
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.text-right{
+    text-align: right;
+}
+
+.ico-view{
+    background: url('../img/icon-view.svg') top left no-repeat;
+    width: 23px;
+    height: 13px;
+    display: inline-block;
+    margin-bottom: -3px;
+    margin-left: 2px;    
+}
+
+.pocket-fuel{
+    background: #ffc69e;
+    padding: 10px;
+}
+
+.pocket-title a:hover{
+    opacity: 0.6;
+}
+
+.pocket-title input[type="text"]{
+    width: 60%;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    font-weight: 700;
+}
+
+
+.btn{
+    display: inline-block;
+    padding: 7px 20px;
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.btn:hover{
+    opacity: 0.8;
+}
+
+.btn-success{
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+
+.inventory-actions{
+
+
+}
+
+.inventory-actions input[type="text"]{
+    margin-top: 10px;
+    clear: none;
+    width: 307px;
+    padding-left: 10px;
+}
+
+#refresh-inventory{
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.ico-sync{
+    display:  inline-block;
+    background:  url('../img/icon-sync.svg');
+    width:  19px;
+    height:  18px;
+    transition: 1s;
+}
+
+#refresh-inventory:hover{
+    opacity: 0.6;
+}
+
+.clear{
+    display: block;
+    position: relative;
+    height: 1px;
+    clear: both;
+}  

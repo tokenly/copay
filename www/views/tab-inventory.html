@@ -1,0 +1,132 @@
+<ion-view id="tab-receive" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>
+  <ion-side-menu-content>  
+  <ion-nav-bar class="bar-royal">
+    <ion-nav-title>
+        <button menu-toggle="left" id="menu_pull" class="button button-icon icon ion-navicon" ng-show="!!mobileView"></button>
+        {{'Token Inventory' | translate}}
+    </ion-nav-title>
+  </ion-nav-bar>
+  <ion-content scroll="true">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="content">
+                    <h2>Token Inventory</h2>
+                    <div class="pull-right text-right inventory-actions">                  
+                        <button class="btn btn-lg btn-success" ng-click="newAddress()">+ New Pocket</button>
+                        <button class="btn btn-lg btn-success" style="">+ Create Token</button>
+                        <input type="text" ng-model="inventory_search.tokenName" placeholder="Search tokens...">
+                    </div>                    
+                    <p>
+                        Below you can find a list of all tokens owned by bitcoin addresses in the currently selected wallet.
+                    </p>
+                    <p>
+                        <a href="http://tokenly.com/" target="_blank">Visit Tokenly.com</a> to learn more about tokens.
+                    </p>
+                    <p>
+                      <a ng-click="refreshBalances()" title="Refresh balances" id="refresh-inventory" style="cursor: pointer;"><i class="icon ico-sync" id="refresh-inventory-icon"></i> Refresh</a>
+                      
+                    </p>                    
+                    <div class="item token-pocket" ng-repeat="addr in address_list track by $index">
+                        <div class="pocket-fuel pull-right text-right">
+                            <strong>Bitcoin (BTC):</strong> {{ numberWithCommas(BTCBalances[addr.address] / 100000000) }}
+                            <div ng-repeat="xcp in inventoryBalances[addr.address]" ng-if="xcp.tokenName == 'XCP'">
+                                <strong>XCP:</strong> {{ numberWithCommas(xcp.quantityFloat) }}
+                            </div>
+                        </div>
+                        <div class="pocket-title">
+                            <input type="text" ng-change="saveAddressLabels()" ng-model="addressLabels[addr.address]" value="{{ 'Pocket #' + ($index+1) }}" />
+                            <strong>Address:</strong> <span copy-to-clipboard="addr.address">{{addr.address}}</span>
+                            <a href="https://www.blocktrail.com/BTC/address/{{addr.address}}" title="View on block explorer" target="_blank"><i class="icon ico-view"></i></a>
+                            <br>
+                            <span class="token-count">{{ numberWithCommas(inventoryBalances[addr.address].length) }} unique tokens</span>
+                        </div>
+                        <p ng-if="inventoryBalances[addr.address].length == 0">
+                            No tokens found.
+                        </p>
+                        <ul class="pocket-tokens non-divisibles">
+                            <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search " ng-if="!token.divisible">
+                                <a href="#" class=""></a>
+                                <div class="pocket-token-emblem-non-divisible" style="background: #{{ token.bg_color }};"
+                                >
+                                <!--style="
+                                background:  url('https://sogassets.com/static/img/cards/dropdown/1433.png');
+                                background-size:  cover;
+                                background-position: top center;
+                                " -->
+                                    {{ token.tokenName.substring(0, 4) }}
+                                </div>
+                                <div class="pocket-token-name">
+                                    <strong>{{ token.tokenName }}</strong>                                
+                                </div>
+                                <div class="pocket-token-quantity">
+                                    x {{ numberWithCommas(token.quantityFloat) }}
+                                </div>
+                            </li>
+                            <!--
+                            <li>
+                                <a href="#" class=""></a>
+                                <div class="pocket-token-emblem-non-divisible" style="
+                                background: url(https://sogassets.com/static/img/cards/dropdown/1400.png);
+                                background-size: cover;
+                                background-position: top center;
+                                ">
+
+                                </div>
+                                <div class="pocket-token-name">
+                                    <strong>SATOSHICARD</strong>                                
+                                </div>
+                                <div class="pocket-token-quantity">
+                                    x 1
+                                </div>
+                            </li>
+                            -->
+                        </ul>                  
+                        
+                        <ul class="pocket-tokens divisibles">
+                            <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search" ng-if="token.divisible && token.tokenName != 'XCP'">
+                                <a href="#"></a>
+                                <div class="pocket-token-emblem-divisible" style="background: #{{ token.bg_color }};"
+                                >
+                                <!--                                 style="
+                                    background:  url('http://letstalkbitcoin.com/resources/files/images/LTBCoin-no-web.jpg');
+                                    background-size: cover;
+                                    background-position: top center;
+                                " -->
+                                    {{ token.tokenName.substring(0, 4) }}
+                                </div>
+                                <div class="pocket-token-name">
+                                    <strong>{{ token.tokenName }}</strong>                                
+                                </div>
+                                <div class="pocket-token-quantity">
+                                    {{ numberWithCommas(token.quantityFloat) }}
+                                </div>
+                            </li>
+                            <!--
+                            <li>
+                                <a href="#"></a>
+                                <div class="pocket-token-emblem-divisible" style="
+                                    background:  url('http://foldingcoin.net/wp/wp-content/uploads/2016/01/FLDC.jpg');
+                                    background-size:  cover;
+                                    background-position: top center;
+                                ">
+                                   
+                                </div>
+                                <div class="pocket-token-name">
+                                    <strong>Folding Coin</strong>                                
+                                </div>
+                                <div class="pocket-token-quantity">
+                                    100,000
+                                </div>
+                            </li>-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </ion-content>
+  </ion-side-menu-content>
+</ion-view>

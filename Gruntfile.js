@@ -131,7 +131,8 @@ module.exports = function(grunt) {
           'bower_components/angular-mocks/angular-mocks.js',
           'bower_components/ngtouch/src/ngTouch.js',
           'angular-bitauth/angular-bitauth.js',
-          'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js'
+          'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js',
+          'angular-bitcore-counterparty-wallet-client/angular-bitcore-counterparty-wallet-client.js'          
         ],
         dest: 'www/lib/angular-components.js'
       },
@@ -248,7 +249,8 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'angular-bitcore-wallet-client/angular-bitcore-wallet-client.js': ['angular-bitcore-wallet-client/index.js'],
-          'angular-bitauth/angular-bitauth.js': ['angular-bitauth/index.js']
+          'angular-bitauth/angular-bitauth.js': ['angular-bitauth/index.js'],
+          'angular-bitcore-counterparty-wallet-client/angular-bitcore-counterparty-wallet-client.js': ['angular-bitcore-counterparty-wallet-client/index.js']          
         },
       }
     }

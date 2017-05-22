@@ -1,6 +1,6 @@
 'use strict';
 angular.module('copayApp.services')
-  .factory('profileService', function profileServiceFactory($rootScope, $timeout, $filter, $log, sjcl, lodash, storageService, bwcService, configService, gettextCatalog, bwcError, uxLanguage, platformInfo, txFormatService, $state) {
+  .factory('profileService', function profileServiceFactory($rootScope, $timeout, $filter, $log, sjcl, lodash, storageService, bwcService, bcpwcService, configService, gettextCatalog, bwcError, uxLanguage, platformInfo, txFormatService, $state, counterpartyService) {
 
 
     var isChromeApp = platformInfo.isChromeApp;
@@ -27,6 +27,10 @@ angular.module('copayApp.services')
 
 
     root.wallet = {}; // decorated version of client
+    
+    root.focusedCounterpartyClient = null;
+    root.counterpartyWalletClients = {};
+        
 
     root.updateWalletSettings = function(wallet) {
       var defaults = configService.getDefaults();
@@ -148,6 +152,22 @@ angular.module('copayApp.services')
       return true;
     };
 
+    // Adds a counterparty wallet client to profileService
+    root.bindCounterpartyWalletClient = function(client, counterpartyClient, opts) {
+      var opts = opts || {};
+      var walletId = client.credentials.walletId;
+
+      if ((root.counterpartyWalletClients[walletId] && root.counterpartyWalletClients[walletId].started) || opts.force) {
+        return false;
+      }
+
+      root.counterpartyWalletClients[walletId] = counterpartyClient;
+      root.counterpartyWalletClients[walletId].started = true;
+
+      return true;
+    };
+
+
     var throttledBwsEvent = lodash.throttle(function(n, wallet) {
       newBwsEvent(n, wallet);
     }, 10000);
@@ -226,12 +246,23 @@ angular.module('copayApp.services')
       var client = bwcService.getClient(JSON.stringify(credentials), {
         bwsurl: getBWSURL(credentials.walletId),
       });
+      
+      var getBCPWSURL = function(walletId) {
+        var config = configService.getSync();
+        var defaults = configService.getDefaults();
+        return ((config.bcpwsFor && config.bcpwsFor[walletId]) || defaults.counterpartyTokens.counterpartyService.url);
+      };
+
+      var counterpartyClient = bcpwcService.getClient({
+        bcpwsurl: getBCPWSURL(credentials.walletId)
+      });      
 
       var skipKeyValidation = shouldSkipValidation(credentials.walletId);
       if (!skipKeyValidation)
         root.runValidation(client, 500);
 
       $log.info('Binding wallet:' + credentials.walletId + ' Validating?:' + !skipKeyValidation);
+      root.bindCounterpartyWalletClient(client, counterpartyClient);      
       return cb(null, root.bindWalletClient(client));
     };
 

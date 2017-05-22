@@ -1118,7 +1118,18 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
             templateUrl: 'views/preferencesBitpayServices.html'
           }
         }
-      });
+      })
+      /** Tokenly routes **/
+      .state('tabs.inventory', {
+        url: '/inventory',
+        views: {
+          'tab-inventory': {
+            controller: 'tabInventoryController',
+            templateUrl: 'views/tab-inventory.html',
+          }
+        }
+      })      
+      ;
   })
   .run(function($rootScope, $state, $location, $log, $timeout, startupService, fingerprintService, $ionicHistory, $ionicPlatform, $window, appConfigService, lodash, platformInfo, profileService, uxLanguage, gettextCatalog, openURLService, storageService, scannerService, configService, emailService, /* plugins START HERE => */ coinbaseService, glideraService, amazonService, bitpayCardService, applicationService) {
 

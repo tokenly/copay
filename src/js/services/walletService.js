@@ -872,6 +872,15 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       return cb(err, resp);
     });
   };
+  
+  root.getAddressBalance = function(wallet, address, cb) {
+      wallet.getUtxos({
+        addresses: address.toString(),
+      }, function(err, utxos) {
+        if (err) return cb(err);
+        return cb(null, lodash.sum(utxos, 'satoshis'));
+      });
+  };  
 
   root.getAddress = function(wallet, forceNew, cb) {
     storageService.getLastAddress(wallet.id, function(err, addr) {

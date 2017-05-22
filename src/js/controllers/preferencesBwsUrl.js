@@ -14,18 +14,34 @@ angular.module('copayApp.controllers').controller('preferencesBwsUrlController',
     $scope.bwsurl = {
       value: (config.bwsFor && config.bwsFor[walletId]) || defaults.bws.url
     };
+    
+    $scope.bcpws = {
+      value: (config.bcpwsFor && config.bcpwsFor[walletId]) || defaults.counterpartyTokens.counterpartyService.url
+    };
+    
+    $scope.bvam = {
+      value: (config.bvamFor && config.bvamFor[walletId]) || defaults.counterpartyTokens.bvamService.url
+    };    
 
     $scope.resetDefaultUrl = function() {
       $scope.bwsurl.value = defaults.bws.url;
     };
 
+    $scope.resetDefaultXCPUrl = function() {
+      $scope.bcpws.value = defaults.counterpartyTokens.counterpartyService.url
+    };
+    
+    $scope.resetDefaultBVAMUrl = function() {
+      $scope.bvamurl.value = defaults.counterpartyTokens.bvamService.url
+    };    
+    
     $scope.save = function() {
 
       var bws;
       switch ($scope.bwsurl.value) {
         case 'prod':
         case 'production':
-          bws = 'https://bws.bitpay.com/bws/api'
+          bws = 'ttps://pockets-service.tokenly.com/bws/api'
           break;
         case 'sta':
         case 'staging':
@@ -40,11 +56,15 @@ angular.module('copayApp.controllers').controller('preferencesBwsUrlController',
         $log.info('Using BWS URL Alias to ' + bws);
         $scope.bwsurl.value = bws;
       }
-
+    
       var opts = {
-        bwsFor: {}
+        bwsFor: {},
+        bcpwsFor: {},
+        bvamFor: {}
       };
       opts.bwsFor[walletId] = $scope.bwsurl.value;
+      opts.bcpwsFor[walletId] = $scope.bcpws.value;
+      opts.bvamFor[walletId] = $scope.bvam.value;
 
       configService.set(opts, function(err) {
         if (err) $log.debug(err);
