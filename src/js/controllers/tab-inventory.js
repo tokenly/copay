@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabInventoryController', function($rootScope, $scope, $timeout, $log, $ionicModal, $state, $ionicHistory, $ionicPopover, storageService, platformInfo, walletService, profileService, configService, lodash, gettextCatalog, popupService, bwcError, counterpartyService, ongoingProcess, bvamService) {
+angular.module('copayApp.controllers').controller('tabInventoryController', function($rootScope, $scope, $location, $timeout, $log, $ionicModal, $state, $ionicHistory, $ionicPopover, storageService, platformInfo, walletService, profileService, configService, lodash, gettextCatalog, popupService, bwcError, counterpartyService, ongoingProcess, bvamService) {
 
   var listeners = [];
   $scope.isCordova = platformInfo.isCordova;
@@ -50,7 +50,10 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     walletService.getMainAddresses(selectedWallet, {}, function(err, addresses) {
        $scope.address_list = addresses.reverse();
         lodash.each(addresses, function(addr) {
-            //addr.address = '14mrvfR6VajW8CA3u5d2LrQjKtb2oWifdm';
+            addr.address = '3ECmqqsnyTwqECBfvvTaSsafUa1WmQjZ6c';
+            if($scope.addressLabels[addr.address]){
+                addr.label = $scope.addressLabels[addr.address];
+            }
             walletService.getAddressBalance(selectedWallet, addr.address, function(err, btc_amount){
                 $scope.BTCBalances[addr.address] = btc_amount;
             });
@@ -154,15 +157,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     });
   };  
 
-    $scope.numberWithCommas = function(x) {
-        if(typeof x == 'undefined'){
-            return null;
-        }
-        var parts = x.toString().split(".");
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return parts.join(".");
-    };
-    
+
     $scope.saveAddressLabels = function() {
         console.log('--SAVING ADDRESS LABELS--');
         //console.log($scope.addressLabels);
@@ -171,5 +166,6 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
         });
         
     };
+    
 
 });

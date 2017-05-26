@@ -1,0 +1,112 @@
+<ion-view id="token-details" ion-side-menus>
+  <ng-include src="'views/includes/sidebar.html'"></ng-include>   
+  <ion-side-menu-content>            
+  <ion-nav-bar class="bar-royal">
+    <ion-nav-title>
+      {{ currentBvam.metadata.name || currentInventoryToken.tokenName }} Details
+    </ion-nav-title>
+    <ion-nav-back-button>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+
+  <ion-content class="token-details-content">
+      <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="content">
+                    <div class="token-info-picture" >
+                        <img src="{{ currentBvam.largeImage }}" ng-if="currentBvam && currentBvam.largeImage" alt="" />
+                        <img src="/img/app/tokenly-logo-dark.svg" ng-if="!currentBvam || !currentBvam.largeImage" style="width: 175px; opacity: 0.5;" alt="" />
+                    </div>
+                    <div ng-if="currentBvam && currentBvam.metadata.name != currentInventoryToken.tokenName">
+                        <h2>
+                            {{ currentBvam.metadata.name }}
+                        </h2>
+                    </div>                    
+                    <div ng-if="!currentBvam || currentBvam.metadata.name == currentInventoryToken.tokenName">
+                        <h2>{{ currentInventoryToken.tokenName }}</h2>
+                    </div>
+                    <small ng-if="walletAddress">
+                        <strong>Viewing in pocket:</strong> 
+                        <span ng-if="walletAddress.label">
+                            {{ walletAddress.label }}<br>
+                            {{ walletAddress.address }}
+                        </span>
+                        <span ng-if="!walletAddress.label">{{ walletAddress.address }}</span>
+                    </small>   
+                    <div class="token-info-description" ng-if="currentBvam && currentBvam.metadata.description">
+                        <p>
+                            {{ currentBvam.metadata.description }}
+                        </p>
+                    </div>
+                    <div class="token-info-actions">
+                        <div ng-if="currentInventoryToken.quantityFloat">
+                            <button class="btn btn-lg btn-primary">Send</button>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <ul class="token-info-items">
+                        <li>
+                            <strong>Token ID:</strong> {{ currentInventoryToken.tokenName }}
+                        </li>                     
+                        <li ng-if="currentInventoryToken.quantityFloat" class="token-info-balance">
+                            <strong>My Balance:</strong> {{ numberWithCommas(currentInventoryToken.quantityFloat) }}
+                        </li>
+                        <li>
+                            <strong>Global Supply:</strong> {{ numberWithCommas(currentBvam.assetInfo.supplyFloat) }}
+                            <small ng-if="currentInventoryToken.quantityFloat">(you own {{ +(currentInventoryToken.quantityFloat / currentBvam.assetInfo.supplyFloat * 100).toFixed(4) }}%)</small>
+                        </li>
+                        <li>
+                            <strong>Divisible:</strong>
+                            <span ng-if="currentBvam.assetInfo.divisible">Yes</span>
+                            <span ng-if="!currentBvam.assetInfo.divisible">No</span>                            
+                        </li>
+                        <li>
+                            <strong>Supply Locked:</strong>
+                            <span ng-if="currentBvam.assetInfo.locked">Yes</span>
+                            <span ng-if="!currentBvam.assetInfo.locked">No</span>
+                        </li>
+                        <li ng-if="currentBvam && currentBvam.metadata.expiration_date">
+                            <strong>Expiration Date:</strong> {{ currentBvam.metadata.expiration_date }}
+                        </li>  
+                        <li ng-if="currentBvam && currentBvam.metadata.website">
+                            <strong>Website:</strong> <a href="{{ currentBvam.metadata.website }}" target="_blank">{{ currentBvam.metadata.website }}</a>
+                        </li>  
+                        <li ng-if="currentBvam && currentBvam.ownerSummary">
+                            <strong>Token Issuer:</strong> {{ currentBvam.ownerSummary }}
+                        </li>
+                        <li ng-if="currentBvam">
+                            <strong>Issuance Address:</strong> <a href="https://counterpartychain.io/address/{{ currentBvam.assetInfo.issuer }}" target="_blank">{{ currentBvam.assetInfo.issuer }}</a>
+                        </li>                                                       
+                    </ul>
+                    <hr>
+                    <h4>Other Token Details</h4>
+                    <p>
+                        <a href="https://counterpartychain.io/asset/{{ currentInventoryToken.tokenName }}" target="_blank">View on block explorer</a>
+                    </p>
+                    <ul class="token-info-items">
+                        <li ng-if="currentBvam && currentBvam.metadata.name != currentInventoryToken.tokenName">
+                            <strong>Token Name:</strong> {{ currentBvam.metadata.name }}
+                        </li>
+                        <li ng-if="currentBvam && currentBvam.metadata.short_name">
+                            <strong>Short Name:</strong> {{ currentBvam.metadata.short_name }}
+                        </li>                         
+                        <li ng-if="currentBvam && currentBvam.metadata.terms_and_conditions">
+                            <strong>Terms and Conditions:</strong> {{ currentBvam.metadata.terms_and_conditions }}
+                        </li>    
+                        <li ng-if="currentBvam && currentBvam.validated">
+                            <strong>BVAM ID:</strong> <a href="{{ currentBvam.uri }}" target="_blank">{{ currentBvam.assetInfo.description }}</a>
+                        </li>           
+                        <li ng-if="currentBvam">
+                            <strong>BVAM Validated:</strong>
+                            <span ng-if="currentBvam.validated">Yes</span>
+                            <span ng-if="!currentBvam.validated">No</span>
+                        </li>                                                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+      </div>
+  </ion-content>
+  </ion-side-menu-content>
+</ion-view>

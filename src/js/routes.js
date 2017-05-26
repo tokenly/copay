@@ -1128,6 +1128,20 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
             templateUrl: 'views/tab-inventory.html',
           }
         }
+      }) 
+      .state('tabs.inventory.token', {
+        url: '/inventory/:token',
+        views: {
+          'tab-inventory@tabs': {
+            controller: 'tokenDetailsController',
+            templateUrl: 'views/token-details.html',
+          }
+        },
+        params: {
+          'tokenData': null,
+          'bvamData': null,
+          'address': null
+        }
       })      
       ;
   })

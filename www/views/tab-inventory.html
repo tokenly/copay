@@ -38,7 +38,7 @@
                             </div>
                         </div>
                         <div class="pocket-title">
-                            <input type="text" ng-change="saveAddressLabels()" ng-model="addressLabels[addr.address] || 'Pocket #' + ($index+1)" />
+                            <input type="text" ng-change="saveAddressLabels()" ng-model="addressLabels[addr.address]" placeholder="{{ 'Pocket #' + ($index+1) }}" />
                             <strong>Address:</strong> <span copy-to-clipboard="addr.address">{{addr.address}}</span>
                             <a href="https://www.blocktrail.com/BTC/address/{{addr.address}}" title="View on block explorer" target="_blank"><i class="icon ico-view"></i></a>
                             <br>
@@ -49,12 +49,12 @@
                         </p>
                         <ul class="pocket-tokens non-divisibles">
                             <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search " ng-if="!token.divisible">
-                                <a href="#" class=""></a>
+                                <a ng-click="openTokenDetails(addr, token, bvamData[token.tokenName])"></a>
                                 <div class="pocket-token-quantity">
                                     x {{ numberWithCommas(token.quantityFloat) }}
                                 </div>
                                 <div class="pocket-token-emblem-non-divisible" ng-if="!bvamData[token.tokenName] || !bvamData[token.tokenName].smallImage"
-                                style="background: #{{ token.bg_color }};"
+                                style="background: #{{ token.bg_color }}; border-color: #{{ token.bg_color }};"
                                 >
                                     {{ token.tokenName.substring(0, 4) }}
                                 </div>
@@ -63,6 +63,7 @@
                                     background:  url('{{ bvamData[token.tokenName].smallImage }}');
                                     background-size: cover;
                                     background-position: top center;
+                                    border-color: #{{ token.bg_color }};
                                 "
                                 ></div>                                
                                 <div class="pocket-token-name">
@@ -73,12 +74,12 @@
                         
                         <ul class="pocket-tokens divisibles">
                             <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search" ng-if="token.divisible && token.tokenName != 'XCP'">
-                                <a href="#"></a>
+                                <a ng-click="openTokenDetails(addr, token, bvamData[token.tokenName])"></a>
                                 <div class="pocket-token-quantity">
                                     {{ numberWithCommas(token.quantityFloat) }}
                                 </div>
                                 <div class="pocket-token-emblem-divisible" ng-if="!bvamData[token.tokenName] || !bvamData[token.tokenName].smallImage"
-                                style="background: #{{ token.bg_color }};"
+                                style="background: #{{ token.bg_color }}; border-color: #{{ token.bg_color }};"
                                 >
                                     {{ token.tokenName.substring(0, 4) }}
                                 </div>
@@ -87,6 +88,7 @@
                                     background:  url('{{ bvamData[token.tokenName].smallImage }}');
                                     background-size: cover;
                                     background-position: top center;
+                                    border-color: #{{ token.bg_color }};
                                 "
                                 ></div>
                                 <div class="pocket-token-name">

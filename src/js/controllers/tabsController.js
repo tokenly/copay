@@ -75,5 +75,23 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
     }, 50
     );
   };  
+  
+    $scope.openTokenDetails = function(address, token, bvam) {
+        console.log('--OPENING TOKEN DETAILS ' + token.tokenName + '--');  
+        console.log(token);
+        console.log(bvam); 
+        $state.go('tabs.inventory.token',  {"token": token.tokenName, "tokenData": token, "bvamData": bvam, "address": address});
+        
+    };
+  
+    $scope.numberWithCommas = function(x) {
+        if(typeof x == 'undefined'){
+            return null;
+        }
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    };
+    
 
 });
