@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabInventoryController', function($rootScope, $scope, $timeout, $log, $ionicModal, $state, $ionicHistory, $ionicPopover, storageService, platformInfo, walletService, profileService, configService, lodash, gettextCatalog, popupService, bwcError, counterpartyService, ongoingProcess) {
+angular.module('copayApp.controllers').controller('tabInventoryController', function($rootScope, $scope, $timeout, $log, $ionicModal, $state, $ionicHistory, $ionicPopover, storageService, platformInfo, walletService, profileService, configService, lodash, gettextCatalog, popupService, bwcError, counterpartyService, ongoingProcess, bvamService) {
 
   var listeners = [];
   $scope.isCordova = platformInfo.isCordova;
@@ -8,6 +8,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
 
   $scope.inventoryBalances = [];
   $scope.BTCBalances = [];
+  $scope.bvamData = [];
   $scope.addressLabels = [];
   storageService.getAddressLabels(function(err, addressLabels){
     $scope.addressLabels = addressLabels;
@@ -49,7 +50,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     walletService.getMainAddresses(selectedWallet, {}, function(err, addresses) {
        $scope.address_list = addresses.reverse();
         lodash.each(addresses, function(addr) {
-            addr.address = '15fx1Gqe4KodZvyzN6VUSkEmhCssrM1yD7';
+            //addr.address = '14mrvfR6VajW8CA3u5d2LrQjKtb2oWifdm';
             walletService.getAddressBalance(selectedWallet, addr.address, function(err, btc_amount){
                 $scope.BTCBalances[addr.address] = btc_amount;
             });
@@ -99,15 +100,29 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
   $scope.loadAddressBalances = function(address)
   {
     counterpartyService.getBalances(profileService.counterpartyWalletClients[$scope.wallet.id], address, function(err, tokenBalances) { 
-        console.log(tokenBalances);
+        //console.log(tokenBalances);
         console.log('--LOADING COUNTERPARTY TOKEN BALANCES ' + address + '--');
         $scope.inventoryBalances[address] = Array();
+        var used_tokens = [];
         lodash.each(tokenBalances, function(token){
             if(token.quantitySat > 0){
                 token.bg_color = stringToColor(token.tokenName);
                 $scope.inventoryBalances[address].push(token);
             }
+            if($scope.bvamData[token.tokenName] == undefined){
+                used_tokens.push(token.tokenName);
+            }
         });
+        
+        if(used_tokens.length > 0){
+            bvamService.getBvamData(profileService.counterpartyWalletClients[$scope.wallet.id], used_tokens, function(err, bvam_data){
+               console.log('-- LOADING COUNTERPARTY BVAM DATA --');
+               lodash.each(bvam_data, function(bvam){
+                  $scope.bvamData[bvam.asset] = bvam; 
+               });
+               console.log($scope.bvamData);
+            });      
+        }
     });
       
   };

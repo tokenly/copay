@@ -30,13 +30,15 @@
                     </p>                    
                     <div class="item token-pocket" ng-repeat="addr in address_list track by $index">
                         <div class="pocket-fuel pull-right text-right">
-                            <strong>Bitcoin (BTC):</strong> {{ numberWithCommas(BTCBalances[addr.address] / 100000000) }}
+                            <strong>Bitcoin (BTC):</strong> 
+                                <span ng-if="BTCBalances[addr.address] != undefined">{{ numberWithCommas(BTCBalances[addr.address] / 100000000) }}</span>
+                                <span ng-if="BTCBalances[addr.address] == undefined">loading...</span>
                             <div ng-repeat="xcp in inventoryBalances[addr.address]" ng-if="xcp.tokenName == 'XCP'">
                                 <strong>XCP:</strong> {{ numberWithCommas(xcp.quantityFloat) }}
                             </div>
                         </div>
                         <div class="pocket-title">
-                            <input type="text" ng-change="saveAddressLabels()" ng-model="addressLabels[addr.address]" value="{{ 'Pocket #' + ($index+1) }}" />
+                            <input type="text" ng-change="saveAddressLabels()" ng-model="addressLabels[addr.address] || 'Pocket #' + ($index+1)" />
                             <strong>Address:</strong> <span copy-to-clipboard="addr.address">{{addr.address}}</span>
                             <a href="https://www.blocktrail.com/BTC/address/{{addr.address}}" title="View on block explorer" target="_blank"><i class="icon ico-view"></i></a>
                             <br>
@@ -48,20 +50,23 @@
                         <ul class="pocket-tokens non-divisibles">
                             <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search " ng-if="!token.divisible">
                                 <a href="#" class=""></a>
-                                <div class="pocket-token-emblem-non-divisible" style="background: #{{ token.bg_color }};"
-                                >
-                                <!--style="
-                                background:  url('https://sogassets.com/static/img/cards/dropdown/1433.png');
-                                background-size:  cover;
-                                background-position: top center;
-                                " -->
-                                    {{ token.tokenName.substring(0, 4) }}
-                                </div>
-                                <div class="pocket-token-name">
-                                    <strong>{{ token.tokenName }}</strong>                                
-                                </div>
                                 <div class="pocket-token-quantity">
                                     x {{ numberWithCommas(token.quantityFloat) }}
+                                </div>
+                                <div class="pocket-token-emblem-non-divisible" ng-if="!bvamData[token.tokenName] || !bvamData[token.tokenName].smallImage"
+                                style="background: #{{ token.bg_color }};"
+                                >
+                                    {{ token.tokenName.substring(0, 4) }}
+                                </div>
+                                <div class="pocket-token-emblem-non-divisible" ng-if="bvamData[token.tokenName] && bvamData[token.tokenName].smallImage"
+                                style="
+                                    background:  url('{{ bvamData[token.tokenName].smallImage }}');
+                                    background-size: cover;
+                                    background-position: top center;
+                                "
+                                ></div>                                
+                                <div class="pocket-token-name">
+                                    <strong>{{ bvamData[token.tokenName].metadata.name || token.tokenName }}</strong>                                
                                 </div>
                             </li>
                             <!--
@@ -87,20 +92,26 @@
                         <ul class="pocket-tokens divisibles">
                             <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search" ng-if="token.divisible && token.tokenName != 'XCP'">
                                 <a href="#"></a>
-                                <div class="pocket-token-emblem-divisible" style="background: #{{ token.bg_color }};"
-                                >
-                                <!--                                 style="
-                                    background:  url('http://letstalkbitcoin.com/resources/files/images/LTBCoin-no-web.jpg');
-                                    background-size: cover;
-                                    background-position: top center;
-                                " -->
-                                    {{ token.tokenName.substring(0, 4) }}
-                                </div>
-                                <div class="pocket-token-name">
-                                    <strong>{{ token.tokenName }}</strong>                                
-                                </div>
                                 <div class="pocket-token-quantity">
                                     {{ numberWithCommas(token.quantityFloat) }}
+                                </div>
+                                <div class="pocket-token-emblem-divisible" ng-if="!bvamData[token.tokenName] || !bvamData[token.tokenName].smallImage"
+                                style="background: #{{ token.bg_color }};"
+                                >
+                                    {{ token.tokenName.substring(0, 4) }}
+                                </div>
+                                <div class="pocket-token-emblem-divisible" ng-if="bvamData[token.tokenName] && bvamData[token.tokenName].smallImage"
+                                style="
+                                    background:  url('{{ bvamData[token.tokenName].smallImage }}');
+                                    background-size: cover;
+                                    background-position: top center;
+                                "
+                                ></div>
+                                <div class="pocket-token-name">
+                                    <strong>{{ bvamData[token.tokenName].metadata.name || token.tokenName }}</strong>    
+                                    <small ng-if="bvamData[token.tokenName] && bvamData[token.tokenName].metadata.name != token.tokenName">
+                                        ({{ token.tokenName }})
+                                    </small>
                                 </div>
                             </li>
                             <!--

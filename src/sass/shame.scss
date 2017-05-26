@@ -556,9 +556,16 @@ input[type=file] {
     font-size: 14px;
 }
 
+.pocket-token-name small{
+    color: #019477;
+    font-size: 10px;
+    display: block;
+}
+
 .pocket-token-quantity{
     font-size: 12px;
     line-height: 1;
+    margin-bottom: 5px;
 }
 
 .token-count{
