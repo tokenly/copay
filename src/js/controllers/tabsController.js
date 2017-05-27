@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabsController', function($rootScope, $window, $log, $scope, $state, $stateParams, $timeout, incomingData, lodash, popupService, gettextCatalog, profileService, $ionicHistory) {
+angular.module('copayApp.controllers').controller('tabsController', function($rootScope, $window, $log, $scope, $state, $stateParams, $timeout, incomingData, lodash, popupService, gettextCatalog, profileService, $ionicHistory, $ionicSideMenuDelegate) {
 
   $scope.onScan = function(data) {
     if (!incomingData.redir(data)) {
@@ -36,6 +36,9 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
 
   };  
     
+  $rootScope.closeSideMenu = function(){
+    $ionicSideMenuDelegate.toggleLeft(false);
+  };
 
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {

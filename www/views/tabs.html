@@ -1,30 +1,30 @@
 <ion-tabs class="tabs-icon-top tabs-color-active-positive ion-tabs-transparent {{$root.hideTabs}}">
 
-  <ion-tab title="{{'Home'|translate}}" icon-off="ico-home" icon-on="ico-home-selected" ui-sref="tabs.home">
+  <ion-tab title="{{'Home'|translate}}" icon-off="ico-home" icon-on="ico-home-selected" ui-sref="tabs.home"  on-select="closeSideMenu()">
     <ion-nav-view name="tab-home"></ion-nav-view>
   </ion-tab>
   
-  <ion-tab title="{{'Activity'|translate}}" icon-off="ion-social-bitcoin" icon-on="ion-social-bitcoin" ng-click="openWallet(wallet)" ui-sref="tabs.wallet">
+  <ion-tab title="{{'Activity'|translate}}" icon-off="ion-social-bitcoin" icon-on="ion-social-bitcoin" ng-click="openWallet(wallet)" ui-sref="tabs.wallet"  on-select="closeSideMenu()">
     <ion-nav-view name="tab-wallet"></ion-nav-view>
   </ion-tab>  
   
-  <ion-tab title="{{'Inventory'|translate}}" icon-off="ico-pockets" icon-on="ico-pockets-open" ui-sref="tabs.inventory">
+  <ion-tab title="{{'Inventory'|translate}}" icon-off="ico-pockets" icon-on="ico-pockets-open" ui-sref="tabs.inventory" on-select="closeSideMenu()">
     <ion-nav-view name="tab-inventory"></ion-nav-view>
   </ion-tab>  
 
-  <ion-tab title="{{'Receive'|translate}}" icon-off="ico-receive" icon-on="ico-receive-selected" ui-sref="tabs.receive">
+  <ion-tab title="{{'Receive'|translate}}" icon-off="ico-receive" icon-on="ico-receive-selected" ui-sref="tabs.receive" on-select="closeSideMenu()">
     <ion-nav-view name="tab-receive"></ion-nav-view>
   </ion-tab>
 
-  <ion-tab title="{{'Scan'|translate}}" icon-off="ico-scan" icon-on="ico-scan-selected" ui-sref="tabs.scan">
+  <ion-tab title="{{'Scan'|translate}}" icon-off="ico-scan" icon-on="ico-scan-selected" ui-sref="tabs.scan" on-select="closeSideMenu()">
     <ion-nav-view name="tab-scan"></ion-nav-view>
   </ion-tab>
 
-  <ion-tab title="{{'Send'|translate}}" icon-off="ico-send" icon-on="ico-send-selected" ui-sref="tabs.send">
+  <ion-tab title="{{'Send'|translate}}" icon-off="ico-send" icon-on="ico-send-selected" ui-sref="tabs.send" on-select="closeSideMenu()">
     <ion-nav-view name="tab-send"></ion-nav-view>
   </ion-tab>
 
-  <ion-tab title="{{'Settings'|translate}}" icon-off="ico-settings" icon-on="ico-settings-selected" ui-sref="tabs.settings">
+  <ion-tab title="{{'Settings'|translate}}" icon-off="ico-settings" icon-on="ico-settings-selected" ui-sref="tabs.settings" on-select="closeSideMenu()">
     <ion-nav-view name="tab-settings"></ion-nav-view>
   </ion-tab>
 </ion-tabs>

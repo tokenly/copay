@@ -7,7 +7,6 @@
             </button>
         </ion-nav-buttons>          
         <ion-nav-title>
-            <button menu-toggle="left" id="menu_pull" class="button button-icon icon ion-navicon" ng-show="!!mobileView"></button>
             <img class="tab-home__logo" src="img/app/tokenly-logo-negative.svg">
         </ion-nav-title>
       </ion-nav-bar>
@@ -31,7 +30,6 @@
           </div>
         </div>
 
-        <div class="ng-hide" ng-show="showRateCard.value" ng-include="'views/feedback/rateCard.html'"></div>
         <div class="list card homeTip" ng-if="homeTip">
           <div class="item item-icon-right item-heading">
             <a ng-click="hideHomeTip()"><i class="icon ion-ios-close-empty close-home-tip"></i></a>
@@ -42,10 +40,7 @@
             </i>
           </div>
           <div class="title" translate>
-            Your token wallet is ready!
-          </div>
-          <div class="subtitle" translate>
-            On this screen you can see all your wallets, accounts, and assets.
+            Your token enabled wallet is ready!
           </div>
         </div>
 
@@ -74,7 +69,7 @@
 
         <div class="list card">
           <div class="item item-icon-right item-heading">
-            <span translate>Wallets</span>
+            <span translate>My Wallets</span>
             <a ui-sref="tabs.add" ng-if="wallets[0]"><i class="icon ion-ios-plus-empty list-add-button"></i></a>
           </div>
           <div>
