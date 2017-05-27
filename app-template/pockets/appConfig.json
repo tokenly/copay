@@ -1,0 +1,33 @@
+{
+  "packageName": "pockets",
+  "packageDescription": "Token Enabled Bitcoin Wallet",
+  "packageNameId": "com.tokenly.pockets",
+  "userVisibleName": "Token Pockets",
+  "purposeLine": "Token Enabled Bitcoin Wallet",
+  "bundleName": "pockets",
+  "appUri": "pockets",
+  "name": "pockets",
+  "nameNoSpace": "pockets",
+  "nameCase": "Pockets",
+  "nameCaseNoSpace": "Pockets",
+  "gitHubRepoName": "pockets",
+  "gitHubRepoUrl": "git://github.com/tokenly/pockets.git",
+  "gitHubRepoBugs": "https://github.com/pockets/pockets/issues",
+  "disclaimerUrl": "https://tokenpockets.com/disclaimer",
+  "url": "https://tokenpockets.com",
+  "appDescription": "Token Enabled Bitcoin Wallet",
+  "winAppName": "PocketsWallet",
+  "wpPublisherId": "{31cdd08b-457c-413d-b440-f6665eec847d}",
+  "wpProductId": "{5381aa50-9069-11e4-84cc-293caf9cbdc8}",
+  "windowsAppId": "804636ee-b017-4cad-8719-e58ac97ffa5c",
+  "pushSenderId": "1036948132229",
+  "description": "A Secure Token Enabled Bitcoin Wallet",
+  "version": "3.2.1",
+  "androidVersion": "320000",
+  "_extraCSS": null,
+  "_enabledExtensions": {
+    "coinbase": true,
+    "glidera": true,
+    "amazon": false
+  }
+}

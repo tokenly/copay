@@ -526,7 +526,7 @@ angular.module('copayApp.services')
       var walletId = client.credentials.walletId
 
       if (!root.profile.addWallet(JSON.parse(client.export())))
-        return cb(gettextCatalog.getString('Wallet already in Copay'));
+        return cb(gettextCatalog.getString('Wallet already in Token Pockets'));
 
 
       var skipKeyValidation = shouldSkipValidation(walletId);
