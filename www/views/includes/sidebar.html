@@ -25,7 +25,7 @@
         </li>
         <li ng-repeat="wallet in wallets track by $index"
            class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet"
-           ng-click="openWallet(wallet)">
+           ng-click="openWallet(wallet)" menu-close>
           <i class="icon big-icon-svg">
             <img src="img/app/tokenly-wallet_icon.svg" ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}" class="bg wallet"/>
           </i>
@@ -35,14 +35,12 @@
           <i class="icon bp-arrow-right"></i>
         </li>
         <li class="divider"></li>
-        <li class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet">
-          <a href="#/tabs/settings">
+        <li class="item item-sub item-icon-left item-big-icon-left item-icon-right wallet" ui-sref="tabs.settings" menu-close>
               <i class="icon big-icon-svg">
                 <img src="img/tab-icons/ico-settings.svg" class="bg wallet" />
               </i>
               <span>Global Settings</span>
               <i class="icon bp-arrow-right"></i>
-          </a>
         </li>                
     </ul>
 </div>

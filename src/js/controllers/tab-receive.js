@@ -122,7 +122,7 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
   }
 
   $scope.onWalletSelect = function(wallet) {
-    $scope.wallet = wallet;
+    $rootScope.wallet = wallet;
     $scope.setAddress();
   };
 

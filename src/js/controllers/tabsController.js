@@ -76,7 +76,7 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
         disableAnimate: true
     });    
     
-    
+
     //if($state.current.name != 'tabs.wallet'){
         //$state.go('tabs.home');
     //}
@@ -92,7 +92,8 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
         var selectedWallet = checkSelectedWallet($rootScope.wallet, wallets);
         wallet = selectedWallet;
     }
-
+    
+    $rootScope.wallet = wallet;
     
     setTimeout(function(){
         $state.go('tabs.home');
