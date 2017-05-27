@@ -2,6 +2,10 @@
     <ng-include src="'views/includes/sidebar.html'"></ng-include>  
     <ion-side-menu-content>       
       <ion-nav-bar class="bar-royal">    
+        <ion-nav-buttons side="left">
+            <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+            </button>
+        </ion-nav-buttons>          
         <ion-nav-title>
             <button menu-toggle="left" id="menu_pull" class="button button-icon icon ion-navicon" ng-show="!!mobileView"></button>
             <img class="tab-home__logo" src="img/app/tokenly-logo-negative.svg">
