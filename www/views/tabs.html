@@ -4,6 +4,10 @@
     <ion-nav-view name="tab-home"></ion-nav-view>
   </ion-tab>
   
+  <ion-tab title="{{'Activity'|translate}}" icon-off="ion-social-bitcoin" icon-on="ion-social-bitcoin" ng-click="openWallet(wallet)" ui-sref="tabs.wallet">
+    <ion-nav-view name="tab-wallet"></ion-nav-view>
+  </ion-tab>  
+  
   <ion-tab title="{{'Inventory'|translate}}" icon-off="ico-pockets" icon-on="ico-pockets-open" ui-sref="tabs.inventory">
     <ion-nav-view name="tab-inventory"></ion-nav-view>
   </ion-tab>  

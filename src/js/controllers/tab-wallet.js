@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('walletDetailsController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog) {
+angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog) {
 
   var HISTORY_SHOW_LIMIT = 10;
   var currentTxHistoryPage = 0;
@@ -339,6 +339,7 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
     $scope.walletId = data.stateParams.walletId;
+    $scope.wallets = profileService.getWallets();
     $scope.wallet = profileService.getWallet($scope.walletId);
     if (!$scope.wallet) return;
     $scope.requiresMultipleSignatures = $scope.wallet.credentials.m > 1;
@@ -376,6 +377,18 @@ angular.module('copayApp.controllers').controller('walletDetailsController', fun
       x();
     });
   });
+  
+  
+  $scope.onWalletSelect = function(wallet) {
+    $scope.wallet = wallet;
+    $rootScope.wallet = wallet;
+  };
+
+  $scope.showWalletSelector = function() {
+    if ($scope.singleWallet) return;
+    $scope.walletSelectorTitle = gettextCatalog.getString('Activity from');
+    $scope.showWallets = true;
+  };  
 
   function setAndroidStatusBarColor() {
     var SUBTRACT_AMOUNT = 15;

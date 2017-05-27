@@ -21,6 +21,21 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
       $scope.$apply();
     }, 1);
   };
+  
+  var checkSelectedWallet = function(wallet, wallets) {
+    if (!wallet) return wallets[0];
+    var w = lodash.find(wallets, function(w) {
+      return w.id == wallet.id;
+    });
+    if (!w) return wallets[0];
+    return wallet;
+  };
+
+  $scope.onWalletSelect = function(wallet) {
+    $rootScope.wallet = wallet;
+
+  };  
+    
 
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
@@ -52,17 +67,33 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
   });
 
 
-  $scope.openWallet = function(wallet) {
+  $scope.openWallet = function(wallet = null) {
     
     $ionicHistory.nextViewOptions({
         disableAnimate: true
     });    
     
-    if($state.current.name != 'tabs.wallet'){
-        $state.go('tabs.home');
+    
+    //if($state.current.name != 'tabs.wallet'){
+        //$state.go('tabs.home');
+    //}
+    
+
+    if(wallet == undefined || wallet == null){
+        var wallets = $rootScope.wallets;
+        var singleWallet = wallets.length == 1;
+
+        if (!wallets[0]) return;
+
+        // select first wallet if no wallet selected previously
+        var selectedWallet = checkSelectedWallet($rootScope.wallet, wallets);
+        wallet = selectedWallet;
     }
+
     
     setTimeout(function(){
+        $state.go('tabs.home');
+        
         if (!wallet.isComplete()) {
           return $state.go('tabs.copayers', {
             walletId: wallet.credentials.walletId
@@ -76,6 +107,7 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
     );
   };  
   
+
     $scope.openTokenDetails = function(address, token, bvam) {
         console.log('--OPENING TOKEN DETAILS ' + token.tokenName + '--');  
         console.log(token);

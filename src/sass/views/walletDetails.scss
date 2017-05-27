@@ -90,7 +90,7 @@
   }
 }
 
-#walletDetails {
+#tab-wallet {
   background: #F8F8F9;
 
   .scroll-refresher {
@@ -230,6 +230,11 @@
       margin-top: 3px;
     }
   }
+  .wallet-selector {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }  
 }
 
 .wallet-details-wallet-info {

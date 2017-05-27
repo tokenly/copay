@@ -1,9 +1,8 @@
-<ion-view id="walletDetails" ion-side-menus  enable-menu-with-back-views="true" > 
+<ion-view id="tab-wallet" ion-side-menus > 
   <ng-include src="'views/includes/sidebar.html'"></ng-include>   
   <ion-side-menu-content>        
-  <ion-nav-bar ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}">
+  <ion-nav-bar ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}" class="bar-royal">
     <ion-nav-title>{{wallet.name}}</ion-nav-title>
-    <ion-nav-back-button></ion-nav-back-button>
     <ion-nav-buttons side="secondary">
       <button class="button back-button" ng-click="startSearch(); openSearchModal()" ng-if="txHistory.length > 4">
         <i class="icon ion-ios-search-strong tx-search"></i>
@@ -294,7 +293,36 @@
         distance="1%">
       </ion-infinite-scroll>
     </div>
+    
+    <div class="wallet-selector" ng-click="showWalletSelector()" ng-if="wallets[0] && wallet">
+      <a ng-if="wallet" class="item item-sub item-icon-left item-big-icon-left item-icon-right">
+        <i class="icon big-icon-svg">
+          <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}" class="bg wallet"/>
+        </i>
+        <span>
+          {{wallet.name || wallet.id}}
+        </span>
+        <p>
+        <span ng-if="!wallet.balanceHidden"> {{wallet.status.totalBalanceStr}} </span>
+
+        <span ng-if="wallet.balanceHidden" translate>[Balance Hidden]</span>
+        <span class="tab-home__wallet__multisig-number" ng-if="wallet.n > 1">
+          {{wallet.m}}-of-{{wallet.n}}
+        </span>
+        <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
+        &nbsp;
+        </p>
+        <i ng-if="!singleWallet" class="icon bp-arrow-right"></i>
+      </a>
+    </div>    
   </ion-content>
 </div>
 </ion-side-menu-content>
+<wallet-selector
+wallet-selector-title="walletSelectorTitle"
+wallet-selector-wallets="wallets"
+wallet-selector-selected-wallet="wallet"
+wallet-selector-show="showWallets"
+wallet-selector-on-select="onWalletSelect">
+</wallet-selector>
 </ion-view>

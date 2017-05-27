@@ -150,9 +150,9 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       .state('tabs.wallet', {
         url: '/wallet/:walletId/:fromOnboarding',
         views: {
-          'tab-home@tabs': {
-            controller: 'walletDetailsController',
-            templateUrl: 'views/walletDetails.html'
+          'tab-wallet@tabs': {
+            controller: 'tabWalletController',
+            templateUrl: 'views/tab-wallet.html'
           }
         }
       })
@@ -186,7 +186,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       .state('tabs.wallet.backupWarning', {
         url: '/backupWarning/:from/:walletId',
         views: {
-          'tab-home@tabs': {
+          'tab-wallet@tabs': {
             controller: 'backupWarningController',
             templateUrl: 'views/backupWarning.html'
           }
@@ -195,7 +195,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       .state('tabs.wallet.backup', {
         url: '/backup/:walletId',
         views: {
-          'tab-home@tabs': {
+          'tab-wallet@tabs': {
             templateUrl: 'views/backup.html',
             controller: 'backupController'
           }
