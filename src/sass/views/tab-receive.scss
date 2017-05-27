@@ -54,8 +54,12 @@
     }
   }
   .wallet-selector {
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    bottom: 49px;
     width: 100%;
+    z-index: 1000;
+  }
+  ion-content{
+    margin-bottom: 50px;
   }
 }

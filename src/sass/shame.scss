@@ -745,3 +745,14 @@ input[type=file] {
 .token-info-actions .btn{
     margin-left: 0px;
 }
+
+#tab-inventory ion-content{
+    margin-bottom: 50px;
+}
+
+#tab-inventory .wallet-selector {
+    position: fixed;
+    bottom: 49px;
+    width: 100%;
+    z-index: 1000;
+}

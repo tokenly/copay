@@ -1,4 +1,4 @@
-<ion-view id="tab-receive" ion-side-menus>
+<ion-view id="tab-inventory" ion-side-menus>
   <ng-include src="'views/includes/sidebar.html'"></ng-include>
   <ion-side-menu-content>  
   <ion-nav-bar class="bar-royal">
@@ -104,7 +104,34 @@
             </div>
         </div>
     </div>
-
   </ion-content>
+    <div class="wallet-selector" ng-click="showWalletSelector()" ng-if="wallets[0] && wallet">
+      <a ng-if="wallet" class="item item-sub item-icon-left item-big-icon-left item-icon-right">
+        <i class="icon big-icon-svg">
+          <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}" class="bg wallet"/>
+        </i>
+        <span>
+          {{wallet.name || wallet.id}}
+        </span>
+        <p>
+        <span ng-if="!wallet.balanceHidden"> {{wallet.status.totalBalanceStr}} </span>
+
+        <span ng-if="wallet.balanceHidden" translate>[Balance Hidden]</span>
+        <span class="tab-home__wallet__multisig-number" ng-if="wallet.n > 1">
+          {{wallet.m}}-of-{{wallet.n}}
+        </span>
+        <span class="assertive" ng-if="wallet.error">{{wallet.error}}</span>
+        &nbsp;
+        </p>
+        <i ng-if="!singleWallet" class="icon bp-arrow-right"></i>
+      </a>
+    </div>    
   </ion-side-menu-content>
+<wallet-selector
+wallet-selector-title="walletSelectorTitle"
+wallet-selector-wallets="wallets"
+wallet-selector-selected-wallet="wallet"
+wallet-selector-show="showWallets"
+wallet-selector-on-select="onWalletSelect">
+</wallet-selector>  
 </ion-view>

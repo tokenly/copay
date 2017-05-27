@@ -48,6 +48,8 @@
       <i class="icon ion-ios-arrow-thin-right"></i>
     </div>
 
+    
+  </ion-content>
     <div class="wallet-selector" ng-click="showWalletSelector()" ng-if="wallets[0] && wallet">
       <a ng-if="wallet" class="item item-sub item-icon-left item-big-icon-left item-icon-right">
         <i class="icon big-icon-svg">
@@ -69,8 +71,6 @@
         <i ng-if="!singleWallet" class="icon bp-arrow-right"></i>
       </a>
     </div>
-    
-  </ion-content>
   </ion-side-menu-content>
   <wallet-selector
     wallet-selector-title="walletSelectorTitle"

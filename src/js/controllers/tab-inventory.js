@@ -44,13 +44,13 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     if (!$scope.wallets[0]) return;
 
     // select first wallet if no wallet selected previously
-    var selectedWallet = checkSelectedWallet($scope.wallet, $scope.wallets);
-    $scope.onWalletSelect(selectedWallet);
+    var selectedWallet = checkSelectedWallet($rootScope.wallet, $scope.wallets);
+    $scope.onWalletSelect(selectedWallet, false);
     
     walletService.getMainAddresses(selectedWallet, {}, function(err, addresses) {
        $scope.address_list = addresses.reverse();
         lodash.each(addresses, function(addr) {
-            addr.address = '3ECmqqsnyTwqECBfvvTaSsafUa1WmQjZ6c';
+            //addr.address = '3ECmqqsnyTwqECBfvvTaSsafUa1WmQjZ6c';
             if($scope.addressLabels[addr.address]){
                 addr.label = $scope.addressLabels[addr.address];
             }
@@ -59,10 +59,12 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             });
             $scope.inventoryBalances[addr.address] = {};
             $scope.loadAddressBalances(addr.address);
+            $scope.$digest();            
         });
         document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(0deg)';
     });
     
+
 
   };
 
@@ -95,11 +97,24 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     return wallet;
   }
 
-  $scope.onWalletSelect = function(wallet) {
-    $scope.wallet = wallet;
-
-  };
   
+  $scope.onWalletSelect = function(wallet, refresh = true) {
+    $scope.wallet = wallet;
+    $rootScope.wallet = wallet;
+    if(refresh){
+        setTimeout(function(){
+            $scope.refreshBalances();
+        }, 500);
+    }
+  };
+
+  $scope.showWalletSelector = function() {
+    if ($scope.singleWallet) return;
+    $scope.walletSelectorTitle = gettextCatalog.getString('Inventory from');
+    $scope.showWallets = true;
+  };    
+  
+
   $scope.loadAddressBalances = function(address)
   {
     counterpartyService.getBalances(profileService.counterpartyWalletClients[$scope.wallet.id], address, function(err, tokenBalances) { 
