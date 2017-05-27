@@ -5,15 +5,22 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
   var listeners = [];
   $scope.isCordova = platformInfo.isCordova;
   $scope.isNW = platformInfo.isNW;
+  
+  $scope.addressList = null;
+  $scope.addressLabels = [];
+  storageService.getAddressLabels(function(err, addressLabels){
+    $scope.addressLabels = addressLabels;
+  });;
 
   $scope.requestSpecificAmount = function() {
     $state.go('tabs.paymentRequest.amount', {
-      id: $scope.wallet.credentials.walletId
+      id: $scope.wallet.credentials.walletId,
+      address: $rootScope.addr,
     });
   };
 
   $scope.setAddress = function(newAddr) {
-    $scope.addr = null;
+    $rootScope.addr = null;
     if (!$scope.wallet || $scope.generatingAddress || !$scope.wallet.isComplete()) return;
     $scope.generatingAddress = true;
     walletService.getAddress($scope.wallet, newAddr, function(err, addr) {
@@ -24,7 +31,7 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
         popupService.showAlert(err);
       }
 
-      $scope.addr = addr;
+      $rootScope.addr = addr;
       $timeout(function() {
         $scope.$apply();
       }, 10);
@@ -84,7 +91,7 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
   $scope.showReceiveAddressFromHardware = function() {
     var wallet = $scope.wallet;
     if (wallet.isPrivKeyExternal() && wallet.credentials.hwInfo) {
-      walletService.showReceiveAddressFromHardware(wallet, $scope.addr, function() {});
+      walletService.showReceiveAddressFromHardware(wallet, $rootScope.addr, function() {});
     }
   };
 
@@ -97,6 +104,8 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
     // select first wallet if no wallet selected previously
     var selectedWallet = checkSelectedWallet($scope.wallet, $scope.wallets);
     $scope.onWalletSelect(selectedWallet);
+    
+    $scope.loadAddresses(selectedWallet);
 
     $scope.showShareButton = platformInfo.isCordova ? (platformInfo.isIOS ? 'iOS' : 'Android') : null;
 
@@ -136,6 +145,31 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
 
   $scope.shareAddress = function() {
     if (!$scope.isCordova) return;
-    window.plugins.socialsharing.share('bitcoin:' + $scope.addr, null, null, null);
-  }
+    window.plugins.socialsharing.share('bitcoin:' + $rootScope.addr, null, null, null);
+  };
+  
+  $scope.loadAddresses = function(selectedWallet) {
+    walletService.getMainAddresses(selectedWallet, {}, function(err, addresses) {
+        $scope.addressList = addresses;
+        var i = -1;
+        lodash.each(addresses, function(addr) {
+            i++;
+            if($scope.addressLabels[addr.address]){
+                addr.label = $scope.addressLabels[addr.address];
+                addr.friendlyLabel = addr.label + ' - ' + addr.address;
+            }
+            else{
+                addr.label = null;
+                addr.friendlyLabel = 'Pocket #' + (addresses.length - i) + ' - ' + addr.address;
+            }
+            $scope.$digest();            
+        });
+    });
+  };
+  
+  $scope.switchAddress = function(address) {
+      $rootScope.addr = address;
+      $scope.$digest();
+  };
+  
 });

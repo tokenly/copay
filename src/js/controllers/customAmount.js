@@ -10,6 +10,9 @@ angular.module('copayApp.controllers').controller('customAmountController', func
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
     var walletId = data.stateParams.id;
+    var address = data.stateParams.address;
+    
+    $scope.address = address;
 
     if (!walletId) {
       showErrorAndBack('Error', 'No wallet selected');
@@ -19,15 +22,25 @@ angular.module('copayApp.controllers').controller('customAmountController', func
     $scope.showShareButton = platformInfo.isCordova ? (platformInfo.isIOS ? 'iOS' : 'Android') : null;
 
     $scope.wallet = profileService.getWallet(walletId);
-
-    walletService.getAddress($scope.wallet, false, function(err, addr) {
-      if (!addr) {
-        showErrorAndBack('Error', 'Could not get the address');
-        return;
-      }
-      
-      $scope.address = addr;
     
+    if(!address){
+        walletService.getAddress($scope.wallet, false, function(err, addr) {
+          if (!addr) {
+            showErrorAndBack('Error', 'Could not get the address');
+            return;
+          }
+          
+          $scope.address = addr;
+          $scope.setParsedAmounts(data);
+          
+        });
+    } else{
+        $scope.setParsedAmounts(data);
+
+    } //endif
+  });
+  
+  $scope.setParsedAmounts = function(data){
       var parsedAmount = txFormatService.parseAmount(
         data.stateParams.amount, 
         data.stateParams.currency);
@@ -49,8 +62,8 @@ angular.module('copayApp.controllers').controller('customAmountController', func
         $scope.amountBtc = amount; // BTC
         $scope.altAmountStr = txFormatService.formatAlternativeStr(parsedAmount.amountSat);
       }
-    });
-  });
+      $scope.$digest();
+  };
 
   $scope.close = function() {
     $ionicHistory.nextViewOptions({

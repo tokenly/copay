@@ -225,6 +225,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       })
       .state('tabs.receive', {
         url: '/receive',
+        cache: false,
         views: {
           'tab-receive': {
             controller: 'tabReceiveController',
@@ -664,7 +665,8 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         abstract: true,
         params: {
           id: null,
-          nextStep: 'tabs.paymentRequest.confirm'
+          nextStep: 'tabs.paymentRequest.confirm',
+          address: null
         }
       })
 
@@ -673,8 +675,11 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         views: {
           'tab-receive@tabs': {
             controller: 'amountController',
-            templateUrl: 'views/amount.html'
+            templateUrl: 'views/amount.html',       
           }
+        },
+        params: {
+            address: null
         }
       })
       .state('tabs.paymentRequest.confirm', {
@@ -684,7 +689,10 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
             controller: 'customAmountController',
             templateUrl: 'views/customAmount.html'
           }
-        }
+        },
+        params: {
+            address: null
+        }        
       })
 
       /*

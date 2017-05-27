@@ -759,3 +759,23 @@ input[type=file] {
 .icon .tokenmarkets{ background: url('../img/app/markets-icon.png') top center no-repeat; background-size: cover;}
 .icon .tokenfm{ background: url('../img/app/tokenfm-panda-icon.png') top center no-repeat; background-size: cover;}
 .icon .tokenly{ background: url('../img/app/tokenly-icon.svg') top center no-repeat; background-size: cover;}
+
+
+.address-info .address-select{
+    margin-top: 10px;
+}
+
+.address-info .address-select label{
+    display: block;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.address-info .address-select select{
+    font-size: 12px;
+    padding: 5px;
+}
+
+body #tab-receive .address-info .address-label{
+    margin-top: 2%;
+}

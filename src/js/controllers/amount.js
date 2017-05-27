@@ -26,6 +26,7 @@ angular.module('copayApp.controllers').controller('amountController', function($
       $ionicHistory.backView().stateName == 'tabs.bitpayCard');
     $scope.recipientType = data.stateParams.recipientType || null;
     $scope.toAddress = data.stateParams.toAddress;
+    $scope.sourceAddress = data.stateParams.address;
     $scope.toName = data.stateParams.toName;
     $scope.toEmail = data.stateParams.toEmail;
     $scope.showAlternativeAmount = !!$scope.nextStep;
@@ -228,7 +229,8 @@ angular.module('copayApp.controllers').controller('amountController', function($
         id: _id,
         amount: $scope.useSendMax ? null : _amount,
         currency: $scope.showAlternativeAmount ? $scope.alternativeIsoCode : $scope.unitName,
-        useSendMax: $scope.useSendMax
+        useSendMax: $scope.useSendMax,
+        address: $scope.sourceAddress
       });
     } else {
       var amount = $scope.showAlternativeAmount ? fromFiat(_amount) : _amount;
@@ -239,7 +241,8 @@ angular.module('copayApp.controllers').controller('amountController', function($
         toName: $scope.toName,
         toEmail: $scope.toEmail,
         toColor: $scope.toColor,
-        useSendMax: $scope.useSendMax
+        useSendMax: $scope.useSendMax,
+        address: $scope.sourceAddress
       });
     }
     $scope.useSendMax = null;
