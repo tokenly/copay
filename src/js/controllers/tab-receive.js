@@ -112,7 +112,8 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
     listeners = [
       $rootScope.$on('bwsEvent', function(e, walletId, type, n) {
         // Update current address
-        if ($scope.wallet && walletId == $scope.wallet.id && type == 'NewIncomingTx') $scope.setAddress(true);
+        //disable for Token Pockets
+        //if ($scope.wallet && walletId == $scope.wallet.id && type == 'NewIncomingTx') $scope.setAddress(true);
       })
     ];
   });
@@ -134,6 +135,7 @@ angular.module('copayApp.controllers').controller('tabReceiveController', functi
 
   $scope.onWalletSelect = function(wallet) {
     $rootScope.wallet = wallet;
+    $scope.loadAddresses(wallet);
     $scope.setAddress();
   };
 
