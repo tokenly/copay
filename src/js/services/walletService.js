@@ -225,9 +225,12 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
         if (used) {
           $log.debug('Address used. Creating new');
           // Force new address
+          //disable for now (Token Pockets)
+          /*
           root.getAddress(wallet, true, function(err, addr) {
             $log.debug('New address: ', addr);
           });
+          */
         }
       });
 
@@ -333,7 +336,6 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
       limit: limit
     }, function(err, txsFromServer) {
       if (err) return cb(err);
-
       if (!txsFromServer.length)
         return cb();
 

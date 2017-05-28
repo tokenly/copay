@@ -348,6 +348,8 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
       if (err) $log.error(err);
       $scope.addressbook = ab || {};
     });
+    
+
 
     listeners = [
       $rootScope.$on('bwsEvent', function(e, walletId) {

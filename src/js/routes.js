@@ -152,7 +152,8 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
         views: {
           'tab-wallet@tabs': {
             controller: 'tabWalletController',
-            templateUrl: 'views/tab-wallet.html'
+            templateUrl: 'views/tab-wallet.html',
+            cache: false
           }
         }
       })
@@ -225,11 +226,11 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       })
       .state('tabs.receive', {
         url: '/receive',
-        cache: false,
         views: {
           'tab-receive': {
             controller: 'tabReceiveController',
             templateUrl: 'views/tab-receive.html',
+            cache: false
           }
         }
       })
