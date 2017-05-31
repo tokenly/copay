@@ -384,6 +384,7 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   $scope.onWalletSelect = function(wallet) {
     $scope.wallet = wallet;
     $rootScope.wallet = wallet;
+    $scope.updateAll();
   };
 
   $scope.showWalletSelector = function() {
