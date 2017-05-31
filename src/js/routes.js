@@ -178,7 +178,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
       .state('tabs.wallet.tx-details', {
         url: '/tx-details/:txid',
         views: {
-          'tab-home@tabs': {
+          'tab-wallet@tabs': {
             controller: 'txDetailsController',
             templateUrl: 'views/tx-details.html'
           }
