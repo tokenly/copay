@@ -153,7 +153,7 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           'tab-wallet@tabs': {
             controller: 'tabWalletController',
             templateUrl: 'views/tab-wallet.html',
-            cache: false
+            cache: true
           }
         }
       })

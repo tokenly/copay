@@ -240,6 +240,9 @@
                 <div ng-show="btx.action == 'received'" class="ellipsis">
                   <div ng-if="btx.note.body" class="wallet-details__tx-message ellipsis">{{btx.note.body}}</div>
                   <div ng-if="!btx.note.body" class="wallet-details__tx-message ellipsis" translate>Received</div>
+                  <div ng-if="btx.ourAddress" class="wallet-details__tx-message ellipsis">
+                      <small class="wallet-details__tx-pocket"><i class="icon ico-pockets"></i> {{ addressLabels[btx.ourAddress] || btx.ourAddress }}</small>
+                  </div>
                   <div class="low-fees" ng-if="btx.lowFees">
                     <i class="icon"><img src="img/icon-warning.png" width="20px"></i>
                     <span class="comment" translate>Low fees</span>
@@ -268,6 +271,9 @@
                     {{addressbook[btx.addressTo].name || addressbook[btx.addressTo] || 'Sending'|translate}}
                   </span>
                   <span ng-if="btx.action == 'received'" translate>Receiving</span>
+                  <div ng-if="btx.ourAddress" class="wallet-details__tx-message ellipsis">
+                      <small class="wallet-details__tx-pocket"><i class="icon ico-pockets"></i> {{ addressLabels[btx.ourAddress] || btx.ourAddress }}</small>
+                  </div>                  
                 </div>
               </div>
 
@@ -278,7 +284,12 @@
                   (possible double spend)
                   </span>
                   <span  ng-if="btx.action != 'invalid'">
-                  {{btx.amountStr}}
+                      <span ng-if="btx.counterparty && btx.counterparty.asset">
+                          {{numberWithCommas(btx.counterparty.quantityFloat)}} {{btx.counterparty.asset}}
+                      </span>
+                      <span ng-if="!btx.counterparty || !btx.counterparty.asset">
+                          {{btx.amountStr}}
+                      </span>
                   </span>
                 </span>
                 <div>
@@ -288,6 +299,11 @@
                   </time>
                 </div>
               </span>
+              <!-- token/asset image, hide for now
+              <div class="pocket-token-emblem-divisible" ng-if="btx.counterparty && btx.counterparty.asset">
+                  {{ btx.counterparty.asset.substring(0, 4) }}
+              </div>
+              -->
             </div>
           </a>
 

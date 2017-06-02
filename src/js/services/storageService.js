@@ -654,8 +654,33 @@ angular.module('copayApp.services')
       $log.debug('=CACHE= Removing address labels');
       storage.remove('addressLabels', cb);
     };    
-        
     
+    root.getParsedTxData = function(txid, cb) {
+      storage.get('parsed_txs-' + txid, function(err, txString){
+        if (err) return cb(err);
+        if (txString == null) {
+          return cb(null, false);
+        }
+        var tx;
+        try {
+          tx = JSON.parse(txString);
+        } catch (e) {
+          $log.error("failed to parse transaction json string: "+txString);
+          tx = false;
+        }
+        cb(null, tx)
+      });  
+    };
+        
+    root.storeTxData = function(tx, cb) {
+      $log.debug('=CACHE= storing parsed transaction data ', tx.txid);
+      storage.set('parsed_txs-' + tx.txid, JSON.stringify(tx), cb);
+    };
+    
+    root.clearTxData = function(tx, cb) {
+      $log.debug('=CACHE= clearing cached transaction data ', tx.txid);
+      storage.remove('parsed_txs-' + tx.txid, cb);
+    }
 
     root.setTxConfirmNotification = function(txid, val, cb) {
       storage.set('txConfirmNotif-' + txid, val, cb);

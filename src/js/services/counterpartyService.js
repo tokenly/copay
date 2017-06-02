@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').factory('counterpartyService', function(counterpartyUtils, bvamService, configService, lodash, $timeout) {
+angular.module('copayApp.services').factory('counterpartyService', function(counterpartyUtils, bvamService, configService, lodash, $timeout, storageService) {
   var root = {};
 
   var CACHED_CONFIRMATIONS_LENGTH = 6;
@@ -119,7 +119,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     return pendingTokenBalances;
   }
 
-  root.applyCounterpartyDataToTxHistory = function(counterpartyClient, address, txHistory, cb) {
+  root.applyCounterpartyDataToTxHistory = function(counterpartyClient, txHistory, cb) {
     if (!counterpartyClient) { return cb('counterparty client not found'); }
 
     if (!root.isEnabled()) {
@@ -129,20 +129,27 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     var txIdsForLookup = [];
     for (var i = 0; i < txHistory.length; i++) {
       var txObject = txHistory[i];
-      if (isRecentOrUnvalidatedCounterpartyTransaction(txObject)) {
-        txIdsForLookup.push(txObject.txid)
-      }
+      storageService.getParsedTxData(txObject.txid, function(err, cached_tx){
+         if(cached_tx){
+             txHistory[i] = cached_tx;
+         }
+         else{
+            if (isRecentOrUnvalidatedCounterpartyTransaction(txObject)) {
+                txIdsForLookup.push(txObject.txid)
+            }
+         }
+      });
+
     }
 
     // lookup all txids
-    console.log('=CPTY= applyCounterpartyDataToTxHistory address='+address+' txHistory', txHistory, 'txIdsForLookup:', txIdsForLookup);
-    counterpartyClient.getTransactions(address, txIdsForLookup, function(err, cpTransactions) {
+    console.log('=CPTY= applyCounterpartyDataToTxHistory txHistory', txHistory, 'txIdsForLookup:', txIdsForLookup);
+    counterpartyClient.getTransactions(txIdsForLookup, function(err, cpTransactions) {
       if (err) return cb(err)
       console.log('=CPTY= applyCounterpartyDataToTxHistory cpTransactions:', cpTransactions);
-      var cpTxHistory = applyCounterpartyTransactionsToTXHistory(cpTransactions, txHistory, address, counterpartyClient)
+      var cpTxHistory = applyCounterpartyTransactionsToTXHistory(cpTransactions, txHistory, counterpartyClient)
       cb(null, cpTxHistory);
     })
-
   }
 
 
@@ -338,7 +345,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     return true;
   }
 
-  function applyCounterpartyTransactionsToTXHistory(cpTransactions, txHistory, address, counterpartyClient) {
+  function applyCounterpartyTransactionsToTXHistory(cpTransactions, txHistory, counterpartyClient) {
     var cpTransactionsMap = {};
     lodash.each(cpTransactions, function(cpTx) {
       var action = 'unknown';
@@ -365,7 +372,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     for (var i = 0; i < txHistory.length; i++) {
       var txEntry = txHistory[i];
       cpTransaction = (cpTransactionsMap[txEntry.txid] != null) ? mergeCounterpartyTransactions(cpTransactionsMap[txEntry.txid].transactions) : null;
-      cpTxHistory.push(applyCounterpartyTransaction(cpTransaction, txEntry, address, counterpartyClient));
+      cpTxHistory.push(applyCounterpartyTransaction(cpTransaction, txEntry, counterpartyClient));
     }
 
     return cpTxHistory;
@@ -392,7 +399,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     return mergedTransaction;
   }
 
-  function applyCounterpartyTransaction(cpTransaction, txEntry, address, counterpartyClient) {
+  function applyCounterpartyTransaction(cpTransaction, txEntry, counterpartyClient) {
     // make a copy of the existing counterparty data
     var cpData = lodash.assign({}, txEntry.counterparty || {});
     cpData.validatedConfirmations = txEntry.confirmations;
@@ -423,7 +430,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
       // apply debit/credit for mempool transactions based on address
       if (cpData.mempool) {
-        cpData.direction = cpData.destination == address ? "credit" : "debit"
+        //cpData.direction = cpData.destination == address ? "credit" : "debit"
       }
 
       // always treate issuances as credits
@@ -434,11 +441,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
     } else {
       // did not find this counterparty transaction
       if (isRecentOrUnvalidatedCounterpartyTransaction(txEntry)) {
-        var txs_2 = counterpartyClient.getTransactions(address, [txEntry.txid]);
-        console.log('WTF...');
-        console.log(txs_2);
         console.log('=CPTY= unvalidated txEntry:', txEntry);
-        
         cpData.isCounterparty = null;        
         console.log('=CPTY= applyCounterpartyTransaction txid:'+txEntry.txid+' cpData.isCounterparty:', cpData.isCounterparty);
       }
@@ -446,6 +449,8 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
 
     txEntry.counterparty = cpData;
     txEntry.isCounterparty = cpData.isCounterparty;
+    
+    storageService.storeTxData(txEntry, function(err){ });
 
     return txEntry;
   }

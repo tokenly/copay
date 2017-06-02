@@ -779,3 +779,23 @@ input[type=file] {
 body #tab-receive .address-info .address-label{
     margin-top: 2%;
 }
+
+.wallet-details__tx-pocket{
+    font-weight: 700;
+    color: #7b7b7b;
+}
+
+.wallet-details__tx-pocket .icon{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin-top: 3px;
+    margin-right: 5px;
+    float: left;
+}
+
+.wallet-details__tx-content .pocket-token-emblem-divisible{
+    margin-left: 15px;
+    margin-top: -15px;
+    float: right;
+}

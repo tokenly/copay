@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog) {
+angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog, counterpartyService, bvamService) {
 
   var HISTORY_SHOW_LIMIT = 10;
   var currentTxHistoryPage = 0;
@@ -13,6 +13,12 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   $scope.isIOS = platformInfo.isIOS;
 
   $scope.amountIsCollapsible = !$scope.isAndroid;
+  
+  $scope.addressList = [];
+  $scope.addressLabels = [];
+  storageService.getAddressLabels(function(err, addressLabels){
+     $scope.addressLabels = addressLabels; 
+  });
 
   $scope.openExternalLink = function(url, target) {
     externalLinkService.open(url, target);
@@ -142,12 +148,14 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     $scope.updatingTxHistoryProgress = 0;
 
     var progressFn = function(txs, newTxs) {
-      $scope.updatingTxHistoryProgress = newTxs;
-      $scope.completeTxHistory = txs;
-      $scope.showHistory();
-      $timeout(function() {
-        $scope.$apply();
-      });
+        $scope.updatingTxHistoryProgress = newTxs;
+        /*
+        $scope.completeTxHistory = txs;
+        $scope.showHistory();
+        $timeout(function() {
+          $scope.$apply();
+        }); 
+        */
     };
 
     $timeout(function() {
@@ -160,9 +168,31 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
           $scope.updateTxHistoryError = true;
           return;
         }
-        $scope.completeTxHistory = txHistory;
-        $scope.showHistory();
-        $scope.$apply();
+        
+        counterpartyService.applyCounterpartyDataToTxHistory(profileService.counterpartyWalletClients[$scope.wallet.id], txHistory, function(err, xcpHistory){
+            for(var i = 0; i < xcpHistory.length; i++){
+              xcpHistory[i].ourAddress = false;
+              var outputs = xcpHistory[i].outputs;
+              if(xcpHistory[i].action == "sent"){
+                  //come back to this
+              }
+              for(var i2 = 0; i2 < xcpHistory[i].outputs.length; i2++){
+                  for(var i3 = 0; i3 < $scope.addressList.length; i3++){
+                      if($scope.addressList[i3].address == xcpHistory[i].outputs[i2].address){
+                          xcpHistory[i].ourAddress = $scope.addressList[i3].address;
+                          break;
+                      }
+                  }
+              }         
+            }
+
+            $scope.completeTxHistory = xcpHistory;
+            $scope.showHistory();
+            $timeout(function() {
+                $scope.$apply();
+            });            
+        });
+
         return cb();
       });
     });
@@ -349,7 +379,7 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
       $scope.addressbook = ab || {};
     });
     
-
+    $scope.loadWalletAddresses();
 
     listeners = [
       $rootScope.$on('bwsEvent', function(e, walletId) {
@@ -364,8 +394,7 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   });
 
   $scope.$on("$ionicView.afterEnter", function(event, data) {
-    $scope.updateAll();
-    refreshAmountSection();
+
   });
 
   $scope.$on("$ionicView.beforeLeave", function(event, data) {
@@ -380,11 +409,28 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     });
   });
   
+  $scope.loadWalletAddresses = function() {
+    walletService.getMainAddresses($scope.wallet, {}, function(err, addresses) {
+       $scope.addressList = addresses.reverse();
+        lodash.each(addresses, function(addr) {
+            if($scope.addressLabels[addr.address]){
+                addr.label = $scope.addressLabels[addr.address];
+            }         
+        });
+        $timeout(function(){
+            $scope.$apply();
+            $scope.updateAll();
+            refreshAmountSection();        
+        }); 
+    });
+    
+  }
+  
   
   $scope.onWalletSelect = function(wallet) {
     $scope.wallet = wallet;
     $rootScope.wallet = wallet;
-    $scope.updateAll();
+    $scope.loadWalletAddresses();
   };
 
   $scope.showWalletSelector = function() {
@@ -392,6 +438,26 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     $scope.walletSelectorTitle = gettextCatalog.getString('Activity from');
     $scope.showWallets = true;
   };  
+  
+  $scope.txIsOurs = function(tx) {
+      tx.ourAddress = false;
+      var outputs = tx.outputs;
+      if(tx.action == "sent"){
+          //come back to this
+          return true;
+      }
+      var result = false;
+      for(var i = 0; i < tx.outputs.length; i++){
+          for(var i2 = 0; i2 < $scope.addressList.length; i2++){
+              if($scope.addressList[i2].address == tx.outputs[i].address){
+                  result = true;
+                  tx.ourAddress = $scope.addressList[i2].address;
+                  break;
+              }
+          }
+      }
+      return result;
+  };
 
   function setAndroidStatusBarColor() {
     var SUBTRACT_AMOUNT = 15;
@@ -432,4 +498,14 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
   }
+  
+    $scope.numberWithCommas = function(x) {
+        if(typeof x == 'undefined'){
+            return null;
+        }
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    };
+      
 });
