@@ -59,7 +59,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             });
             $scope.inventoryBalances[addr.address] = {};
             $scope.loadAddressBalances(addr.address);
-            $scope.$digest();            
+            $scope.$apply();            
         });
         document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(0deg)';
     });
@@ -141,6 +141,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                console.log($scope.bvamData);
             });      
         }
+        $scope.$apply();
     });
       
   };
@@ -158,7 +159,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
           popupService.showAlert(err);
         }
         $timeout(function() {
-          $scope.$digest();
+          $scope.$apply();
         });
         return;
       }
@@ -167,7 +168,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
         ongoingProcess.set('generatingNewAddress', false);
         if (err) return popupService.showAlert(gettextCatalog.getString('Error'), err);
         $scope.address_list = addresses.reverse();
-        $scope.$digest();
+        $scope.$apply();
       });
     });
   };  
