@@ -6,6 +6,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
   $scope.isCordova = platformInfo.isCordova;
   $scope.isNW = platformInfo.isNW;
 
+  $scope.inventorySearch = null;
   $scope.inventoryBalances = [];
   $scope.BTCBalances = [];
   $scope.bvamData = [];
@@ -48,6 +49,9 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     $scope.onWalletSelect(selectedWallet, false);
     
     walletService.getMainAddresses(selectedWallet, {}, function(err, addresses) {
+       if(!addresses){
+           return;
+       }
        $scope.address_list = addresses.reverse();
         lodash.each(addresses, function(addr) {
             //addr.address = '3ECmqqsnyTwqECBfvvTaSsafUa1WmQjZ6c';
@@ -57,7 +61,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             walletService.getAddressBalance(selectedWallet, addr.address, function(err, btc_amount){
                 $scope.BTCBalances[addr.address] = btc_amount;
             });
-            $scope.inventoryBalances[addr.address] = {};
+            $scope.inventoryBalances[addr.address] = [];
             $scope.loadAddressBalances(addr.address);
             $scope.$apply();            
         });
@@ -119,6 +123,9 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
   {
     counterpartyService.getBalances(profileService.counterpartyWalletClients[$scope.wallet.id], address, function(err, tokenBalances) { 
         //console.log(tokenBalances);
+        if(!tokenBalances){
+            return;
+        }
         console.log('--LOADING COUNTERPARTY TOKEN BALANCES ' + address + '--');
         $scope.inventoryBalances[address] = Array();
         var used_tokens = [];
