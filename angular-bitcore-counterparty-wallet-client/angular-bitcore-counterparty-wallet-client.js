@@ -27821,7 +27821,7 @@ module.exports={
     "/"
   ],
   "_resolved": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
-  "_shasum": "e42c104badb0f9e0064362920f05dfc289166b6a",
+  "_shasum": "066a7217e70d75be431be2e8c77314999a460115",
   "_shrinkwrap": null,
   "_spec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
   "_where": "/var/www/copay",
