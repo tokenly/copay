@@ -131,6 +131,18 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       var txObject = txHistory[i];
       storageService.getParsedTxData(txObject.txid, function(err, cached_tx){
          if(cached_tx){
+             //set most up to date tx confirmations data
+             cached_tx.confirmations = txObject.confirmations;
+             cached_tx.hasUnconfirrmedInputs = txObject.hasUnconfirmedInputs;
+             if(typeof txObject.recent == 'undefined'){
+                 cached_tx.recent = false;
+             }
+             else{
+                 cached_tx.recent = txObject.recent;
+             }
+             cached_tx.safeConfirmed = txObject.safeConfirmed;
+             console.log('DERP...');
+             console.log(cached_tx);
              txHistory[i] = cached_tx;
          }
          else{
