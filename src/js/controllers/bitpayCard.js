@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('bitpayCardController', function($scope, $timeout, $log, $state, lodash, bitpayCardService, moment, popupService, gettextCatalog, $ionicHistory, bitpayService, externalLinkService) {
+angular.module('copayApp.controllers').controller('bitpayCardController', function($scope, $timeout, $log, $state, lodash, bitpayCardService, moment, popupService, gettextCatalog, $ionicHistory, bitpayService, externalLinkService, timeService) {
 
   var self = this;
   var runningBalance;
@@ -143,7 +143,7 @@ angular.module('copayApp.controllers').controller('bitpayCardController', functi
 
   var _getIconName = function(tx) {
     var icon = tx.mcc || tx.category || null;
-    if (!icon) return 'default';
+    if (!icon || bitpayCardService.iconMap[icon] == undefined) return 'default';
     return bitpayCardService.iconMap[icon];
   };
 
@@ -161,6 +161,14 @@ angular.module('copayApp.controllers').controller('bitpayCardController', functi
 
   var _runningBalance = function(tx) {
     runningBalance -= parseFloat(tx.amount);
+  };
+
+  $scope.createdWithinPastDay = function(tx) {
+    var result = false;
+    if (tx.timestamp) {
+      result = timeService.withinPastDay(tx.timestamp);
+    }
+    return result;
   };
 
   this.openExternalLink = function(url) {
@@ -201,7 +209,9 @@ angular.module('copayApp.controllers').controller('bitpayCardController', functi
       if (cards && cards[0]) {
         self.lastFourDigits = cards[0].lastFourDigits;
         self.balance = cards[0].balance;
+        self.currencySymbol = cards[0].currencySymbol;
         self.updatedOn = cards[0].updatedOn;
+        self.currency = cards[0].currency;
       }
       self.update();
     });

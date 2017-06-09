@@ -15053,13 +15053,12 @@ API.prototype.getBalances = function(address, cb) {
  *
  * @param {Callback} cb
  */
-API.prototype.getTransactions = function(address, txids, cb) {
+API.prototype.getTransactions = function(txids, cb) {
   if (txids == null || txids.length == 0) {
     return cb(null, []);
   }
 
   var args = {
-    address: address,
     txids:   txids
   }
 
@@ -27774,57 +27773,57 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
+        "raw": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
         "scope": null,
         "escapedName": null,
         "name": null,
-        "rawSpec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-        "spec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
+        "rawSpec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+        "spec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
         "type": "hosted",
         "hosted": {
           "type": "github",
-          "ssh": "git@github.com:tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-          "sshUrl": "git+ssh://git@github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-          "httpsUrl": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-          "gitUrl": "git://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-          "shortcut": "github:tokenly/bitcore-counterparty-wallet-client#v0.1.0",
-          "directUrl": "https://raw.githubusercontent.com/tokenly/bitcore-counterparty-wallet-client/v0.1.0/package.json"
+          "ssh": "git@github.com:tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+          "sshUrl": "git+ssh://git@github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+          "httpsUrl": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+          "gitUrl": "git://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+          "shortcut": "github:tokenly/bitcore-counterparty-wallet-client#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+          "directUrl": "https://raw.githubusercontent.com/tokenly/bitcore-counterparty-wallet-client/91a0f39d9d4af12b6b8712e0f802be11e4a447a8/package.json"
         }
       },
       "/var/www/copay"
     ]
   ],
-  "_from": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
+  "_from": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
   "_id": "bitcore-counterparty-wallet-client@0.0.1",
   "_inCache": true,
   "_location": "/bitcore-counterparty-wallet-client",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
+    "raw": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
     "scope": null,
     "escapedName": null,
     "name": null,
-    "rawSpec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-    "spec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
+    "rawSpec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+    "spec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
     "type": "hosted",
     "hosted": {
       "type": "github",
-      "ssh": "git@github.com:tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-      "sshUrl": "git+ssh://git@github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-      "httpsUrl": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-      "gitUrl": "git://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
-      "shortcut": "github:tokenly/bitcore-counterparty-wallet-client#v0.1.0",
-      "directUrl": "https://raw.githubusercontent.com/tokenly/bitcore-counterparty-wallet-client/v0.1.0/package.json"
+      "ssh": "git@github.com:tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+      "sshUrl": "git+ssh://git@github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+      "httpsUrl": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+      "gitUrl": "git://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+      "shortcut": "github:tokenly/bitcore-counterparty-wallet-client#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+      "directUrl": "https://raw.githubusercontent.com/tokenly/bitcore-counterparty-wallet-client/91a0f39d9d4af12b6b8712e0f802be11e4a447a8/package.json"
     }
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#849179cb8d845becb995f812bb6497f3d8bd4bdc",
-  "_shasum": "92e619a215ec4a554eb45a8aee1eebd9041d8392",
+  "_resolved": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
+  "_shasum": "e42c104badb0f9e0064362920f05dfc289166b6a",
   "_shrinkwrap": null,
-  "_spec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#v0.1.0",
+  "_spec": "git+https://github.com/tokenly/bitcore-counterparty-wallet-client.git#91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
   "_where": "/var/www/copay",
   "author": {
     "name": "Devon Weller",
@@ -27867,7 +27866,7 @@ module.exports={
     "uuid": "^2.0.1"
   },
   "engine": "node >= 0.12.0",
-  "gitHead": "849179cb8d845becb995f812bb6497f3d8bd4bdc",
+  "gitHead": "91a0f39d9d4af12b6b8712e0f802be11e4a447a8",
   "homepage": "https://github.com/tokenly/bitcore-counterparty-wallet-client#readme",
   "keywords": [
     "bitcoin",

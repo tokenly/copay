@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog, counterpartyService, bvamService) {
+angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog, counterpartyService, bvamService, timeService) {
 
   var HISTORY_SHOW_LIMIT = 10;
   var currentTxHistoryPage = 0;
@@ -220,7 +220,7 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     }
     var curTx = $scope.txHistory[index];
     var prevTx = $scope.txHistory[index - 1];
-    return !createdDuringSameMonth(curTx, prevTx);
+    return !$scope.createdDuringSameMonth(curTx, prevTx);
   };
 
   $scope.isLastInGroup = function(index) {
@@ -230,27 +230,17 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     return $scope.isFirstInGroup(index + 1);
   };
 
-  function createdDuringSameMonth(tx1, tx2) {
-    if (!tx1 || !tx2) return false;
-    var date1 = new Date(tx1.time * 1000);
-    var date2 = new Date(tx2.time * 1000);
-    return getMonthYear(date1) === getMonthYear(date2);
-  }
+  $scope.createdDuringSameMonth = function(curTx, prevTx) {
+    return timeService.withinSameMonth(curTx.time * 1000, prevTx.time * 1000);
+  };
 
   $scope.createdWithinPastDay = function(time) {
-    var now = new Date();
-    var date = new Date(time * 1000);
-    return (now.getTime() - date.getTime()) < (1000 * 60 * 60 * 24);
+    return timeService.withinPastDay(time);
   };
 
   $scope.isDateInCurrentMonth = function(date) {
-    var now = new Date();
-    return getMonthYear(now) === getMonthYear(date);
+    return timeService.isDateInCurrentMonth(date);
   };
-
-  function getMonthYear(date) {
-    return date.getMonth() + date.getFullYear();
-  }
 
   $scope.isUnconfirmed = function(tx) {
     return !tx.confirmations || tx.confirmations === 0;

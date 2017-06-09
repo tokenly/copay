@@ -15,7 +15,7 @@
       <div class="amount-bg"></div>
       <div class="amount">
         <div ng-if="bitpayCard.balance" ng-click="bitpayCard.update()">
-          <div class="amount__balance">${{bitpayCard.balance}}</div>
+          <div class="amount__balance">{{bitpayCard.currencySymbol}}{{bitpayCard.balance}}</div>
 
           <div class="size-12 m5r" ng-if="bitpayCard.updatedOn">
             {{bitpayCard.updatedOn  * 1000 | amTimeAgo}}
@@ -23,7 +23,7 @@
 
           <a class="button button-primary button-small m5t size-14"
             style="padding: 0.5em 1em;"
-            ui-sref="tabs.bitpayCard.amount({nextStep: 'tabs.bitpayCard.topup'})" no-low-fee>
+            ui-sref="tabs.bitpayCard.amount({nextStep: 'tabs.bitpayCard.topup', currency: bitpayCard.currency})" no-low-fee>
             <i class="icon ion-plus m10r" style="vertical-align: baseline;"></i>
             {{'Add Funds'|translate}}
           </a>
@@ -64,7 +64,7 @@
       <a ng-click="bitpayCard.openExternalLink('https://help.bitpay.com/bitpay-card/why-was-i-overcharged-on-my-bitpay-card-account-why-is-there-a-hold-on-my-account')" translate>Learn More</a>
     </div>
     <div class="list" ng-show="!bitpayCard.getStarted">
-      <label class="item item-input item-select">
+      <label class="item item-input item-select activity-header">
         <div class="input-label" translate>
           Activity
         </div>
