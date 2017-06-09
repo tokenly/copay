@@ -241,7 +241,10 @@
                       <span ng-if="btx.action == 'sent'">-</span>
                       <span ng-if="btx.action == 'received'">+</span>
                       <span ng-if="btx.counterparty && btx.counterparty.asset">
-                          {{numberWithCommas(btx.counterparty.quantityFloat)}} {{btx.counterparty.asset}}
+                          {{numberWithCommas(btx.counterparty.quantityFloat)}} {{ bvamData[btx.counterparty.asset].metadata.name || btx.counterparty.asset }}
+                          <small ng-if="bvamData[btx.counterparty.asset] && bvamData[btx.counterparty.asset].metadata.name != btx.counterparty.asset" style="display: block">
+                              ({{ btx.counterparty.asset }})
+                          </small>
                       </span>
                       <span ng-if="!btx.counterparty || !btx.counterparty.asset">
                           {{btx.amountStr}}

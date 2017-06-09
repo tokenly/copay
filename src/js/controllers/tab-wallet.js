@@ -19,6 +19,8 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   storageService.getAddressLabels(function(err, addressLabels){
      $scope.addressLabels = addressLabels; 
   });
+  $scope.uniqueTokens = [];
+  $scope.bvamData = [];
 
   $scope.openExternalLink = function(url, target) {
     externalLinkService.open(url, target);
@@ -187,7 +189,22 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
                           break;
                       }
                   }
-              }         
+              }
+                if(xcpHistory[i].counterparty.asset){
+                    var asset = xcpHistory[i].counterparty.asset;
+                    if($scope.uniqueTokens.indexOf(asset) == -1){
+                        $scope.uniqueTokens.push(asset);
+                    }
+                }       
+            }
+            if($scope.uniqueTokens.length > 0){
+                bvamService.getBvamData(profileService.counterpartyWalletClients[$scope.wallet.id], $scope.uniqueTokens, function(err, bvam_data){
+                   console.log('-- LOADING COUNTERPARTY BVAM DATA --');
+                   lodash.each(bvam_data, function(bvam){
+                      $scope.bvamData[bvam.asset] = bvam; 
+                   });
+                   console.log($scope.bvamData);
+                });      
             }
 
             $scope.completeTxHistory = xcpHistory;
