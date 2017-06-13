@@ -7,6 +7,8 @@ angular.module('copayApp.controllers').controller('txDetailsController', functio
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
     txId = data.stateParams.txid;
+    $scope.bvamData = data.stateParams.bvamData;
+    $scope.addressLabels = data.stateParams.addressLabels;
     $scope.title = gettextCatalog.getString('Transaction');
     $scope.wallet = profileService.getWallet(data.stateParams.walletId);
     $scope.color = $scope.wallet.color;

@@ -26,15 +26,24 @@
           <span ng-if="btx.action == 'received'" translate>Receiving</span>
         </div>
         <div class="amount-label">
-          <div class="amount">{{displayAmount}} <span class="unit">{{displayUnit}}</span></div>
-          <div class="alternative" ng-click="showRate = !showRate">
-            <span ng-if="!showRate">{{btx.alternativeAmountStr}}</span>
-            <span ng-if="showRate">
-              <span ng-if="!rate">...</span>
-              <span ng-if="rate">
-                {{rate| currency:'':2}} {{alternativeIsoCode}} ({{rateDate | amDateFormat:'MM/DD/YYYY HH:mm a'}})
-              </span>
-            </span>
+          
+          <div ng-if="btx.counterparty.asset">
+              <div class="amount">{{numberWithCommas(btx.counterparty.quantityFloat)}}  <span class="unit">{{ bvamData[btx.counterparty.asset].metadata.name || btx.counterparty.asset }}</span></div>
+              <div class="alternative">
+                <span ng-if="bvamData[btx.counterparty.asset] && btx.counterparty.asset != bvamData[btx.counterparty.asset].metadata.name">{{btx.counterparty.asset}}</span>
+              </div>          
+          </div>
+          <div ng-if="!btx.counterparty.asset">
+              <div class="amount">{{displayAmount}} <span class="unit">{{displayUnit}}</span></div>
+              <div class="alternative" ng-click="showRate = !showRate">
+                <span ng-if="!showRate">{{btx.alternativeAmountStr}}</span>
+                <span ng-if="showRate">
+                  <span ng-if="!rate">...</span>
+                  <span ng-if="rate">
+                    {{rate| currency:'':2}} {{alternativeIsoCode}} ({{rateDate | amDateFormat:'MM/DD/YYYY HH:mm a'}})
+                  </span>
+                </span>
+              </div>
           </div>
         </div>
       </div>
@@ -60,6 +69,17 @@
             <div>{{wallet.name}}</div>
           </div>
         </div>
+        <div class="item single-line" ng-if="btx.ourAddress">
+            <span class="label">Pocket</span> 
+            <span class="item-note"  style="text-align: right;">
+                <div ng-if="addressLabels[btx.ourAddress]">
+                    {{ addressLabels[btx.ourAddress] }}
+                </div>
+                <small copy-to-clipboard="btx.ourAddress">
+                    {{ btx.ourAddress }}
+                </small>
+            </span>              
+        </div>        
         <div class="item single-line" ng-if="btx.action != 'received' && isShared">
           <span class="label" translate>Created by</span>
           <span class="item-note">

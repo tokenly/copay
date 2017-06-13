@@ -141,8 +141,6 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
                  cached_tx.recent = txObject.recent;
              }
              cached_tx.safeConfirmed = txObject.safeConfirmed;
-             console.log('DERP...');
-             console.log(cached_tx);
              txHistory[i] = cached_tx;
          }
          else{

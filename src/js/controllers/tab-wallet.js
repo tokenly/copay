@@ -116,7 +116,9 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     $scope.walletId = $scope.wallet.id;
     $state.transitionTo('tabs.wallet.tx-details', {
       txid: $scope.btx.txid,
-      walletId: $scope.walletId
+      walletId: $scope.walletId,
+      bvamData: $scope.bvamData,
+      addressLabels: $scope.addressLabels
     });
   };
 

@@ -182,6 +182,10 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
             controller: 'txDetailsController',
             templateUrl: 'views/tx-details.html'
           }
+        },
+        params: {
+            bvamData: null,
+            addressLabels: null
         }
       })
       .state('tabs.wallet.backupWarning', {
