@@ -1,12 +1,27 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabSendController', function($scope, $rootScope, $log, $timeout, $ionicScrollDelegate, addressbookService, profileService, lodash, $state, walletService, incomingData, popupService, platformInfo, bwcError, gettextCatalog) {
+angular.module('copayApp.controllers').controller('tabSendController', function($scope, $rootScope, $log, $timeout, $ionicScrollDelegate, addressbookService, profileService, lodash, $state, walletService, incomingData, popupService, platformInfo, bwcError, gettextCatalog, storageService, bvamService, counterpartyService) {
 
   var originalList;
   var CONTACTS_SHOW_LIMIT;
   var currentContactsPage;
   $scope.isChromeApp = platformInfo.isChromeApp;
 
+
+  $scope.addressList = [];
+  $scope.addressLabels = [];
+  storageService.getAddressLabels(function(err, addressLabels){
+     $scope.addressLabels = addressLabels; 
+  });
+  $scope.uniqueTokens = [];
+  $scope.bvamData = [];
+  
+  $scope.source_balances = [];
+  $scope.token_balance = 'N/A';
+  $scope.form_data = {};
+  $scope.form_data.source_address = null;
+  $scope.form_data.send_token = null;
+  
 
   var hasWallets = function() {
     $scope.wallets = profileService.getWallets({
@@ -201,6 +216,20 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     CONTACTS_SHOW_LIMIT = 10;
     currentContactsPage = 0;
     hasWallets();
+    
+    
+    $scope.wallets = profileService.getWallets();
+    $scope.singleWallet = $scope.wallets.length == 1;
+
+    if (!$scope.wallets[0]) return;
+
+    // select first wallet if no wallet selected previously
+    var selectedWallet = checkSelectedWallet($rootScope.wallet, $scope.wallets);
+    $scope.onWalletSelect(selectedWallet);    
+    
+    $scope.loadWalletAddresses();
+    
+    
   });
 
   $scope.$on("$ionicView.enter", function(event, data) {
@@ -214,4 +243,117 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
       updateList();
     });
   });
+  
+  $scope.onWalletSelect = function(wallet) {
+    $scope.wallet = wallet;
+    $rootScope.wallet = wallet;
+    loadWalletAddresses();
+  };  
+  
+  var checkSelectedWallet = function(wallet, wallets) {
+    if (!wallet) return wallets[0];
+    var w = lodash.find(wallets, function(w) {
+      return w.id == wallet.id;
+    });
+    if (!w) return wallets[0];
+    return wallet;
+  }
+
+
+  $scope.loadWalletAddresses = function() {
+    walletService.getMainAddresses($scope.wallet, {}, function(err, addresses) {
+       $scope.addressList = addresses.reverse();
+        lodash.each(addresses, function(addr, idx) {
+            if(idx === 0){
+                $scope.form_data.source_address = addr.address;
+                $scope.loadAddressBalances($scope.form_data.source_address);
+            }
+            if($scope.addressLabels[addr.address]){
+                addr.label = $scope.addressLabels[addr.address] + ' - ' + addr.address;
+            }         
+        });
+        $timeout(function(){
+            $scope.$apply();
+        }); 
+    });
+    
+  }
+  
+  $scope.loadAddressBalances = function(address)
+  {
+    console.log($scope.form_data.send_token);
+    counterpartyService.getBalances(profileService.counterpartyWalletClients[$scope.wallet.id], address, function(err, tokenBalances) { 
+        //console.log(tokenBalances);
+        if(!tokenBalances){
+            return;
+        }
+        //console.log('--LOADING COUNTERPARTY TOKEN AND BTC BALANCES ' + address + '--');
+        
+        $scope.source_balances = Array({tokenName: 'BTC', quantitySat: 0, quantityFloat: 0});
+        $scope.form_data.send_token = 'BTC';
+        walletService.getAddressBalance($scope.wallet, address, function(err, btc_amount){
+            $scope.source_balances[0].quantitySat = btc_amount;
+            $scope.source_balances[0].quantityFloat = parseFloat((btc_amount / 100000000).toFixed(8));
+            $scope.token_balance = parseFloat((btc_amount / 100000000).toFixed(8));
+            $timeout(function(){
+                $scope.$apply();
+            });             
+        });        
+        
+        var used_tokens = [];
+        lodash.each(tokenBalances, function(token, idx){
+            if(token.quantitySat > 0){
+                $scope.source_balances.push(token);
+            }
+            if($scope.bvamData[token.tokenName] == undefined){
+                used_tokens.push(token.tokenName);
+            }
+        });
+        
+        if(used_tokens.length > 0){
+            bvamService.getBvamData(profileService.counterpartyWalletClients[$scope.wallet.id], used_tokens, function(err, bvam_data){
+              //console.log('-- LOADING COUNTERPARTY BVAM DATA --');
+               lodash.each(bvam_data, function(bvam){
+                  $scope.bvamData[bvam.asset] = bvam;
+                  $scope.bvamData[bvam.asset].selectName = bvam.asset;
+                  if(bvam.metadata.name && bvam.metadata.name != bvam.asset){
+                      $scope.bvamData[bvam.asset].selectName = bvam.metadata.name + ' (' + bvam.asset + ')';
+                  } 
+               });
+               //console.log($scope.bvamData);
+            });      
+        }
+        $timeout(function(){
+            $scope.$apply();
+        }); 
+    });
+      
+  };
+  
+  $scope.updateSendTokenBalance = function(token){
+      
+      for(var i = 0; i < $scope.source_balances.length; i++){
+          if($scope.source_balances[i].tokenName == token){
+            $scope.token_balance = $scope.source_balances[i].quantityFloat;
+          }
+      }
+  };
+  
+  
+  $scope.onWalletSelect = function(wallet, refresh = true) {
+    $scope.wallet = wallet;
+    $rootScope.wallet = wallet;
+    if(refresh){
+        setTimeout(function(){
+            $scope.loadWalletAddresses();
+        }, 500);
+    }
+  };
+
+  $scope.showWalletSelector = function() {
+    if ($scope.singleWallet) return;
+    $scope.walletSelectorTitle = gettextCatalog.getString('Inventory from');
+    $scope.showWallets = true;
+  };      
+
 });
