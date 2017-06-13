@@ -75,9 +75,9 @@
                 <div ng-if="addressLabels[btx.ourAddress]">
                     {{ addressLabels[btx.ourAddress] }}
                 </div>
-                <small copy-to-clipboard="btx.ourAddress">
+                <div copy-to-clipboard="btx.ourAddress">
                     {{ btx.ourAddress }}
-                </small>
+                </div>
             </span>              
         </div>        
         <div class="item single-line" ng-if="btx.action != 'received' && isShared">
@@ -123,6 +123,10 @@
               {{btx.safeConfirmed}}
             </span>
           </span>
+        </div>
+        <div class="item single-line">
+            <span class="label" translate>Transaction ID</span>
+            <span class="item-note" copy-to-clipboard="btx.txid">{{ btx.txid }}</span>
         </div>
         <ion-toggle ng-show="!btx.confirmations || btx.confirmations == 0"
                     class="toggle-unconfirmed"
