@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabSendController', function($scope, $rootScope, $log, $timeout, $ionicScrollDelegate, addressbookService, profileService, lodash, $state, walletService, incomingData, popupService, platformInfo, bwcError, gettextCatalog, storageService, bvamService, counterpartyService) {
+angular.module('copayApp.controllers').controller('tabSendController', function($scope, $rootScope, $log, $timeout, $ionicScrollDelegate, addressbookService, profileService, lodash, $state, walletService, incomingData, popupService, platformInfo, bwcError, gettextCatalog, storageService, bvamService, counterpartyService, bitcore) {
 
   var originalList;
   var CONTACTS_SHOW_LIMIT;
@@ -21,6 +21,11 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   $scope.form_data = {};
   $scope.form_data.source_address = null;
   $scope.form_data.send_token = null;
+  $scope.form_data.to_address = null;
+  $scope.form_data.send_amount = null;
+  
+  $scope.errors = {};
+  $scope.errors.to_address = null;
   
 
   var hasWallets = function() {
@@ -281,7 +286,6 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   
   $scope.loadAddressBalances = function(address)
   {
-    console.log($scope.form_data.send_token);
     counterpartyService.getBalances(profileService.counterpartyWalletClients[$scope.wallet.id], address, function(err, tokenBalances) { 
         //console.log(tokenBalances);
         if(!tokenBalances){
@@ -291,6 +295,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         
         $scope.source_balances = Array({tokenName: 'BTC', quantitySat: 0, quantityFloat: 0});
         $scope.form_data.send_token = 'BTC';
+        $scope.form_data.send_amount = null;
+        $scope.errors.send_amount = null;
         walletService.getAddressBalance($scope.wallet, address, function(err, btc_amount){
             $scope.source_balances[0].quantitySat = btc_amount;
             $scope.source_balances[0].quantityFloat = parseFloat((btc_amount / 100000000).toFixed(8));
@@ -331,7 +337,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
   
   $scope.updateSendTokenBalance = function(token){
-      
+      $scope.form_data.send_amount = null;
       for(var i = 0; i < $scope.source_balances.length; i++){
           if($scope.source_balances[i].tokenName == token){
             $scope.token_balance = $scope.source_balances[i].quantityFloat;
@@ -355,5 +361,32 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.walletSelectorTitle = gettextCatalog.getString('Inventory from');
     $scope.showWallets = true;
   };      
+  
+  $scope.validateAddress = function(address){
+      var is_valid =  bitcore.Address.isValid(address);
+      if(!is_valid && address.trim() != ''){
+          $scope.errors.to_address = 'Invalid bitcoin address';
+      }
+      else{
+          $scope.errors.to_address = null;
+      }
+      return is_valid;
+  };
+
+  $scope.validateAmount = function(amount){
+    var token = $scope.form_data.send_token;
+    var balance = $scope.token_balance;
+    
+    if(amount != null && (amount <= 0 || amount > balance)){
+        $scope.errors.send_amount = 'Invalid amount';
+        return false;
+    }
+    else{
+        $scope.errors.send_amount = null;
+        return true;
+    }   
+      
+  };
+    
 
 });

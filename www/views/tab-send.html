@@ -13,17 +13,6 @@
   <ion-content>
 
     <div id="send-form">
-        <!--
-        - source pocket
-        - choose token
-        - show balance
-        - enter bitcoin address + address book
-        - amount
-        - memo/description
-        - BTC dust
-        - fee rate
-        
-        -->
         <div class="form-group">
             <label for="source_address">Source Pocket</label>
             <select id="source_address" name="source_address" class="form-control" ng-model="form_data.source_address" ng-change="loadAddressBalances(form_data.source_address)">
@@ -35,28 +24,30 @@
             <select id="send_token" name="send_token" ng-model="form_data.send_token" class="form-control" ng-change="updateSendTokenBalance(form_data.send_token)">
                 <option value="{{ balance.tokenName }}" ng-repeat="balance in source_balances track by $index">{{ bvamData[balance.tokenName].selectName || balance.tokenName }}</option>
             </select>
-            <small><strong>Balance:</strong> {{ numberWithCommas(token_balance) }}</small>
+            <small><strong>Balance:</strong> {{ numberWithCommas(token_balance) }} <a ng-if="token_balance > 0" ng-click="form_data.send_amount = token_balance">Send Max</a></small>
         </div>
         <div class="form-group">
             <label for="to_address" name="to_address">To</label>
-            <input type="text" id="to_address" name="to_address" class="form-control" placeholder="Bitcoin address" />
+            <input type="text" id="to_address" name="to_address" class="form-control" ng-model="form_data.to_address" placeholder="Bitcoin address" ng-change="validateAddress(form_data.to_address)" />
+            <small class="text-danger" id="to_address-error">{{ errors.to_address }}</small>
         </div>
         <div class="form-group">
-            <label for="amount" for="amount">Amount</label>
-            <input type="text" id="amount"  name="amount" class="form-control numeric-only" />
+            <label for="send_amount">Amount</label>
+            <input type="number" id="send_amount"  name="send_amount" class="form-control" ng-model="form_data.send_amount" ng-change="validateAmount(form_data.send_amount)" />
+            <small class="text-danger" id="send_amount-error">{{ errors.send_amount }}</small>
         </div>
         <div class="form-group">
             <label for="memo">Memo</label>
-            <textarea id="memo" name="memo" class="form-control"></textarea>
+            <textarea id="memo" name="memo" class="form-control" maxlength="250" style="height: 70px;"></textarea>
             <small>For your personal reference only.</small>
         </div>
         <div class="form-group">
             <label for="btc_dust">[Advanced] BTC Dust</label>
-            <input type="text" id="btc_dust"  name="btc_dust" class="form-control numeric-only" />
+            <input type="number" id="btc_dust"  name="btc_dust" class="form-control" value="0.00005463" />
         </div>
         <div class="form-group">
             <label for="fee_rate">[Advanced] Fee Rate (satoshi/byte)</label>
-            <input type="text" id="fee_rate"  name="fee_rate" class="form-control numeric-only" />
+            <input type="number" id="fee_rate"  name="fee_rate" class="form-control" />
         </div>        
     </div>
     <div class="wallet-selector" ng-click="showWalletSelector()" ng-if="wallets[0] && wallet">
@@ -117,8 +108,9 @@
         </div>
       </div>
     </div>
-
-    <div class="card" ng-if="hasContacts && hasWallets && hasFunds">
+    -->
+    <!--
+    <div class="card" ng-if="hasContacts">
       <div class="item item-icon-right item-heading">
         <span translate>Contacts</span>
         <a ng-if="hasContacts" ui-sref="tabs.send.addressbook">
@@ -139,7 +131,8 @@
         </div>
       </div>
     </div>
-
+    -->
+    <!--
     <div class="card" ng-if="showTransferCard && hasFunds">
       <div class="item item-heading">
         <span translate>Transfer to Wallet</span>
