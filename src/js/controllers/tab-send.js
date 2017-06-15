@@ -18,11 +18,15 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   
   $scope.source_balances = [];
   $scope.token_balance = 'N/A';
+  $scope.btc_balance = 0;
+  $scope.btc_balanceSat = 0;
   $scope.form_data = {};
   $scope.form_data.source_address = null;
   $scope.form_data.send_token = null;
   $scope.form_data.to_address = null;
   $scope.form_data.send_amount = null;
+  $scope.form_data.fee_rate = null;
+  $scope.form_data.btc_dust = 0.00005463; //default dust size
   
   $scope.errors = {};
   $scope.errors.to_address = null;
@@ -301,6 +305,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
             $scope.source_balances[0].quantitySat = btc_amount;
             $scope.source_balances[0].quantityFloat = parseFloat((btc_amount / 100000000).toFixed(8));
             $scope.token_balance = parseFloat((btc_amount / 100000000).toFixed(8));
+            $scope.btc_balance = parseFloat((btc_amount / 100000000).toFixed(8));
+            $scope.btc_balanceSat = btc_amount;
+            $scope.validateBTCDust($scope.form_data.btc_dust);
             $timeout(function(){
                 $scope.$apply();
             });             
@@ -329,6 +336,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
                //console.log($scope.bvamData);
             });      
         }
+                 
         $timeout(function(){
             $scope.$apply();
         }); 
@@ -387,6 +395,49 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     }   
       
   };
-    
+
+
+  $scope.validateBTCDust = function(amount){
+    var balance = $scope.btc_balance;
+    if(amount != null && amount <= 0){
+        $scope.errors.btc_dust = 'Invalid amount';
+        return false;
+    }
+    else if(amount != null && balance < amount){
+        $scope.errors.btc_dust = 'Not enough BTC balance';
+        return false;
+    }
+    else if(amount != null && amount < 0.00005463){
+        $scope.errors.btc_dust = 'Dust size too low';
+        return false;
+    }
+    else{
+        $scope.errors.btc_dust = null;
+        return true;
+    }   
+      
+  };
+
+
+  $scope.validateFeeRate = function(rate){
+
+    if(rate != null && rate <= 0){
+        $scope.errors.fee_rate = 'Invalid amount';
+        return false;
+    }
+    else if(rate != null && rate > 1000){
+        $scope.errors.fee_rate = 'Fee rate is unusually high';
+        return false;
+    }
+    else if(rate != null && rate < 20){
+        $scope.errors.fee_rate = 'Fee rate is unusually low';
+        return false;
+    }    
+    else{
+        $scope.errors.fee_rate = null;
+        return true;
+    }   
+      
+  };
 
 });
