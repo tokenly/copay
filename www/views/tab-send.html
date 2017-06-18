@@ -39,7 +39,7 @@
         </div>
         <div class="form-group">
             <label for="memo">Memo</label>
-            <textarea id="memo" name="memo" class="form-control" maxlength="250" style="height: 70px;"></textarea>
+            <textarea id="memo" name="memo" class="form-control" maxlength="250" style="height: 70px;" ng-model="form_data.memo"></textarea>
             <small>For your personal reference only. Max 250 characters</small>
         </div>
         <div class="form-group" ng-show="form_data.send_token != 'BTC'">
@@ -52,6 +52,10 @@
             <input type="number" id="fee_rate"  name="fee_rate" class="form-control" ng-model="form_data.fee_rate" ng-change="validateFeeRate(form_data.fee_rate)" placeholder="Leave blank for default" />
             <small class="text-danger" id="fee_rate-error">{{ errors.fee_rate }}</small>
         </div>        
+        <div class="form-group">
+            <button class="btn btn-lg" id="resetForm" ng-click="resetForm()">Reset</button>
+            <button class="btn btn-lg" id="send" ng-click="initSend()">Send</button>
+        </div>
     </div>
     <div class="wallet-selector" ng-click="showWalletSelector()" ng-if="wallets[0] && wallet">
       <a ng-if="wallet" class="item item-sub item-icon-left item-big-icon-left item-icon-right">

@@ -5,6 +5,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   var originalList;
   var CONTACTS_SHOW_LIMIT;
   var currentContactsPage;
+  const DEFAULT_DUST = 0.0000543;
+  const SATOSHI_MOD = 100000000;
+  
   $scope.isChromeApp = platformInfo.isChromeApp;
 
 
@@ -26,10 +29,14 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   $scope.form_data.to_address = null;
   $scope.form_data.send_amount = null;
   $scope.form_data.fee_rate = null;
-  $scope.form_data.btc_dust = 0.00005463; //default dust size
+  $scope.form_data.btc_dust = DEFAULT_DUST; //default dust size
+  $scope.form_data.memo = null;
   
   $scope.errors = {};
   $scope.errors.to_address = null;
+  $scope.errors.send_amount = null;
+  $scope.errors.fee_rate = null;
+  $scope.errors.btc_dust = null;
   
 
   var hasWallets = function() {
@@ -303,9 +310,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         $scope.errors.send_amount = null;
         walletService.getAddressBalance($scope.wallet, address, function(err, btc_amount){
             $scope.source_balances[0].quantitySat = btc_amount;
-            $scope.source_balances[0].quantityFloat = parseFloat((btc_amount / 100000000).toFixed(8));
-            $scope.token_balance = parseFloat((btc_amount / 100000000).toFixed(8));
-            $scope.btc_balance = parseFloat((btc_amount / 100000000).toFixed(8));
+            $scope.source_balances[0].quantityFloat = parseFloat((btc_amount / SATOSHI_MOD).toFixed(8));
+            $scope.token_balance = parseFloat((btc_amount / SATOSHI_MOD).toFixed(8));
+            $scope.btc_balance = parseFloat((btc_amount / SATOSHI_MOD).toFixed(8));
             $scope.btc_balanceSat = btc_amount;
             $scope.validateBTCDust($scope.form_data.btc_dust);
             $timeout(function(){
@@ -407,7 +414,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         $scope.errors.btc_dust = 'Not enough BTC balance';
         return false;
     }
-    else if(amount != null && amount < 0.00005463){
+    else if(amount != null && amount < DEFAULT_DUST){
         $scope.errors.btc_dust = 'Dust size too low';
         return false;
     }
@@ -437,6 +444,44 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         $scope.errors.fee_rate = null;
         return true;
     }   
+      
+  };
+  
+  $scope.resetForm = function(){
+      
+    //reset form fields
+    $scope.form_data.to_address = null;
+    $scope.form_data.send_amount = null;
+    $scope.form_data.fee_rate = null;
+    $scope.form_data.memo = null;
+    $scope.form_data.btc_dust = DEFAULT_DUST;
+    
+    //reset errors  
+    $scope.errors.fee_rate = null;  
+    $scope.errors.btc_dust = null;  
+    $scope.errors.send_amount = null;  
+    $scope.errors.to_address = null;  
+    
+    $timeout(function(){
+        $scope.$apply();
+    }); 
+      
+  };
+  
+  
+  $scope.initSend = function(){
+      
+    //load form data
+    var form_data = $scope.form_Data;  
+    
+    //verify user input
+    
+    //prepare transaction
+    
+    //construct tx
+    
+    //prompt for confirmation and signing+broadcast
+    
       
   };
 
