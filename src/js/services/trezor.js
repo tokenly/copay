@@ -18,9 +18,7 @@ angular.module('copayApp.services')
     };
 
     root.getEntropySource = function(isMultisig, account, callback) {
-console.log('[trezor.js.20:isMultisig:]',root.description.id, isMultisig, account); //TODO
       root.getXPubKey(hwWallet.getEntropyPath(root.description.id, isMultisig, account), function(data) {
-console.log('[trezor.js.21:data:]',data); //TODO
         if (!data.success)
           return callback(hwWallet._err(data));
 
@@ -32,7 +30,6 @@ console.log('[trezor.js.21:data:]',data); //TODO
     root.getXPubKey = function(path, callback) {
       $log.debug('TREZOR deriving xPub path:', path);
       try {
-console.log('[trezor.js.35:path:]',path); //TODO
         TrezorConnect.getXPubKey(path, callback);
       } catch (e) {
         callback('Error connecting Trezor');
@@ -95,7 +92,6 @@ console.log('[trezor.js.35:path:]',path); //TODO
       var inputs = [],
         outputs = [];
       var tmpOutputs = [];
-
 
       if (txp.type && txp.type != 'simple') {
         return callback('Only TXPs type SIMPLE are supported in TREZOR');
@@ -173,7 +169,6 @@ console.log('[trezor.js.35:path:]',path); //TODO
           return '';
         });
 
-
         inputs = lodash.map(txp.inputs, function(i) {
           $log.debug("Trezor TX input path:", i.path);
           var pathArr = i.path.split('/');
@@ -183,12 +178,12 @@ console.log('[trezor.js.35:path:]',path); //TODO
           inAmount += i.satoshis;
 
           var orderedPubKeys = root._orderPubKeys(xPubKeys, np);
-          var pubkeys = lodash(orderedPubKeys.map(function(v) {
+          var pubkeys = orderedPubKeys.map(function(v) {
             return {
               node: v,
               address_n: np,
             };
-          }));
+          });
 
           return {
             address_n: n,
@@ -211,12 +206,12 @@ console.log('[trezor.js.35:path:]',path); //TODO
           var np = n.slice(3);
 
           var orderedPubKeys = root._orderPubKeys(xPubKeys, np);
-          var pubkeys = lodash(orderedPubKeys.map(function(v) {
+          var pubkeys = orderedPubKeys.map(function(v) {
             return {
               node: v,
               address_n: np,
             };
-          }));
+          });
 
           tmpOutputs.push({
             address_n: n,

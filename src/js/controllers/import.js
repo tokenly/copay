@@ -284,7 +284,6 @@ angular.module('copayApp.controllers').controller('importController',
         opts.entropySourcePath = 'm/' + hwWallet.getEntropyPath(id, isMultisig, account);
       }
 
-console.log('[import.js.283:opts:]',opts); //TODO
       _importMnemonic(words, opts);
     };
 
@@ -298,7 +297,7 @@ console.log('[import.js.283:opts:]',opts); //TODO
 
         lopts.externalSource = walletService.externalSource.trezor.id;
         lopts.bwsurl = $scope.formData.bwsurl;
-console.log('[import.js.299:lopts:]',lopts); //TODO
+        lopts.account = account;
         ongoingProcess.set('importingWallet', true);
         $log.debug('Import opts', lopts);
 
@@ -355,6 +354,7 @@ console.log('[import.js.299:lopts:]',lopts); //TODO
 
         lopts.externalSource = lopts.externalSource = walletService.externalSource.ledger.id;
         lopts.bwsurl = $scope.formData.bwsurl;
+        lopts.account = account;
         ongoingProcess.set('importingWallet', true);
         $log.debug('Import opts', lopts);
 
