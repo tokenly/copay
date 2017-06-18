@@ -74,7 +74,9 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
 
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
+
     $scope.refreshBalances();
+    
     
     listeners = [
       $rootScope.$on('bwsEvent', function(e, walletId, type, n) {

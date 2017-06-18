@@ -42,6 +42,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
       requiredCopayers: 2,
       totalCopayers: 3,
       spendUnconfirmed: false,
+      advancedTransactions: false,
       reconnectDelay: 5000,
       idleDurationMin: 4,
       settings: {
