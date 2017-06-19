@@ -37,6 +37,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   $scope.errors.send_amount = null;
   $scope.errors.fee_rate = null;
   $scope.errors.btc_dust = null;
+  $scope.errors.general = null;
   
   $scope.currentFeeRate = null;
   
@@ -388,9 +389,13 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.showWallets = true;
   };      
   
-  $scope.validateAddress = function(address){
+  $scope.validateAddress = function(address, require = false){
+      if(require && (address == null || address.trim() == '')){
+          $scope.errors.to_address = 'Bitcoin destination address required.';
+          return false;
+      }      
       var is_valid =  bitcore.Address.isValid(address);
-      if(!is_valid && address.trim() != ''){
+      if(!is_valid && address != null && address.trim() != ''){
           $scope.errors.to_address = 'Invalid bitcoin address';
       }
       else{
@@ -399,9 +404,14 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
       return is_valid;
   };
 
-  $scope.validateAmount = function(amount){
+  $scope.validateAmount = function(amount, require = false){
     var token = $scope.form_data.send_token;
     var balance = $scope.token_balance;
+    
+    if(require && amount == null){
+        $scope.errors.send_amount = 'Send amount required';
+        return false;
+    }
     
     if(amount != null && (amount <= 0 || amount > balance)){
         $scope.errors.send_amount = 'Invalid amount';
@@ -415,8 +425,12 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
 
-  $scope.validateBTCDust = function(amount){
+  $scope.validateBTCDust = function(amount, require = false){
     var balance = $scope.btc_balance;
+    if(require && amount == null){
+        $scope.errors.btc_dust = 'Dust size required';
+        return false;
+    }
     if(amount != null && amount <= 0){
         $scope.errors.btc_dust = 'Invalid amount';
         return false;
@@ -437,8 +451,11 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
 
-  $scope.validateFeeRate = function(rate){
-
+  $scope.validateFeeRate = function(rate, require = false){
+    if(require && rate == null){
+        $scope.errors.fee_rate = 'Fee rate required';
+        return false;
+    }
     if(rate != null && rate <= 0){
         $scope.errors.fee_rate = 'Invalid amount';
         return false;
@@ -472,6 +489,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.errors.btc_dust = null;  
     $scope.errors.send_amount = null;  
     $scope.errors.to_address = null;  
+    $scope.errors.general = null;  
     
     $timeout(function(){
         $scope.$apply();
@@ -485,7 +503,66 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     //load form data
     var form_data = $scope.form_Data;  
     
-    //verify user input
+    //--verify user input--
+    //validate source address
+    var source_address = $scope.form_data.source_address;
+    var addr_found = false;
+    for(var i = 0; i < $scope.addressList.length; i++){
+        if($scope.addressList[i].address == source_address){
+            addr_found = true;
+        }
+    }
+    if(!addr_found){
+        $scope.errors.general = 'Invalid source address';
+        return false;
+    }
+    
+    //validate token to send
+    var send_token = $scope.form_data.send_token;
+    var token_found = false;
+    for(var i = 0; i < $scope.source_balances.length; i++){
+        if($scope.source_balances[i].tokenName == send_token){
+            token_found = true;
+        }
+    }
+    if(!token_found){
+        $scope.errors.general = 'Invalid token to send';
+        return false;
+    }          
+  
+    //validate destination address
+    var to_address = $scope.form_data.to_address;
+    if(!$scope.validateAddress(to_address, true)){
+        return false;
+    }
+    
+    //validate amount to send
+    var send_amount = $scope.form_data.send_amount;
+    if(!$scope.validateAmount(send_amount, true)){
+        return false;
+    }
+    
+    //make sure memo isnt too long
+    var memo = $scope.form_data.memo;
+    if(memo){
+        memo = memo.substring(0, 250);
+    }
+    
+    if($scope.advancedTransactions){
+        //validate custom fee rate
+        var fee_rate = $scope.form_data.fee_rate;
+        if(!$scope.validateFeeRate(fee_rate, true)){
+            return false;
+        }
+        
+        //validate BTC dust for token sends
+        if(send_token != 'BTC'){
+            var btc_dust = $scope.form_data.btc_dust;
+            if(!$scope.validateBTCDust(btc_dust, true)){
+                return false;
+            }
+        }
+    }
     
     //prepare transaction
     
