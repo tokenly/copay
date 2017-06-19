@@ -13,12 +13,12 @@
       <div class="settings-heading" translate>Bitcoin transactions include a fee collected by miners on the network.</div>
       <div class="settings-description" translate>The higher the fee, the greater the incentive a miner has to include that transaction in a block. Current fees are determined based on network load and the selected policy.</div>
       <div class="estimates">
-        <div>
+        <div ng-show="currentFeeLevel != 'custom'">
           <span translate>Average confirmation time</span>:
           <span class="fee-minutes" ng-if="avgConfirmationTime">{{avgConfirmationTime | amDurationFormat: 'minute'}}</span>
           <span ng-if="loadingFee">...</span>
         </div>
-        <div>
+        <div ng-show="feePerSatByte">
           <span translate>Current fee rate for this policy</span>:
           <span class="fee-rate" ng-if="feePerSatByte">{{feePerSatByte}} satoshis/byte</span>
           <span ng-if="loadingFee">...</span>
@@ -29,6 +29,13 @@
       <ion-radio ng-repeat="(fee, level) in feeOpts" ng-value="fee" ng-model="currentFeeLevel" ng-click="save(fee)">
         {{level|translate}}
       </ion-radio>
+      <div ng-show="currentFeeLevel == 'custom'" class="form-group settings-button-group">
+          <input type="number" placeholder="Custom satoshi per byte rate" ng-model="customFeeRate" ng-change="save('custom', customFeeRate); checkCustomFee(customFeeRate); feePerSatByte = customFeeRate" class="form-control" prevent-typing-greater min="20" max="1000" />
+          <small>Min: 20, Max: 1000</small>
+          <div ng-show="customFeeError">
+            <small class="text-danger" id="fee_rate-error">{{ customFeeError }}</small>
+          </div>
+      </div>
     </div>
   </ion-content>
   </ion-side-menu-content>

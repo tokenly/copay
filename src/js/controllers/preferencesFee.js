@@ -2,14 +2,16 @@
 
 angular.module('copayApp.controllers').controller('preferencesFeeController', function($scope, $timeout, $ionicHistory, lodash, gettextCatalog, configService, feeService, ongoingProcess, popupService) {
 
-  $scope.save = function(newFee) {
+  $scope.save = function(newFee, custom_fee = null) {
 
+    
     if ($scope.customFeeLevel) {
       $scope.currentFeeLevel = newFee;
       updateCurrentValues();
       return;
     }
-
+    
+    
     var opts = {
       wallet: {
         settings: {
@@ -17,6 +19,10 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
         }
       }
     };
+    
+    if(custom_fee != null){
+        opts.wallet.settings.customFeeLevel = custom_fee;
+    }
 
     configService.set(opts, function(err) {
       if (err) $log.debug(err);
@@ -33,8 +39,10 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
   });
 
   $scope.init = function() {
+    var config = configService.getSync();
+    $scope.customFeeRate = config.wallet.settings.customFeeLevel;
     $scope.feeOpts = feeService.feeOpts;
-    $scope.currentFeeLevel = $scope.customFeeLevel ? $scope.customFeeLevel : feeService.getCurrentFeeLevel();
+    $scope.currentFeeLevel = feeService.getCurrentFeeLevel();
     $scope.loadingFee = true;
     feeService.getFeeLevels(function(err, levels) {
       $scope.loadingFee = false;
@@ -44,8 +52,13 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
         return;
       }
       $scope.feeLevels = levels;
+      var customLevelObject = {feePerKB: ($scope.customFeeRate * 1024), level: 'custom', nbBlocks: false};
+      $scope.feeLevels.livenet.push(customLevelObject);
+      $scope.feeLevels.testnet.push(customLevelObject);
       updateCurrentValues();
-      $scope.$apply();
+      $timeout(function() {
+        $scope.$apply();
+      });
     });
   };
 
@@ -59,11 +72,33 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
       $scope.avgConfirmationTime = null;
       return;
     }
-    $scope.feePerSatByte = (feeLevelValue.feePerKB / 1000).toFixed();
+    $scope.feePerSatByte = (feeLevelValue.feePerKB / 1024).toFixed();
     $scope.avgConfirmationTime = feeLevelValue.nbBlocks * 10;
+    $timeout(function() {
+        $scope.$apply();
+    });
   };
 
   $scope.chooseNewFee = function() {
     $scope.hideModal($scope.currentFeeLevel);
+  };
+  
+  $scope.checkCustomFee = function(fee){
+    
+    if(fee < 20){
+        $scope.customFeeError = 'Custom fee too low, might never confirm';
+        $scope.customFeeRate = 20;
+    }
+    else if(fee > 1000){
+        $scope.customFeeError = 'Custom fee too high';
+        $scope.customFeeRate = 1000;
+    }
+    else{
+        $scope.customFeeError = null;
+    }
+    
+    $timeout(function() {
+        $scope.$apply();
+    }); 
   };
 });

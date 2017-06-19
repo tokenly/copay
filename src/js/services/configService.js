@@ -52,6 +52,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
         unitCode: 'btc',
         alternativeName: 'US Dollar',
         alternativeIsoCode: 'USD',
+        customFeeLevel: 100
       }
     },
 

@@ -9,7 +9,8 @@ angular.module('copayApp.services').factory('feeService', function($log, $stateP
     priority: gettext('Priority'),
     normal: gettext('Normal'),
     economy: gettext('Economy'),
-    superEconomy: gettext('Super Economy')
+    superEconomy: gettext('Super Economy'),
+    custom: gettext('Custom')
   };
 
   root.getCurrentFeeLevel = function() {
@@ -22,10 +23,15 @@ angular.module('copayApp.services').factory('feeService', function($log, $stateP
 
     root.getFeeLevels(function(err, levels) {
       if (err) return cb(err);
-
-      var feeLevelValue = lodash.find(levels[network], {
-        level: feeLevel
-      });
+      
+      if(feeLevel == 'custom'){
+          var feeLevelValue = {feePerKB: (configService.getSync().wallet.settings.customFeeLevel * 1024), level: 'custom', nbBlocks: false};
+      }
+      else{
+          var feeLevelValue = lodash.find(levels[network], {
+            level: feeLevel
+          });
+      }
 
       if (!feeLevelValue || !feeLevelValue.feePerKB) {
         return cb({

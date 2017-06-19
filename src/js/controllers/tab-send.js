@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabSendController', function($scope, $rootScope, $log, $timeout, $ionicScrollDelegate, addressbookService, profileService, lodash, $state, walletService, incomingData, popupService, platformInfo, bwcError, gettextCatalog, storageService, bvamService, counterpartyService, bitcore, configService) {
+angular.module('copayApp.controllers').controller('tabSendController', function($scope, $rootScope, $log, $timeout, $ionicScrollDelegate, addressbookService, profileService, lodash, $state, walletService, incomingData, popupService, platformInfo, bwcError, gettextCatalog, storageService, bvamService, counterpartyService, bitcore, configService, feeService) {
 
   var originalList;
   var CONTACTS_SHOW_LIMIT;
@@ -249,6 +249,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     
     $scope.loadWalletAddresses();
     
+    feeService.getCurrentFeeValue('livenet', null, function(err, fee_rate){
+        $scope.form_data.fee_rate = parseInt(fee_rate / 1024);
+    });      
     
   });
 
