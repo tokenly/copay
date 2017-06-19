@@ -38,6 +38,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   $scope.errors.fee_rate = null;
   $scope.errors.btc_dust = null;
   
+  $scope.currentFeeRate = null;
+  
 
   var hasWallets = function() {
     $scope.wallets = profileService.getWallets({
@@ -250,7 +252,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.loadWalletAddresses();
     
     feeService.getCurrentFeeValue('livenet', null, function(err, fee_rate){
-        $scope.form_data.fee_rate = parseInt(fee_rate / 1024);
+        fee_rate = parseInt(fee_rate / 1024);
+        $scope.form_data.fee_rate = fee_rate;
+        $scope.currentFeeRate = fee_rate;
     });      
     
   });
@@ -459,7 +463,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     //reset form fields
     $scope.form_data.to_address = null;
     $scope.form_data.send_amount = null;
-    $scope.form_data.fee_rate = null;
+    $scope.form_data.fee_rate = $scope.currentFeeRate;
     $scope.form_data.memo = null;
     $scope.form_data.btc_dust = DEFAULT_DUST;
     
