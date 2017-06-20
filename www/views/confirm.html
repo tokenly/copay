@@ -16,9 +16,9 @@
           <span translate ng-if="useSendMax">Sending maximum amount</span>
         </div>
         <div class="amount-label">
-          <div class="amount">{{displayAmount || '...'}} <span class="unit">{{displayUnit}}</span></div>
-          <div class="alternative">{{alternativeAmountStr || '...'}}</div>
-        </div>
+          <div class="amount">{{numberWithCommas(displayAmount)}} <span class="unit">{{ bvamData[displayUnit].metadata.name || displayUnit }}</span></div>
+          <div class="alternative" ng-show="alternativeAmountStr">{{alternativeAmountStr}}</div>
+        </div>       
       </div>
       <div class="info">
         <div class="item single-line" ng-if="paypro">
@@ -26,9 +26,8 @@
           <span class="item-note" ng-if="!paymentExpired.value">{{remainingTimeStr.value}}</span>
           <span class="item-note" ng-if="paymentExpired.value" ng-style="{'color': 'red'}" translate>Expired</span>
         </div>
-
         <div class="item">
-          <span class="label" translate>To</span>
+          <span class="label" translate>Destination</span>
           <span class="payment-proposal-to" ng-if="!recipientType">
             <img src="img/icon-bitcoin-small.svg">
 
@@ -61,8 +60,18 @@
             <span ng-if="toName && showAddress">{{toAddress}}</span>
           </div>
         </div>
-        <a class="item item-icon-right" ng-hide="!useSendMax && (insufficientFunds || noMatchingWallet)" ng-click="showWalletSelector()">
-          <span class="label" translate>From</span>
+        <div class="item" ng-show="sourceAddress">
+          <span class="label" translate>Source Pocket</span>
+          <div class="payment-proposal-to">
+            <img src="img/app/tokenly-icon_grey.svg" style="width: 25px;" />
+            <div copy-to-clipboard="sourceAddress" class="ellipsis">
+              <contact ng-if="addressLabels[sourceAddress]">{{ addressLabels[sourceAddress] }} <small style="display: block;">{{ sourceAddress }}</small></contact>
+              <contact ng-if="!addressLabels[sourceAddress]">{{ sourceAddress }}</contact>
+            </div>            
+          </div>
+        </div>
+        <div class="item item-icon-right" ng-hide="noMatchingWallet">
+          <span class="label" translate>From Wallet</span>
           <div class="wallet" ng-if="wallet">
             <i class="icon big-icon-svg">
               <img src="img/icon-wallet.svg" ng-class="{'wallet-background-color-default': !wallet.color}" ng-style="{'background-color': wallet.color}" class="bg"/>
@@ -76,7 +85,7 @@
             <div>...</div>
           </div>
           <i class="icon bp-arrow-right"></i>
-        </a>
+        </div>
         <div class="item item-icon-right" ng-if="!insufficientFunds && !noMatchingWallet" ng-click="chooseFeeLevel()">
           <span class="label">{{'Fee:' | translate}} {{feeLevel | translate}}</span>
           <span class="m10l">{{fee || '...'}}</span>

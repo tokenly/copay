@@ -548,29 +548,42 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         memo = memo.substring(0, 250);
     }
     
+    var fee_rate = null;
+    var btc_dust = null;
     if($scope.advancedTransactions){
         //validate custom fee rate
-        var fee_rate = $scope.form_data.fee_rate;
+        fee_rate = $scope.form_data.fee_rate;
         if(!$scope.validateFeeRate(fee_rate, true)){
             return false;
         }
         
         //validate BTC dust for token sends
         if(send_token != 'BTC'){
-            var btc_dust = $scope.form_data.btc_dust;
+            btc_dust = $scope.form_data.btc_dust;
             if(!$scope.validateBTCDust(btc_dust, true)){
                 return false;
             }
         }
     }
     
-    //prepare transaction
-    
-    //construct tx
-    
-    //prompt for confirmation and signing+broadcast
-    
-      
+    //send to confimation page
+    $state.transitionTo('tabs.send.confirm', {
+        recipientType: null,
+        toAmount: (send_amount * SATOSHI_MOD).toFixed(0),
+        toAddress: to_address,
+        toName: null,
+        toEmail: null,
+        toColor: null,
+        useSendMax: false,
+        sourceAddress: source_address,
+        feeRate: fee_rate,
+        btcDust: btc_dust,
+        description: memo,
+        sendToken: send_token,
+        bvamData: $scope.bvamData,
+        addressLabels: $scope.addressLabels
+        
+    });    
   };
 
 });

@@ -124,9 +124,11 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
         if(typeof x == 'undefined'){
             return null;
         }
+        x = parseFloat(x);
         var parts = x.toString().split(".");
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return parts.join(".");
+        var str = parts.join(".");
+        return str;
     };
     
 

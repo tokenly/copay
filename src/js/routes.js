@@ -298,7 +298,13 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           }
         },
         params: {
-          paypro: null
+          paypro: null,
+          feeRate: null,
+          btcDust: null,
+          sendToken: null,
+          sourceAddress: null,
+          bvamData: null,
+          addressLabels: null
         }
       })
       .state('tabs.send.addressbook', {

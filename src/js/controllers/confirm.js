@@ -31,6 +31,14 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.toColor = data.stateParams.toColor;
     $scope.description = data.stateParams.description;
     $scope.paypro = data.stateParams.paypro;
+    
+    $scope.addressLabels = data.stateParams.addressLabels;
+    $scope.bvamData = data.stateParams.bvamData;
+    $scope.sourceAddress = data.stateParams.sourceAddress;
+    $scope.sendToken = data.stateParams.sendToken;
+    $scope.feeRate = data.stateParams.feeRate;
+    $scope.btcDust = data.stateParams.btcDust;
+    
     $scope.insufficientFunds = false;
     $scope.noMatchingWallet = false;
     $scope.paymentExpired = {
@@ -163,12 +171,22 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
   function displayValues() {
     toAmount = parseInt(toAmount);
-    $scope.amountStr = txFormatService.formatAmountStr(toAmount);
-    $scope.displayAmount = getDisplayAmount($scope.amountStr);
-    $scope.displayUnit = getDisplayUnit($scope.amountStr);
-    txFormatService.formatAlternativeStr(toAmount, function(v) {
-      $scope.alternativeAmountStr = v;
-    });
+    if($scope.sendToken == null || $scope.sendToken == 'BTC'){
+        $scope.amountStr = txFormatService.formatAmountStr(toAmount);
+        $scope.displayAmount = getDisplayAmount($scope.amountStr);        
+        $scope.displayUnit = getDisplayUnit($scope.amountStr);
+        txFormatService.formatAlternativeStr(toAmount, function(v) {
+          $scope.alternativeAmountStr = v;
+        });        
+    }
+    else{
+        $scope.amountStr = (toAmount / 100000000).toFixed(8);
+        $scope.displayAmount = $scope.amountStr;
+        $scope.displayUnit = $scope.sendToken;
+        if($scope.bvamData[$scope.sendToken] && $scope.bvamData[$scope.sendToken].metadata.name != $scope.sendToken){
+            $scope.alternativeAmountStr = $scope.sendToken;
+        }
+    }
   };
 
   function resetValues() {
