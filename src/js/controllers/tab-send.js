@@ -17,9 +17,10 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
      $scope.addressLabels = addressLabels; 
   });
   $scope.uniqueTokens = [];
+  $scope.usedTokens = [];
   $scope.bvamData = [];
   
-  $scope.source_balances = [];
+  $scope.source_balances = {};
   $scope.token_balance = 'N/A';
   $scope.btc_balance = 0;
   $scope.btc_balanceSat = 0;
@@ -316,13 +317,13 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         }
         //console.log('--LOADING COUNTERPARTY TOKEN AND BTC BALANCES ' + address + '--');
         
-        $scope.source_balances = Array({tokenName: 'BTC', quantitySat: 0, quantityFloat: 0});
+        $scope.source_balances = {"BTC": {tokenName: 'BTC', quantitySat: 0, quantityFloat: 0}};
         $scope.form_data.send_token = 'BTC';
         $scope.form_data.send_amount = null;
         $scope.errors.send_amount = null;
         walletService.getAddressBalance($scope.wallet, address, function(err, btc_amount){
-            $scope.source_balances[0].quantitySat = btc_amount;
-            $scope.source_balances[0].quantityFloat = parseFloat((btc_amount / SATOSHI_MOD).toFixed(8));
+            $scope.source_balances["BTC"].quantitySat = btc_amount;
+            $scope.source_balances["BTC"].quantityFloat = parseFloat((btc_amount / SATOSHI_MOD).toFixed(8));
             $scope.token_balance = parseFloat((btc_amount / SATOSHI_MOD).toFixed(8));
             $scope.btc_balance = parseFloat((btc_amount / SATOSHI_MOD).toFixed(8));
             $scope.btc_balanceSat = btc_amount;
@@ -332,15 +333,15 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
             });             
         });        
         
-        var used_tokens = [];
+        var used_tokens = ["BTC"];
         lodash.each(tokenBalances, function(token, idx){
             if(token.quantitySat > 0){
-                $scope.source_balances.push(token);
+                $scope.source_balances[token.tokenName] = token;
             }
-            if($scope.bvamData[token.tokenName] == undefined){
-                used_tokens.push(token.tokenName);
-            }
+            used_tokens.push(token.tokenName);
         });
+        
+        $scope.usedTokens = used_tokens;
         
         if(used_tokens.length > 0){
             bvamService.getBvamData(profileService.counterpartyWalletClients[$scope.wallet.id], used_tokens, function(err, bvam_data){
@@ -365,9 +366,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   
   $scope.updateSendTokenBalance = function(token){
       $scope.form_data.send_amount = null;
-      for(var i = 0; i < $scope.source_balances.length; i++){
-          if($scope.source_balances[i].tokenName == token){
-            $scope.token_balance = $scope.source_balances[i].quantityFloat;
+      for(var i = 0; i < $scope.usedTokens.length; i++){
+          if($scope.source_balances[$scope.usedTokens[i]].tokenName == token){
+            $scope.token_balance = $scope.source_balances[$scope.usedTokens[i]].quantityFloat;
           }
       }
   };
@@ -520,8 +521,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     //validate token to send
     var send_token = $scope.form_data.send_token;
     var token_found = false;
-    for(var i = 0; i < $scope.source_balances.length; i++){
-        if($scope.source_balances[i].tokenName == send_token){
+    for(var i = 0; i < $scope.usedTokens.length; i++){
+        if($scope.source_balances[$scope.usedTokens[i]].tokenName == send_token){
             token_found = true;
         }
     }
@@ -581,7 +582,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         description: memo,
         sendToken: send_token,
         bvamData: $scope.bvamData,
-        addressLabels: $scope.addressLabels
+        addressLabels: $scope.addressLabels,
+        wallet: $scope.wallet,
+        sourceBalances: $scope.source_balances
         
     });    
   };

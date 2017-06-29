@@ -31,10 +31,13 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.toColor = data.stateParams.toColor;
     $scope.description = data.stateParams.description;
     $scope.paypro = data.stateParams.paypro;
-    
+
+    $scope.wallet = data.stateParams.wallet;
+    $scope.wallets = [$scope.wallet];
     $scope.addressLabels = data.stateParams.addressLabels;
     $scope.bvamData = data.stateParams.bvamData;
     $scope.sourceAddress = data.stateParams.sourceAddress;
+    $scope.sourceBalances = data.stateParams.sourceBalances;
     $scope.sendToken = data.stateParams.sendToken;
     $scope.feeRate = data.stateParams.feeRate;
     $scope.btcDust = data.stateParams.btcDust;
@@ -50,9 +53,26 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.network = (new bitcore.Address($scope.toAddress)).network.name;
     setFee();
     resetValues();
-    setwallets();
+    //setwallets();
     applyButtonText();
+    
+    if(!$scope.sourceBalances[$scope.sendToken] || $scope.sourceBalances[$scope.sendToken] < toAmount){
+        $scope.insufficientFunds = true;
+    }
+    
+    //pregenerate a BTC or counterparty  transaction and figure out its size and fee cost etc.
+    
+    displayValues();    
+    
+    $timeout(function() {
+        $scope.$apply();
+    });    
+ 
   });
+  
+  
+
+  
 
   function setFee(customFeeLevel, cb) {
     feeService.getCurrentFeeValue($scope.network, customFeeLevel, function(err, currentFeePerKb) {
@@ -81,6 +101,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       $scope.buttonText += gettextCatalog.getString('to send');
   };
 
+    /*
   function setwallets() {
     $scope.wallets = profileService.getWallets({
       onlyComplete: true,
@@ -153,6 +174,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
       });
     });
   };
+  */
 
   $scope.toggleAddress = function() {
     $scope.showAddress = !$scope.showAddress;
