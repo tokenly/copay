@@ -11,7 +11,14 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
       return;
     }
     
-    
+  var network;
+
+  $scope.save = function(newFee) {
+    $scope.currentFeeLevel = newFee;
+    updateCurrentValues();
+
+    if ($scope.noSave) 
+      return;
     var opts = {
       wallet: {
         settings: {
@@ -26,8 +33,6 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
 
     configService.set(opts, function(err) {
       if (err) $log.debug(err);
-      $scope.currentFeeLevel = newFee;
-      updateCurrentValues();
       $timeout(function() {
         $scope.$apply();
       });
@@ -43,6 +48,7 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
     $scope.customFeeRate = config.wallet.settings.customFeeLevel;
     $scope.feeOpts = feeService.feeOpts;
     $scope.currentFeeLevel = feeService.getCurrentFeeLevel();
+    $scope.network = $scope.network || 'livenet';
     $scope.loadingFee = true;
     feeService.getFeeLevels(function(err, levels) {
       $scope.loadingFee = false;
@@ -64,14 +70,17 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
 
   var updateCurrentValues = function() {
     if (lodash.isEmpty($scope.feeLevels) || lodash.isEmpty($scope.currentFeeLevel)) return;
-    var feeLevelValue = lodash.find($scope.feeLevels['livenet'], {
+
+    var value = lodash.find($scope.feeLevels[$scope.network], {
       level: $scope.currentFeeLevel
     });
-    if (lodash.isEmpty(feeLevelValue)) {
+
+    if (lodash.isEmpty(value)) {
       $scope.feePerSatByte = null;
       $scope.avgConfirmationTime = null;
       return;
     }
+
     $scope.feePerSatByte = (feeLevelValue.feePerKB / 1024).toFixed();
     $scope.avgConfirmationTime = feeLevelValue.nbBlocks * 10;
     $timeout(function() {

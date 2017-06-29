@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabsController', function($rootScope, $window, $log, $scope, $state, $stateParams, $timeout, incomingData, lodash, popupService, gettextCatalog, profileService, $ionicHistory, $ionicSideMenuDelegate) {
+
+angular.module('copayApp.controllers').controller('tabsController', function($rootScope, $window, $log, $scope, $state, $stateParams, $timeout, incomingData, lodash, popupService, gettextCatalog, profileService, $ionicHistory, $ionicSideMenuDelegate, scannerService) {
 
   $scope.onScan = function(data) {
     if (!incomingData.redir(data)) {
@@ -40,6 +41,25 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
     $ionicSideMenuDelegate.toggleLeft(false);
   };
 
+
+  $scope.chooseScanner = function() {
+
+    var isWindowsPhoneApp = platformInfo.isCordova && platformInfo.isWP;
+
+    if (!isWindowsPhoneApp) {
+      $state.go('tabs.scan');
+      return;
+    }
+
+    scannerService.useOldScanner(function(err, contents) {
+      if (err) {
+        popupService.showAlert(gettextCatalog.getString('Error'), err);
+        return;
+      }
+      incomingData.redir(contents);
+    });
+
+  };
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
     $rootScope.hideTabs = '';

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog, counterpartyService, bvamService, timeService) {
+angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog, counterpartyService, bvamService, timeService, feeService) {
 
   var HISTORY_SHOW_LIMIT = 10;
   var currentTxHistoryPage = 0;
@@ -55,6 +55,21 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     $scope.txps = lodash.sortBy(txps, 'createdOn').reverse();
   };
 
+  var analyzeUtxosDone;
+
+  var analyzeUtxos = function() {
+    if (analyzeUtxosDone) return;
+
+    feeService.getFeeLevels(function(err, levels){
+      if (err) return;
+      walletService.getLowUtxos($scope.wallet, levels, function(err, resp){
+        if (err || !resp) return;
+        analyzeUtxosDone = true;
+        $scope.lowUtxosWarning = resp.warning;
+      });
+    });
+  };
+
   var updateStatus = function(force) {
     $scope.updatingStatus = true;
     $scope.updateStatusError = null;
@@ -79,6 +94,8 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
       $timeout(function() {
         $scope.$apply();
       });
+
+      analyzeUtxos();
 
     });
   };
@@ -166,9 +183,10 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
         */
     };
 
-    $timeout(function() {
+    feeService.getFeeLevels(function(err, levels){
       walletService.getTxHistory($scope.wallet, {
         progressFn: progressFn,
+        feeLevels: levels,
       }, function(err, txHistory) {
         $scope.updatingTxHistory = false;
         if (err) {
