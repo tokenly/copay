@@ -40,8 +40,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
   $scope.$on("$ionicView.enter", function(event, data) {
     $ionicConfig.views.swipeBackEnabled(false);
-  });
-
     toAmount = data.stateParams.toAmount;
     cachedSendMax = {};
     $scope.showAddress = false;
@@ -672,5 +670,4 @@ function setWalletSelector(network, minAmount, cb) {
       });
     };
   };
-
 });

@@ -2,15 +2,6 @@
 
 angular.module('copayApp.controllers').controller('preferencesFeeController', function($scope, $timeout, $ionicHistory, lodash, gettextCatalog, configService, feeService, ongoingProcess, popupService) {
 
-  $scope.save = function(newFee, custom_fee = null) {
-
-    
-    if ($scope.customFeeLevel) {
-      $scope.currentFeeLevel = newFee;
-      updateCurrentValues();
-      return;
-    }
-    
   var network;
 
   $scope.save = function(newFee) {
