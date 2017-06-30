@@ -322,10 +322,12 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
           btcDust: null,
           sendToken: null,
           sourceAddress: null,
+          sourceAddressData: null,
           bvamData: null,
           addressLabels: null,
           wallet: null,
-          sourceBalances: null
+          sourceBalances: null,
+          toAmount: null
         }
       })
       .state('tabs.send.addressbook', {

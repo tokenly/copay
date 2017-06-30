@@ -16,6 +16,8 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   var satToUnit = 1 / unitToSatoshi;
   var configFeeLevel = walletConfig.settings.feeLevel ? walletConfig.settings.feeLevel : 'normal';
 
+  var toAmount;
+  var cachedSendMax;
 
   // Platform info
   var isChromeApp = platformInfo.isChromeApp;
@@ -40,6 +42,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
   $scope.$on("$ionicView.enter", function(event, data) {
     $ionicConfig.views.swipeBackEnabled(false);
+    $scope.advancedTransactions = config.wallet.advancedTransactions;
     toAmount = data.stateParams.toAmount;
     cachedSendMax = {};
     $scope.showAddress = false;
@@ -51,30 +54,43 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.toColor = data.stateParams.toColor;
     $scope.description = data.stateParams.description;
     $scope.paypro = data.stateParams.paypro;
+    $scope.toAmount = toAmount;
 
     $scope.wallet = data.stateParams.wallet;
     $scope.wallets = [$scope.wallet];
     $scope.addressLabels = data.stateParams.addressLabels;
     $scope.bvamData = data.stateParams.bvamData;
     $scope.sourceAddress = data.stateParams.sourceAddress;
+    $scope.sourceAddressData = data.stateParams.sourceAddressData;
     $scope.sourceBalances = data.stateParams.sourceBalances;
     $scope.sendToken = data.stateParams.sendToken;
     $scope.feeRate = data.stateParams.feeRate;
     $scope.btcDust = data.stateParams.btcDust;
     
+    $scope.estimatedFee = null;
+    $scope.estimatedBytes = null;
+    $scope.alternativeFeeStr = null;
+    $scope.currentFeeRate = null;
+    $scope.currentFeeLevel = feeService.getCurrentFeeLevel();
+    
+    $scope.buttonText = 'Send ' + $scope.sendToken;
+    $scope.insufficientFunds = false;
+    
+    $scope.tx = false;
+    
+    $scope.pregenerateTransaction();
+    
     $scope.insufficientFunds = false;
     $scope.noMatchingWallet = false;
-    $scope.paymentExpired = {
-      value: false
-    };
+    $scope.paymentExpired = false;
+    
     $scope.remainingTimeStr = {
       value: null
     };
     $scope.network = (new bitcore.Address($scope.toAddress)).network.name;
-    setFee();
-    resetValues();
+    
     //setwallets();
-    applyButtonText();
+    //applyButtonText();
     
     if(!$scope.sourceBalances[$scope.sendToken] || $scope.sourceBalances[$scope.sendToken] < toAmount){
         $scope.insufficientFunds = true;
@@ -89,6 +105,144 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     });    
  
   });
+  
+  $scope.pregenerateTransaction = function(){
+      
+    feeService.getFeeRate($scope.wallet.network, $scope.currentFeeLevel, function(err, fee_rate){
+        
+        var fee_rate = parseInt(fee_rate / 1024); //convert to bytes
+        $scope.currentFeeRate = fee_rate;
+
+        //send bitcoin from single BTC address to destination
+        if($scope.sendToken == 'BTC'){
+            console.log('PREPPING BTC TRANSACTION');        
+            var total_needed = $scope.toAmount;
+            var total_found = 0;
+            var use_utxos = [];
+            
+            $scope.wallet.getUtxos({
+                addresses: $scope.sourceAddress,
+            }, 
+            function(err, utxos) {
+                if (err) return;
+                var filter_utxos = filterUtxosForBTCSend(utxos, $scope.toAmount);
+                if(!filter_utxos.inputs){
+                    $scope.insufficientFunds = true;
+                    $scope.buttonText = 'Insufficient Funds';
+                    
+                }
+                utxos = filter_utxos.inputs;
+                console.log(filter_utxos);
+                
+                var estimated_fee = parseInt(filter_utxos.fee.fee);
+                
+                $scope.estimatedFee = estimated_fee;
+                $scope.currentFeeRate = filter_utxos.fee.rate;
+                $scope.estimatedBytes = filter_utxos.fee.bytes;
+                $scope.estimatedChange = filter_utxos.change;
+                
+                txFormatService.formatAlternativeStr(estimated_fee, function(v) {
+                  $scope.alternativeFeeStr = v;
+                });                     
+           
+                
+                $scope.tx = {
+                  toAmount: parseInt($scope.toAmount),
+                  sendMax: $scope.useSendMax,
+                  toAddress: $scope.toAddress,
+                  sourceAddress: $scope.sourceAddress,
+                  description: $scope.description,
+                  paypro: $scope.paypro,
+
+                  feeLevel: configFeeLevel,
+                  feeRate: $scope.currentFeeRate,
+                  fee: $scope.estimatedFee,
+                  change: parseInt($scope.estimatedChange),
+                  inputs: utxos,
+                  
+                  spendUnconfirmed: walletConfig.spendUnconfirmed,
+
+                  // Vanity tx info (not in the real tx)
+                  recipientType: $scope.recipientType || null,
+                  toName: $scope.toName,
+                  toEmail: $scope.toEmail,
+                  toColor: $scope.toColor,
+                  network: (new bitcore.Address($scope.toAddress)).network.name,
+                  txp: {}, 
+                };
+
+                
+                $timeout(function() {
+                    $scope.$apply();
+                });  
+                
+
+            });
+        }
+    });
+    
+    function filterUtxosForBTCSend(utxos, amount, input_count = 1){
+        var fee_estimate = estimateTxFeeFromSize(input_count, 2, $scope.currentFeeRate); //get initial fee estimate
+        var total_amount = parseInt(amount) + parseInt(fee_estimate.fee);
+        var dust_size = 141 * $scope.currentFeeRate; //minimum value worth spending
+        
+        //sort by largest input
+        utxos.sort(function(a,b){
+          if (a.satoshis < b.satoshis)
+            return -1;
+          if (a.satoshis > b.satoshis)
+            return 1;
+          return 0;
+        }).reverse(); 
+        
+        //build input list
+        var inputs = [];
+        var found = 0;
+        for(var i = 0; i < utxos.length; i++){
+            var utxo = utxos[i];
+            if(utxo.locked){ continue; } //filter locked payments
+            if(utxo.satoshis <= dust_size){ continue; } //filter dust payments
+            found += utxo.satoshis;
+            utxo.amount = parseFloat((utxo.satoshis / 100000000).toFixed(8));
+            utxo.path = $scope.sourceAddressData.path;
+            inputs.push(utxo);
+            if(found >= total_amount){
+                break;
+            }
+        }
+        if(inputs.length > input_count){ //try again with different fee estimate from larger # of inputs
+            return filterUtxosForBTCSend(utxos, amount, inputs.length);
+        }
+        if(found < total_amount){
+            console.log('NOT ENOUGH UTXOS SELECTED FOR BTC TX');
+            inputs = false;
+        }
+        
+        //calculate change
+        var change = found - total_amount;
+        if(change <= dust_size && change > 0){ //let dust values become part of the miner fee
+            fee_estimate.extra_fee = change;
+            fee_estimate.fee += change;
+            fee_estimate.rate = parseInt(fee_estimate.fee / fee_estimate.bytes);
+            change = 0;
+        }
+        
+        //return data
+        return {"inputs": inputs, "amount": amount, "fee": fee_estimate, "change": change};
+    }
+    
+    function estimateTxFeeFromSize(inputs, outputs, fee_rate, extra_bytes = 0){
+        var input_bytes = 141 * inputs;
+        var output_bytes = 34 * outputs;
+        var extra = 10;
+        var total_bytes = input_bytes + output_bytes + extra_bytes + extra;
+        var estimate_fee = total_bytes * fee_rate;
+        return {rate: fee_rate, bytes: total_bytes, fee: estimate_fee, extra_fee: 0, input_count: inputs, output_count: outputs};
+    }
+    
+
+
+  };
   
 
   function exitWithError(err) {
@@ -261,6 +415,14 @@ function setWalletSelector(network, minAmount, cb) {
         }
     }
   };
+  
+  function getDisplayAmount(amountStr) {
+    return amountStr.split(' ')[0];
+  };
+
+  function getDisplayUnit(amountStr) {
+    return amountStr.split(' ')[1];
+  };  
 
   function getTxp(tx, wallet, dryRun, cb) {
 
@@ -279,18 +441,32 @@ function setWalletSelector(network, minAmount, cb) {
 
     var txp = {};
 
-    txp.outputs = [{
+    txp.outputs = [
+    {
       'toAddress': tx.toAddress,
       'amount': tx.toAmount,
       'message': tx.description
-    }];
+    }
+    ];
+    
+    if(tx.change && tx.change > 0){
+        txp.outputs.push({
+          'toAddress': tx.sourceAddress,
+          'amount': tx.change,
+          'message': null
+        });
+    }
+    
+    txp.inputs = tx.inputs;
+    txp.fee = tx.fee;
 
+    /*
     if (tx.sendMaxInfo) {
-      txp.inputs = tx.sendMaxInfo.inputs;
       txp.fee = tx.sendMaxInfo.fee;
     } else {
       txp.feeLevel = tx.feeLevel;
     }
+    */
 
     txp.message = tx.description;
 
@@ -299,6 +475,11 @@ function setWalletSelector(network, minAmount, cb) {
     }
     txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
     txp.dryRun = dryRun;
+    
+    
+    console.log('TX PROPOSAL...');
+    console.log(txp);
+    
     walletService.createTx(wallet, txp, function(err, ctxp) {
       if (err) {
         setSendError(err);

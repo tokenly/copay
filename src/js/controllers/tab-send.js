@@ -266,7 +266,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     
     $scope.loadWalletAddresses();
     
-    feeService.getCurrentFeeValue('livenet', null, function(err, fee_rate){
+    feeService.getFeeRate('livenet', null, function(err, fee_rate){
         fee_rate = parseInt(fee_rate / 1024);
         $scope.form_data.fee_rate = fee_rate;
         $scope.currentFeeRate = fee_rate;
@@ -466,10 +466,6 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
 
 
   $scope.validateFeeRate = function(rate, require = false){
-    if(require && rate == null){
-        $scope.errors.fee_rate = 'Fee rate required';
-        return false;
-    }
     if(rate != null && rate <= 0){
         $scope.errors.fee_rate = 'Invalid amount';
         return false;
@@ -521,8 +517,10 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     //validate source address
     var source_address = $scope.form_data.source_address;
     var addr_found = false;
+    var source_addressData = false;
     for(var i = 0; i < $scope.addressList.length; i++){
         if($scope.addressList[i].address == source_address){
+            source_addressData = $scope.addressList[i];
             addr_found = true;
         }
     }
@@ -590,6 +588,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         toColor: null,
         useSendMax: false,
         sourceAddress: source_address,
+        sourceAddressData: source_addressData,
         feeRate: fee_rate,
         btcDust: btc_dust,
         description: memo,
