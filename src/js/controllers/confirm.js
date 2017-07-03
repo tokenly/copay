@@ -116,10 +116,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         //send bitcoin from single BTC address to destination
         if($scope.sendToken == 'BTC'){
             console.log('PREPPING BTC TRANSACTION');        
-            var total_needed = $scope.toAmount;
-            var total_found = 0;
-            var use_utxos = [];
-            
+
             $scope.wallet.getUtxos({
                 addresses: $scope.sourceAddress,
             }, 
@@ -132,8 +129,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                     
                 }
                 utxos = filter_utxos.inputs;
-                console.log(filter_utxos);
-                
+
                 var estimated_fee = parseInt(filter_utxos.fee.fee);
                 
                 $scope.estimatedFee = estimated_fee;
@@ -144,9 +140,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                 txFormatService.formatAlternativeStr(estimated_fee, function(v) {
                   $scope.alternativeFeeStr = v;
                 });                     
-           
                 
                 $scope.tx = {
+                  asset: 'BTC',
+                  protocol: 'bitcoin',
                   toAmount: parseInt($scope.toAmount),
                   sendMax: $scope.useSendMax,
                   toAddress: $scope.toAddress,
@@ -179,10 +176,75 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
             });
         }
+        else{
+            //counterparty token transaction
+            console.log('PREPPING COUNTERPARTY TRANSACTION');
+
+            $scope.wallet.getUtxos({
+                addresses: $scope.sourceAddress,
+            }, 
+            function(err, utxos) {
+                if (err) return;
+                var filter_utxos = filterUtxosForCounterpartySend(utxos, $scope.btcDust);
+                if(!filter_utxos.inputs){
+                    $scope.insufficientFunds = true;
+                    $scope.buttonText = 'Insufficient Funds';
+                    
+                }
+                utxos = filter_utxos.inputs;
+
+                var estimated_fee = parseInt(filter_utxos.fee.fee);
+                
+                $scope.estimatedFee = estimated_fee;
+                $scope.currentFeeRate = filter_utxos.fee.rate;
+                $scope.estimatedBytes = filter_utxos.fee.bytes;
+                $scope.estimatedChange = filter_utxos.change;
+                
+                txFormatService.formatAlternativeStr(estimated_fee, function(v) {
+                  $scope.alternativeFeeStr = v;
+                });  
+                
+                $scope.tx = {
+                  asset: $scope.sendToken,
+                  protocol: 'counterparty',
+                  toAmount: parseInt($scope.toAmount),
+                  sendMax: false,
+                  toAddress: $scope.toAddress,
+                  sourceAddress: $scope.sourceAddress,
+                  description: $scope.description,
+                  paypro: $scope.paypro,
+
+                  feeLevel: configFeeLevel,
+                  feeRate: $scope.currentFeeRate,
+                  fee: $scope.estimatedFee,
+                  change: parseInt($scope.estimatedChange),
+                  inputs: utxos,
+                  
+                  spendUnconfirmed: walletConfig.spendUnconfirmed,
+
+                  // Vanity tx info (not in the real tx)
+                  recipientType: $scope.recipientType || null,
+                  toName: $scope.toName,
+                  toEmail: $scope.toEmail,
+                  toColor: $scope.toColor,
+                  network: (new bitcore.Address($scope.toAddress)).network.name,
+                  txp: {}, 
+                };
+
+                
+                $timeout(function() {
+                    $scope.$apply();
+                });  
+            }
+        }
     });
     
-    function filterUtxosForBTCSend(utxos, amount, input_count = 1){
-        var fee_estimate = estimateTxFeeFromSize(input_count, 2, $scope.currentFeeRate); //get initial fee estimate
+    function filterUtxosForCounterpartySend(utxos, dust_size){
+        return filterUtxosForBTCSend(utxos, dust_size, 1, 80);
+    }
+    
+    function filterUtxosForBTCSend(utxos, amount, input_count = 1, extra_bytes = null){
+        var fee_estimate = estimateTxFeeFromSize(input_count, 2, $scope.currentFeeRate, extra_bytes); //get initial fee estimate
         var total_amount = parseInt(amount) + parseInt(fee_estimate.fee);
         var dust_size = 141 * $scope.currentFeeRate; //minimum value worth spending
         
@@ -211,10 +273,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             }
         }
         if(inputs.length > input_count){ //try again with different fee estimate from larger # of inputs
-            return filterUtxosForBTCSend(utxos, amount, inputs.length);
+            return filterUtxosForBTCSend(utxos, amount, inputs.length, extra_bytes);
         }
         if(found < total_amount){
-            console.log('NOT ENOUGH UTXOS SELECTED FOR BTC TX');
+            console.log('NOT ENOUGH UTXOS SELECTED FOR TX');
             inputs = false;
         }
         
@@ -723,6 +785,64 @@ function setWalletSelector(network, minAmount, cb) {
   $scope.cancel = function() {
     $scope.payproModal.hide();
   };
+  
+    function approveBitcoinTx(tx, wallet, onSendStatusChange) {
+        ongoingProcess.set('creatingTx', true, onSendStatusChange);
+        getTxp(lodash.clone(tx), wallet, false, function(err, txp) {
+          ongoingProcess.set('creatingTx', false, onSendStatusChange);
+          if (err) return;
+
+          // confirm txs for more that 20usd, if not spending/touchid is enabled
+          function confirmTx(cb) {
+            if (walletService.isEncrypted(wallet))
+              return cb();
+
+            var amountUsd = parseFloat(txFormatService.formatToUSD(txp.amount));
+            if (amountUsd <= CONFIRM_LIMIT_USD)
+              return cb();
+
+            var message = gettextCatalog.getString('Sending {{amountStr}} from your {{name}} wallet', {
+              amountStr: tx.amountStr,
+              name: wallet.name
+            });
+            var okText = gettextCatalog.getString('Confirm');
+            var cancelText = gettextCatalog.getString('Cancel');
+            popupService.showConfirm(null, message, okText, cancelText, function(ok) {
+              return cb(!ok);
+            });
+          };
+
+          function publishAndSign() {
+            if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
+              $log.info('No signing proposal: No private key');
+
+              return walletService.onlyPublish(wallet, txp, function(err) {
+                if (err) setSendError(err);
+              }, onSendStatusChange);
+            }
+
+            walletService.publishAndSign(wallet, txp, function(err, txp) {
+              if (err) return setSendError(err);
+            }, onSendStatusChange);
+          };
+
+          confirmTx(function(nok) {
+            if (nok) {
+              $scope.sendStatus = '';
+              $timeout(function() {
+                $scope.$apply();
+              });
+              return;
+            }
+            publishAndSign();
+          });
+        }); 
+    };
+
+    function approveCounterpartyTx(tx, wallet, onSendStatusChange) {
+        
+        
+    }
 
   $scope.approve = function(tx, wallet, onSendStatusChange) {
 
@@ -736,57 +856,15 @@ function setWalletSelector(network, minAmount, cb) {
       });
       return;
     }
+    
+    if(tx.asset == 'BTC'){
+        return approveBitcoinTx(tx, wallet, onSendStatusChange);
+    }
+    else{
+        return approveCounterpartyTx(tx, wallet, onSendStatusChange);
+    }
 
-    ongoingProcess.set('creatingTx', true, onSendStatusChange);
-    getTxp(lodash.clone(tx), wallet, false, function(err, txp) {
-      ongoingProcess.set('creatingTx', false, onSendStatusChange);
-      if (err) return;
 
-      // confirm txs for more that 20usd, if not spending/touchid is enabled
-      function confirmTx(cb) {
-        if (walletService.isEncrypted(wallet))
-          return cb();
-
-        var amountUsd = parseFloat(txFormatService.formatToUSD(txp.amount));
-        if (amountUsd <= CONFIRM_LIMIT_USD)
-          return cb();
-
-        var message = gettextCatalog.getString('Sending {{amountStr}} from your {{name}} wallet', {
-          amountStr: tx.amountStr,
-          name: wallet.name
-        });
-        var okText = gettextCatalog.getString('Confirm');
-        var cancelText = gettextCatalog.getString('Cancel');
-        popupService.showConfirm(null, message, okText, cancelText, function(ok) {
-          return cb(!ok);
-        });
-      };
-
-      function publishAndSign() {
-        if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
-          $log.info('No signing proposal: No private key');
-
-          return walletService.onlyPublish(wallet, txp, function(err) {
-            if (err) setSendError(err);
-          }, onSendStatusChange);
-        }
-
-        walletService.publishAndSign(wallet, txp, function(err, txp) {
-          if (err) return setSendError(err);
-        }, onSendStatusChange);
-      };
-
-      confirmTx(function(nok) {
-        if (nok) {
-          $scope.sendStatus = '';
-          $timeout(function() {
-            $scope.$apply();
-          });
-          return;
-        }
-        publishAndSign();
-      });
-    });
   };
 
   function statusChangeHandler(processName, showName, isOn) {
