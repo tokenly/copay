@@ -1,7 +1,7 @@
 'use strict';
 
 
-angular.module('copayApp.controllers').controller('tabsController', function($rootScope, $window, $log, $scope, $state, $stateParams, $timeout, incomingData, lodash, popupService, gettextCatalog, profileService, $ionicHistory, $ionicSideMenuDelegate, scannerService) {
+angular.module('copayApp.controllers').controller('tabsController', function($rootScope, $window, $log, $scope, $state, $stateParams, $timeout, incomingData, lodash, popupService, gettextCatalog, profileService, $ionicHistory, $ionicSideMenuDelegate, scannerService, platformInfo) {
 
   $scope.onScan = function(data) {
     if (!incomingData.redir(data)) {
