@@ -1,4 +1,4 @@
-<ion-view id="tab-receive" ion-side-menus  enable-menu-with-back-views="false">
+<ion-view id="tab-receive" ion-side-menus  enable-menu-with-back-views="false" show-tabs>
   <ng-include src="'views/includes/sidebar.html'"></ng-include>
   <ion-side-menu-content>  
   <ion-nav-bar class="bar-royal">
@@ -9,9 +9,9 @@
     <ion-nav-title>{{'Receive' | translate}}</ion-nav-title>
     <ion-nav-buttons side="secondary">
       <button class="button-share ng-hide" ng-show="wallets[0] && showShareButton" ng-click="shareAddress()">
-        <i class="icon" 
+        <i class="icon"
           ng-class="{
-          'ion-ios-upload-outline': showShareButton == 'iOS', 
+          'ion-ios-upload-outline': showShareButton == 'iOS',
           'ion-android-share-alt': showShareButton != 'iOS'
           }"></i>
       </button>
@@ -33,7 +33,7 @@
           <button class="button button-standard button-primary" ng-click="goCopayers()" translate>Open wallet</button>
         </div>
       </div>
-      <div class="address-info" ng-if="wallet && wallet.isComplete()"> 
+      <div class="address-info" ng-if="wallet && wallet.isComplete()">
         <div copy-to-clipboard="addr">
           <span ng-show="shouldShowReceiveAddressFromHardware()">
             <button class="button button-standard button-primary" ng-click="showReceiveAddressFromHardware()">
@@ -54,16 +54,16 @@
         </div>
         <div>
           <button ng-show="addr" class="button-request" ng-click="requestSpecificAmount()">
-            <span translate>Request Specific amount</span> 
+            <span translate>Request Specific amount</span>
             <i class="icon ion-ios-arrow-right"></i>
           </button>
         </div>
         <div>
           <button ng-show="addr" class="button-address" ng-click="setAddress(true)">
-            <span translate>Generate new address</span> 
+            <span translate>Generate new address</span>
           </button>
         </div>
-      </div> 
+      </div>
     </article>
 
     <div class="backup" ng-if="wallets[0] && wallet && wallet.isComplete() && wallet.needsBackup" ng-click="openBackupNeededModal()">
@@ -95,7 +95,12 @@
         <i ng-if="!singleWallet" class="icon bp-arrow-right"></i>
       </a>
     </div>
+<<<<<<< HEAD
   </ion-side-menu-content>
+=======
+
+  </ion-content>
+>>>>>>> 3e19bf1c09b8a955291b7ac14e0a33096244feca
   <wallet-selector
     wallet-selector-title="walletSelectorTitle"
     wallet-selector-wallets="wallets"

@@ -93,7 +93,7 @@
             <span>{{alternativeFeeStr || '...'}}&nbsp;
           </span>
           </span>
- 
+
           <i class="icon bp-arrow-right"></i>
         </div>
         <a class="item item-icon-right" ng-if="wallet" ng-click="showDescriptionPopup(tx)">
@@ -129,7 +129,7 @@
     slide-success-hide-on-confirm="true">
     <span ng-show="wallet.m == 1 && (wallet.canSign() || wallet.isPrivKeyExternal())" translate>Payment Sent</span>
     <span ng-show="wallet.m > 1 && (wallet.canSign() || wallet.isPrivKeyExternal())" translate>Proposal Created</span>
-    <span ng-show="!wallet.canSign() && !wallet.isPrivKeyExternal()" translate>Transaction created</span>
+    <span ng-show="!wallet.canSign() && !wallet.isPrivKeyExternal()" translate>Transaction Created</span>
   </slide-to-accept-success>
 
   <wallet-selector
