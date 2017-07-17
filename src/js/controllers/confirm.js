@@ -10,6 +10,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
   // Config Related values
   var config = configService.getSync();
+  var defaultConfig = configService.getDefaults();
   var walletConfig = config.wallet;
   var unitToSatoshi = walletConfig.settings.unitToSatoshi;
   var unitDecimals = walletConfig.settings.unitDecimals;
@@ -66,6 +67,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.sendToken = data.stateParams.sendToken;
     $scope.feeRate = data.stateParams.feeRate;
     $scope.btcDust = data.stateParams.btcDust;
+    if($scope.btcDust == null || typeof $scope.btcDust == 'undefined'){
+        $scope.btcDust = defaultConfig.counterpartyTokens.defaultDust;
+    }
     
     $scope.estimatedFee = null;
     $scope.estimatedBytes = null;
@@ -77,8 +81,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.insufficientFunds = false;
     
     $scope.tx = false;
-    
-    $scope.pregenerateTransaction();
     
     $scope.insufficientFunds = false;
     $scope.noMatchingWallet = false;
@@ -101,6 +103,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     displayValues();    
     
     $timeout(function() {
+        $scope.pregenerateTransaction();
         $scope.$apply();
     });    
  
@@ -150,6 +153,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                   sourceAddress: $scope.sourceAddress,
                   description: $scope.description,
                   paypro: $scope.paypro,
+                  dust: 0,
 
                   feeLevel: configFeeLevel,
                   feeRate: $scope.currentFeeRate,
@@ -189,7 +193,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                 if(!filter_utxos.inputs){
                     $scope.insufficientFunds = true;
                     $scope.buttonText = 'Insufficient Funds';
-                    
                 }
                 utxos = filter_utxos.inputs;
 
@@ -199,7 +202,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                 $scope.currentFeeRate = filter_utxos.fee.rate;
                 $scope.estimatedBytes = filter_utxos.fee.bytes;
                 $scope.estimatedChange = filter_utxos.change;
-                
+
                 txFormatService.formatAlternativeStr(estimated_fee, function(v) {
                   $scope.alternativeFeeStr = v;
                 });  
@@ -213,6 +216,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                   sourceAddress: $scope.sourceAddress,
                   description: $scope.description,
                   paypro: $scope.paypro,
+                  dust: $scope.btcDust,
 
                   feeLevel: configFeeLevel,
                   feeRate: $scope.currentFeeRate,
@@ -231,11 +235,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                   txp: {}, 
                 };
 
-                
                 $timeout(function() {
                     $scope.$apply();
                 });  
-            }
+            });
         }
     });
     
@@ -245,6 +248,8 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     
     function filterUtxosForBTCSend(utxos, amount, input_count = 1, extra_bytes = null){
         var fee_estimate = estimateTxFeeFromSize(input_count, 2, $scope.currentFeeRate, extra_bytes); //get initial fee estimate
+        console.log(fee_estimate);
+        console.log(amount);
         var total_amount = parseInt(amount) + parseInt(fee_estimate.fee);
         var dust_size = 141 * $scope.currentFeeRate; //minimum value worth spending
         
@@ -281,7 +286,10 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         }
         
         //calculate change
-        var change = found - total_amount;
+        var change = parseInt(found) - parseInt(total_amount);
+        console.log(found);
+        console.log(total_amount);
+        console.log(change);
         if(change <= dust_size && change > 0){ //let dust values become part of the miner fee
             fee_estimate.extra_fee = change;
             fee_estimate.fee += change;
@@ -486,6 +494,86 @@ function setWalletSelector(network, minAmount, cb) {
     return amountStr.split(' ')[1];
   };  
 
+  function getCounterpartyTxp(tx, wallet, dryRun, cb) {
+      console.log('ABOUT TO SEND XCP TX....');
+    if (tx.description && !wallet.credentials.sharedEncryptingKey) {
+      var msg = gettextCatalog.getString('Could not add message to imported wallet without shared encrypting key');
+      $log.warn(msg);
+      return setSendError(msg);
+    }
+
+    if (tx.toAmount > Number.MAX_SAFE_INTEGER) {
+      var msg = gettextCatalog.getString('Amount too big');
+      $log.warn(msg);
+      return setSendError(msg);
+    }
+    
+    var divisible;
+    if (tx.asset == 'BTC') {
+        divisible = true;
+    } else {
+        // determine divisibility
+        var tokenBalanceDetails = tokenBalanceDetailsByName(tx.asset)
+        if (!tokenBalanceDetails) {
+            throw new Error("Unable to find balance details for token "+tx.asset);
+        }
+        divisible = tokenBalanceDetails.assetInfo.divisible;
+    }
+    
+    var txp = {};
+
+    txp.outputs = [
+    {
+      'toAddress': tx.toAddress,
+      'amount': tx.toAmount,
+      'token': tx.asset,
+      'divisible': divisible,
+      'dust': tx.dust,
+      'message': tx.description,
+    }
+    ];
+    
+    if(tx.change && tx.change > 0){
+        txp.outputs.push({
+          'toAddress': tx.sourceAddress,
+          'amount': tx.change,
+          'message': null,
+          'token': 'BTC'          
+        });
+    }
+    
+    txp.inputs = tx.inputs;
+    txp.fee = tx.fee;
+    txp.message = tx.description;
+
+    if (tx.paypro) {
+      txp.payProUrl = tx.paypro.url;
+    }
+    txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
+    txp.dryRun = dryRun;
+    
+    walletService.createTx(wallet, txp, function(err, ctxp) {
+      if (err) {
+        setSendError(err);
+        console.log('error...');
+        console.log(err);
+        return cb(err);
+      }
+      console.log(ctxp);
+      return cb(null, ctxp);
+    });    
+      
+  };
+  
+  function tokenBalanceDetailsByName(tokenName) {
+    var foundToken = null, keepSearching = true;
+    console.log(tokenName);
+    console.log($scope.bvamData);
+    if($scope.bvamData[tokenName]){
+        return $scope.bvamData[tokenName];
+    }
+  }  
+
   function getTxp(tx, wallet, dryRun, cb) {
 
     // ToDo: use a credential's (or fc's) function for this
@@ -537,10 +625,6 @@ function setWalletSelector(network, minAmount, cb) {
     }
     txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
     txp.dryRun = dryRun;
-    
-    
-    console.log('TX PROPOSAL...');
-    console.log(txp);
     
     walletService.createTx(wallet, txp, function(err, ctxp) {
       if (err) {
@@ -840,9 +924,54 @@ function setWalletSelector(network, minAmount, cb) {
     };
 
     function approveCounterpartyTx(tx, wallet, onSendStatusChange) {
-        
-        
-    }
+        ongoingProcess.set('creatingTx', true, onSendStatusChange);
+        getCounterpartyTxp(lodash.clone(tx), wallet, false, function(err, txp) {
+          ongoingProcess.set('creatingTx', false, onSendStatusChange);
+          if (err) return;
+
+          function confirmTx(cb) {
+            if (walletService.isEncrypted(wallet))
+              return cb();
+
+            var message = gettextCatalog.getString('Sending {{amountStr}} {{asset}} from your {{name}} wallet pocket: {{sourceAddress}}', {
+              amountStr: txFormatService.formatAmountStr(tx.toAmount),
+              asset: tx.asset,
+              name: wallet.name,
+              sourceAddress: tx.sourceAddress
+            });
+            var okText = gettextCatalog.getString('Confirm');
+            var cancelText = gettextCatalog.getString('Cancel');
+            popupService.showConfirm(null, message, okText, cancelText, function(ok) {
+              return cb(!ok);
+            });
+          };
+
+          function publishAndSign() {
+            if (!wallet.canSign() && !wallet.isPrivKeyExternal()) {
+              $log.info('No signing proposal: No private key');
+
+              return walletService.onlyPublish(wallet, txp, function(err) {
+                if (err) setSendError(err);
+              }, onSendStatusChange);
+            }
+
+            walletService.publishAndSign(wallet, txp, function(err, txp) {
+              if (err) return setSendError(err);
+            }, onSendStatusChange);
+          };
+
+          confirmTx(function(nok) {
+            if (nok) {
+              $scope.sendStatus = '';
+              $timeout(function() {
+                $scope.$apply();
+              });
+              return;
+            }
+            publishAndSign();
+          });
+        }); 
+    };
 
   $scope.approve = function(tx, wallet, onSendStatusChange) {
 

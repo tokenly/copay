@@ -91,6 +91,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
     // counterparty token support
     counterpartyTokens: {
       enabled: true,
+      defaultDust: 5430,
       bws: {
         url: 'https://pockets-service.tokenly.com/bws/api'
       },
