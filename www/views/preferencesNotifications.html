@@ -21,6 +21,12 @@
         </div>
       </div>
 
+      <div ng-if="usePushNotifications && pushNotifications.value">
+        <ion-toggle ng-model="confirmedTxsNotifications.value" toggle-class="toggle-balanced" ng-change="confirmedTxsNotificationsChange()">
+          <span class="toggle-label" translate>Notify me when transactions are confirmed</span>
+        </ion-toggle>
+      </div>
+
       <ion-toggle ng-model="emailNotifications.value" toggle-class="toggle-balanced" ng-change="emailNotificationsChange()">
         <span class="toggle-label" translate>Enable email notifications</span>
       </ion-toggle>
@@ -45,6 +51,8 @@
           </button>
         </form>
       </div>
+
+
     </div>
   </ion-content>
   </ion-side-menu-content>

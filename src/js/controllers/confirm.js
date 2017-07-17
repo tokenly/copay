@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError) {
+angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification) {
 
   var countDown = null;
   var CONFIRM_LIMIT_USD = 20;
@@ -24,6 +24,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   var isChromeApp = platformInfo.isChromeApp;
   var isCordova = platformInfo.isCordova;
   var isWindowsPhoneApp = platformInfo.isCordova && platformInfo.isWP;
+
+  //custom fee flag
+  var usingCustomFee = null;
 
   function refresh() {
     $timeout(function() {
@@ -329,7 +332,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
 
   function setNoWallet(msg) {
     $scope.wallet = null;
-    $scope.noWalletMessage = gettextCatalog.getString(msg);
+    $scope.noWalletMessage = msg;
     $log.warn('Not ready to make the payment:' + msg);
     $timeout(function() {
       $scope.$apply();
@@ -367,7 +370,7 @@ function setWalletSelector(network, minAmount, cb) {
       });
 
       if (!$scope.wallets || !$scope.wallets.length) {
-        setNoWallet('No wallets available');
+        setNoWallet(gettextCatalog.getString('No wallets available'));
         return cb();
       }
 
@@ -396,7 +399,7 @@ function setWalletSelector(network, minAmount, cb) {
               return cb('Could not update any wallet');
 
             if (lodash.isEmpty(filteredWallets)) {
-              setNoWallet('Insufficent funds');
+              setNoWallet(gettextCatalog.getString('Insufficient funds'));
             }
             $scope.wallets = lodash.clone(filteredWallets);
             return cb();
@@ -614,7 +617,9 @@ function setWalletSelector(network, minAmount, cb) {
     if (tx.sendMaxInfo) {
       txp.fee = tx.sendMaxInfo.fee;
     } else {
-      txp.feeLevel = tx.feeLevel;
+      if (usingCustomFee) {
+        txp.feePerKb = tx.feeRate;
+      } else txp.feeLevel = tx.feeLevel;
     }
     */
 
@@ -659,12 +664,12 @@ function setWalletSelector(network, minAmount, cb) {
     refresh();
 
     // End of quick refresh, before wallet is selected.
-    if (!wallet)return cb();
+    if (!wallet) return cb();
 
     feeService.getFeeRate(tx.network, tx.feeLevel, function(err, feeRate) {
       if (err) return cb(err);
 
-      tx.feeRate = feeRate;
+      if (!usingCustomFee) tx.feeRate = feeRate;
       tx.feeLevelName = feeService.feeOpts[tx.feeLevel];
 
       if (!wallet)
@@ -681,7 +686,7 @@ function setWalletSelector(network, minAmount, cb) {
           $log.debug('Send max info', sendMaxInfo);
 
           if (tx.sendMax && sendMaxInfo.amount == 0) {
-            setNoWallet('Insufficent funds');
+            setNoWallet(gettextCatalog.getString('Insufficient funds'));
             popupService.showAlert(gettextCatalog.getString('Error'), gettextCatalog.getString('Not enough funds for fee'));
             return cb('no_funds');
           }
@@ -708,8 +713,7 @@ function setWalletSelector(network, minAmount, cb) {
 
           var per = (txp.fee / (txp.amount + txp.fee) * 100);
           txp.feeRatePerStr = per.toFixed(2) + '%';
-          txp.feeToHigh = per > FEE_TOO_HIGH_LIMIT_PER; 
-
+          txp.feeToHigh = per > FEE_TOO_HIGH_LIMIT_PER;
 
           tx.txp[wallet.id] = txp;
           $log.debug('Confirm. TX Fully Updated for wallet:' + wallet.id, tx);
@@ -992,8 +996,6 @@ function setWalletSelector(network, minAmount, cb) {
     else{
         return approveCounterpartyTx(tx, wallet, onSendStatusChange);
     }
-
-
   };
 
   function statusChangeHandler(processName, showName, isOn) {
@@ -1034,8 +1036,15 @@ function setWalletSelector(network, minAmount, cb) {
     scope.feeLevel = tx.feeLevel;
     scope.noSave = true;
 
+    if (usingCustomFee) {
+      scope.customFeePerKB = tx.feeRate;
+      scope.feePerSatByte = (tx.feeRate / 1000).toFixed();
+    }
+
     $ionicModal.fromTemplateUrl('views/modals/chooseFeeLevel.html', {
       scope: scope,
+      backdropClickToClose: false,
+      hardwareBackButtonClose: false
     }).then(function(modal) {
       scope.chooseFeeLevelModal = modal;
       scope.openModal();
@@ -1044,18 +1053,21 @@ function setWalletSelector(network, minAmount, cb) {
       scope.chooseFeeLevelModal.show();
     };
 
-    scope.hideModal = function(customFeeLevel) {
+    scope.hideModal = function(newFeeLevel, customFeePerKB) {
       scope.chooseFeeLevelModal.hide();
-      $log.debug('Custom fee level choosen:' + customFeeLevel + ' was:' + tx.feeLevel);
-      if (tx.feeLevel == customFeeLevel)
-        return;
+      $log.debug('New fee level choosen:' + newFeeLevel + ' was:' + tx.feeLevel);
 
-      tx.feeLevel = customFeeLevel;
+      usingCustomFee = newFeeLevel == 'custom' ? true : false;
+
+      if (tx.feeLevel == newFeeLevel && !usingCustomFee) return;
+
+      tx.feeLevel = newFeeLevel;
+      if (usingCustomFee) tx.feeRate = parseInt(customFeePerKB);
+
       updateTx(tx, wallet, {
         clearCache: true,
-        dryRun: true,
-      }, function() {
-      });
+        dryRun: true
+      }, function() {});
     };
   };
 });

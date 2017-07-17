@@ -3,13 +3,20 @@
 angular.module('copayApp.controllers').controller('preferencesFeeController', function($scope, $timeout, $ionicHistory, lodash, gettextCatalog, configService, feeService, ongoingProcess, popupService) {
 
   var network;
-
+  
   $scope.save = function(newFee, custom_fee = null) {
+
     $scope.currentFeeLevel = newFee;
-    updateCurrentValues();
 
     if ($scope.noSave) 
       return;
+
+    if ($scope.currentFeeLevel != 'custom') updateCurrentValues();
+    else showCustomFeePrompt();
+
+    if ($scope.noSave) return;
+
+
     var opts = {
       wallet: {
         settings: {
@@ -68,22 +75,45 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
     });
 
     if (lodash.isEmpty(value)) {
-      $scope.feePerSatByte = null;
+      $scope.feePerSatByte = $scope.currentFeeLevel == 'custom' ? $scope.feePerSatByte : null;
       $scope.avgConfirmationTime = null;
+      setMinWarning();
+      setMaxWarning();
       return;
     }
 
     $scope.feePerSatByte = (value.feePerKB / 1024).toFixed();
     $scope.avgConfirmationTime = value.nbBlocks * 10;
+
+    $scope.invalidCustomFeeEntered = false;
+    setMinWarning();
+    setMaxWarning();
     $timeout(function() {
         $scope.$apply();
     });
+
   };
 
   $scope.chooseNewFee = function() {
-    $scope.hideModal($scope.currentFeeLevel);
+    $scope.hideModal($scope.currentFeeLevel, $scope.customFeePerKB);
   };
-  
+
+  var showCustomFeePrompt = function() {
+    $scope.invalidCustomFeeEntered = true;
+    $scope.showMaxWarning = false;
+    $scope.showMinWarning = false;
+    popupService.showPrompt(gettextCatalog.getString('Custom Fee'), gettextCatalog.getString('Set your own fee in satoshis/byte'), null, function(text) {
+      if (!text || !parseInt(text) || parseInt(text) <= 0) return;
+      $scope.feePerSatByte = parseInt(text);
+      $scope.customFeePerKB = ($scope.feePerSatByte * 1000).toFixed();
+      setMaxWarning();
+      setMinWarning();
+      $timeout(function() {
+        $scope.$apply();
+      });
+    });
+  };
+
   $scope.checkCustomFee = function(fee){
     
     if(fee < 20){
@@ -102,4 +132,27 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
         $scope.$apply();
     }); 
   };
+
+  $scope.getMinimumRecommeded = function() {
+    var value = lodash.find($scope.feeLevels[$scope.network], {
+      level: 'superEconomy'
+    });
+    return parseInt((value.feePerKB / 1000).toFixed());
+  };
+
+  var setMinWarning = function() {
+    if (parseInt($scope.feePerSatByte) < $scope.getMinimumRecommeded()) $scope.showMinWarning = true;
+    else $scope.showMinWarning = false;
+  };
+
+  var setMaxWarning = function() {
+    if (parseInt($scope.feePerSatByte) > 1000) {
+      $scope.showMaxWarning = true;
+      $scope.invalidCustomFeeEntered = true;
+    } else {
+      $scope.showMaxWarning = false;
+      $scope.invalidCustomFeeEntered = false;
+    }
+  };
+
 });
