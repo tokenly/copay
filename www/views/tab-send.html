@@ -25,7 +25,7 @@
             <select id="send_token" name="send_token" ng-model="form_data.send_token" class="form-control" ng-change="updateSendTokenBalance(form_data.send_token)">
                 <option value="{{ balance.tokenName }}" ng-repeat="balance in source_balances track by $index">{{ bvamData[balance.tokenName].selectName || balance.tokenName }}</option>
             </select>
-            <small><strong>Balance:</strong> {{ numberWithCommas(token_balance) }} <a ng-if="token_balance > 0" ng-click="form_data.send_amount = token_balance">Send Max</a></small>
+            <small><strong>Balance:</strong> {{ numberWithCommas(token_balance) }} <a ng-if="token_balance > 0 && form_data.send_token != 'BTC'" ng-click="form_data.send_amount = token_balance">Send Max</a></small>
         </div>
         <div class="form-group">
             <label for="to_address" name="to_address">To</label>
