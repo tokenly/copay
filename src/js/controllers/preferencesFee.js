@@ -11,9 +11,11 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
     if ($scope.noSave) 
       return;
 
-    if ($scope.currentFeeLevel != 'custom') updateCurrentValues();
-    else showCustomFeePrompt();
-
+   // if ($scope.currentFeeLevel != 'custom') updateCurrentValues();
+   // else showCustomFeePrompt();
+   
+    updateCurrentValues();
+    
     if ($scope.noSave) return;
 
 
@@ -25,7 +27,8 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
       }
     };
     
-    if(custom_fee != null){
+    if(custom_fee != null && newFee == 'custom'){
+        $scope.feePerSatByte = custom_fee;
         opts.wallet.settings.customFeeLevel = custom_fee;
     }
 
@@ -79,10 +82,15 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
       $scope.avgConfirmationTime = null;
       setMinWarning();
       setMaxWarning();
+      $timeout(function() {
+        $scope.$apply();
+      }); 
       return;
     }
 
     $scope.feePerSatByte = (value.feePerKB / 1024).toFixed();
+    console.log('what the fuck');
+    console.log($scope.feePerSatByte);
     $scope.avgConfirmationTime = value.nbBlocks * 10;
 
     $scope.invalidCustomFeeEntered = false;
