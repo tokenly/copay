@@ -28,8 +28,6 @@ angular.module('copayApp.services').factory('feeService', function($log, $timeou
 
   root.getFeeRate = function(network, feeLevel, cb) {
 
-    if (feeLevel == 'custom') return cb();
-
     network = network || 'livenet';
 
     root.getFeeLevels(function(err, levels, fromCache) {
