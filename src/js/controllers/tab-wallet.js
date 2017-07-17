@@ -196,6 +196,16 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
         }
         
         counterpartyService.applyCounterpartyDataToTxHistory(profileService.counterpartyWalletClients[$scope.wallet.id], txHistory, function(err, xcpHistory){
+            if(!xcpHistory){
+                console.log('Error loading counterparty tx history, using btc history as backup');
+                console.log(err);
+                $scope.completeTxHistory = txHistory;
+                $scope.showHistory();
+                $timeout(function() {
+                    $scope.$apply();
+                }); 
+                return;
+            }
             for(var i = 0; i < xcpHistory.length; i++){
               xcpHistory[i].ourAddress = false;
               var outputs = xcpHistory[i].outputs;
@@ -445,6 +455,11 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   
   $scope.loadWalletAddresses = function() {
     walletService.getMainAddresses($scope.wallet, {}, function(err, addresses) {
+        if(!addresses){
+            console.log('No addresses found');
+            console.log(err);
+            return false;
+        }
        $scope.addressList = addresses.reverse();
         lodash.each(addresses, function(addr) {
             if($scope.addressLabels[addr.address]){

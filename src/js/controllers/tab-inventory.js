@@ -124,11 +124,13 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
   $scope.loadAddressBalances = function(address)
   {
     counterpartyService.getBalances(profileService.counterpartyWalletClients[$scope.wallet.id], address, function(err, tokenBalances) { 
-        //console.log(tokenBalances);
         if(!tokenBalances){
+            console.log('Error loading counterparty token balances');
+            console.log(err);
             return;
         }
         console.log('--LOADING COUNTERPARTY TOKEN BALANCES ' + address + '--');
+        //console.log(tokenBalances);
         $scope.inventoryBalances[address] = Array();
         var used_tokens = [];
         lodash.each(tokenBalances, function(token){
@@ -147,7 +149,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                lodash.each(bvam_data, function(bvam){
                   $scope.bvamData[bvam.asset] = bvam; 
                });
-               console.log($scope.bvamData);
+               //console.log($scope.bvamData);
             });      
         }
         $scope.$apply();

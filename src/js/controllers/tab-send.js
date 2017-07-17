@@ -304,6 +304,11 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
 
   $scope.loadWalletAddresses = function() {
     walletService.getMainAddresses($scope.wallet, {}, function(err, addresses) {
+        if(!addresses){
+            console.log('No addresses found');
+            console.log(err);
+            return false;
+        }        
        $scope.addressList = addresses.reverse();
         lodash.each(addresses, function(addr, idx) {
             if(idx === 0){
