@@ -14,8 +14,8 @@ angular.module('copayApp.services').factory('configService', function(storageSer
 
     // Bitcore wallet service URL
     bws: {
-      url: 'https://bws.bitpay.com/bws/api',
-      /* url: 'https://pockets-service.tokenly.com/bws/api',*/
+     /* url: 'https://bws.bitpay.com/bws/api',*/
+       url: 'https://v3.pockets-service.tokenly.com/bws/api',
     },
 
     download: {
@@ -97,10 +97,10 @@ angular.module('copayApp.services').factory('configService', function(storageSer
       enabled: true,
       defaultDust: 5430,
       bws: {
-        url: 'https://pockets-service.tokenly.com/bws/api'
+        url: 'https://v3.pockets-service.tokenly.com/bws/api'
       },
       counterpartyService: {
-        url: 'https://pockets-service.tokenly.com/counterparty/api'
+        url: 'https://v3.pockets-service.tokenly.com/counterparty/api'
       },
       bvamService: {
           url: ''
