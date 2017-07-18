@@ -1038,7 +1038,7 @@ function setWalletSelector(network, minAmount, cb) {
 
     if (usingCustomFee) {
       scope.customFeePerKB = tx.feeRate;
-      scope.feePerSatByte = (tx.feeRate / 1000).toFixed();
+      scope.feePerSatByte = tx.feeRate / 1000;
     }
 
     $ionicModal.fromTemplateUrl('views/modals/chooseFeeLevel.html', {
