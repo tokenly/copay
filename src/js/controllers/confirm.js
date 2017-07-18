@@ -541,9 +541,9 @@ function setWalletSelector(network, minAmount, cb) {
           'toAddress': tx.sourceAddress,
           'amount': tx.change,
           'message': null,
-          'token': 'BTC'          
+          //'token': 'BTC'          
         });
-    }
+    }  
     
     txp.inputs = tx.inputs;
     txp.fee = tx.fee;

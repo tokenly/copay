@@ -65,7 +65,8 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             $scope.loadAddressBalances(addr.address);
             $scope.$apply();            
         });
-        document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(0deg)';
+        $scope.loadWalletTransactions();        
+        document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(0deg)';        
     });
     
 
@@ -75,9 +76,12 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
 
   $scope.$on("$ionicView.beforeEnter", function(event, data) {
 
+    $scope.unconfirmedHistory = [];
+    $scope.address_list = [];
+    $scope.uniqueTokens = [];
+    
     $scope.refreshBalances();
-    
-    
+        
     listeners = [
       $rootScope.$on('bwsEvent', function(e, walletId, type, n) {
 
@@ -93,6 +97,84 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
       x();
     });
   });
+  
+    $scope.loadWalletTransactions = function(){
+    
+      
+      walletService.getTxHistory($scope.wallet, {}, function(err, txHistory) {
+        if (err) {
+            console.log('Error getting wallet tx history');
+            console.log(err);
+            return;
+        }
+        
+        counterpartyService.applyCounterpartyDataToTxHistory(profileService.counterpartyWalletClients[$scope.wallet.id], txHistory, function(err, xcpHistory){
+            if(!xcpHistory){
+                console.log('Error loading counterparty tx history, using btc history as backup');
+                console.log(err);
+                $scope.completeTxHistory = txHistory;
+                $scope.showHistory();
+                $timeout(function() {
+                    $scope.$apply();
+                }); 
+                return;
+            }
+            var unconfirmedHistory = [];
+            for(var i = 0; i < xcpHistory.length; i++){
+                xcpHistory[i].ourAddress = false;
+                var outputs = xcpHistory[i].outputs;
+                if(xcpHistory[i].action == "sent"){
+                  //come back to this
+                }
+                if(xcpHistory[i].confirmations > 0){
+                  continue;
+                }
+                for(var i2 = 0; i2 < xcpHistory[i].outputs.length; i2++){
+                  for(var i3 = 0; i3 < $scope.address_list.length; i3++){
+                      if($scope.address_list[i3].address == xcpHistory[i].outputs[i2].address){
+                          xcpHistory[i].ourAddress = $scope.address_list[i3].address;
+                          break;
+                      }
+                  }
+                }
+                if(xcpHistory[i].counterparty.asset){
+                    var asset = xcpHistory[i].counterparty.asset;
+                    if($scope.uniqueTokens.indexOf(asset) == -1){
+                        $scope.uniqueTokens.push(asset);
+                    }
+                }
+                unconfirmedHistory.push(xcpHistory[i]);
+            }
+
+            $scope.unconfirmedHistory = unconfirmedHistory;
+            console.log('UNCONFIRMED TX HISTORY...');
+            console.log(unconfirmedHistory);
+            console.log($scope.inventoryBalances);
+            lodash.each(unconfirmedHistory, function(tx){
+                if(!tx.counterparty.asset){
+                    return;
+                }
+                if(tx.action == 'sent'){
+                    
+                }
+                else{ //received
+                    if(!$scope.inventoryBalances[tx.counterparty.destination]){
+                        $scope.inventoryBalances[tx.counterparty.destination] = [];
+                    }
+                    lodash.find($scope.inventoryBalances[tx.counterparty.destination], {tokenName: tx.counterparty.asset}, function(current_balance){
+                        console.log('derp');
+                        console.log(current_balance);
+                    });
+
+                    
+                }
+            });
+            $timeout(function() {
+                $scope.$apply();
+            });            
+        });
+      });
+    };
 
   var checkSelectedWallet = function(wallet, wallets) {
     if (!wallet) return wallets[0];
