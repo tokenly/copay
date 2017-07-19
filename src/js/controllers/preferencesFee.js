@@ -89,8 +89,6 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
     }
 
     $scope.feePerSatByte = (value.feePerKB / 1024).toFixed();
-    console.log('what the fuck');
-    console.log($scope.feePerSatByte);
     $scope.avgConfirmationTime = value.nbBlocks * 10;
 
     $scope.invalidCustomFeeEntered = false;
