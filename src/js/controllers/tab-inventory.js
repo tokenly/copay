@@ -11,6 +11,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
   $scope.BTCBalances = [];
   $scope.bvamData = [];
   $scope.addressLabels = [];
+  $scope.unconfirmedInventoryBalances = [];
   storageService.getAddressLabels(function(err, addressLabels){
     $scope.addressLabels = addressLabels;
   });;
@@ -47,6 +48,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     // select first wallet if no wallet selected previously
     var selectedWallet = checkSelectedWallet($rootScope.wallet, $scope.wallets);
     $scope.onWalletSelect(selectedWallet, false);
+    $scope.loadWalletTransactions();        
     
     walletService.getMainAddresses(selectedWallet, {}, function(err, addresses) {
        if(!addresses){
@@ -65,8 +67,9 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             $scope.loadAddressBalances(addr.address);
             $scope.$apply();            
         });
-        $scope.loadWalletTransactions();        
-        document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(0deg)';        
+        $timeout(function() {
+            document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(0deg)';        
+        });
     });
     
 
@@ -98,6 +101,39 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
     });
   });
   
+    $scope.applyUnconfirmedBalances = function(address){
+        if(!$scope.unconfirmedInventoryBalances[address]){
+            return;
+        }
+        
+        if(!$scope.inventoryBalances[address]){
+            $scope.inventoryBalances[address] = [];
+        }
+        
+        var balances = $scope.inventoryBalances[address];
+        var unconf_balances = $scope.unconfirmedInventoryBalances[address];
+        for(var i = 0; i < unconf_balances.length; i++){
+            var unconf = unconf_balances[i];
+            var found = false;
+            for(var i2 = 0; i2 < balances.length; i2++){
+                var balance = balances[i2];
+                if(balance.tokenName == unconf.tokenName){
+                    balance.quantityFloatReceiving = unconf.quantityFloatReceiving;
+                    balance.quantityFloatSending = unconf.quantityFloatSending;
+                    $scope.inventoryBalances[address][i2] = balance;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                $scope.inventoryBalances[address].push(unconf);
+            }
+        }
+        $timeout(function() {
+            $scope.$apply();
+        });      
+    };
+  
     $scope.loadWalletTransactions = function(){
     
       
@@ -113,7 +149,6 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                 console.log('Error loading counterparty tx history, using btc history as backup');
                 console.log(err);
                 $scope.completeTxHistory = txHistory;
-                // $scope.showHistory();
                 $timeout(function() {
                     $scope.$apply();
                 }); 
@@ -121,13 +156,13 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             }
             var unconfirmedHistory = [];
             for(var i = 0; i < xcpHistory.length; i++){
+                if(xcpHistory[i].confirmations > 0){
+                  continue;
+                }
                 xcpHistory[i].ourAddress = false;
                 var outputs = xcpHistory[i].outputs;
                 if(xcpHistory[i].action == "sent"){
                   //come back to this
-                }
-                if(xcpHistory[i].confirmations > 0){
-                  continue;
                 }
                 for(var i2 = 0; i2 < xcpHistory[i].outputs.length; i2++){
                   for(var i3 = 0; i3 < $scope.address_list.length; i3++){
@@ -147,9 +182,6 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             }
 
             $scope.unconfirmedHistory = unconfirmedHistory;
-            console.log('UNCONFIRMED TX HISTORY...');
-            console.log(unconfirmedHistory);
-            console.log($scope.inventoryBalances);
             lodash.each(unconfirmedHistory, function(tx){
                 if(!tx.counterparty.asset){
                     return;
@@ -158,15 +190,28 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                     
                 }
                 else{ //received
-                    if(!$scope.inventoryBalances[tx.counterparty.destination]){
-                        $scope.inventoryBalances[tx.counterparty.destination] = [];
+                    if(!$scope.unconfirmedInventoryBalances[tx.counterparty.destination]){
+                        $scope.unconfirmedInventoryBalances[tx.counterparty.destination] = [];
                     }
-                    lodash.find($scope.inventoryBalances[tx.counterparty.destination], {tokenName: tx.counterparty.asset}, function(current_balance){
-                        console.log('derp');
-                        console.log(current_balance);
+                    var balance_found = false;
+                    lodash.find($scope.unconfirmedInventoryBalances[tx.counterparty.destination], {tokenName: tx.counterparty.asset}, function(current_balance){
+                        balance_found = true;
+                        current_balance.quantityFloatReceiving += tx.counterparty.quantityFloat;
                     });
-
-                    
+                    if(!balance_found){
+                        //create a new balance entry for the address
+                        var balance_entry = {
+                            amountStr: "0",
+                            bg_color: stringToColor(tx.counterparty.asset),
+                            divisible: tx.counterparty.divisible,
+                            quantityFloat: 0,
+                            quantityFloatReceiving: tx.counterparty.quantityFloat,
+                            quantityFloatSending: 0,
+                            quantitySat: 0,
+                            tokenName: tx.counterparty.asset
+                        };
+                        $scope.unconfirmedInventoryBalances[tx.counterparty.destination].push(balance_entry);
+                    }
                 }
             });
             $timeout(function() {
@@ -234,7 +279,10 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                //console.log($scope.bvamData);
             });      
         }
-        $scope.$apply();
+        $timeout(function() {
+            $scope.applyUnconfirmedBalances(address);
+            $scope.$apply();
+        });          
     });
       
   };

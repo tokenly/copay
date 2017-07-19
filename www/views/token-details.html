@@ -49,8 +49,11 @@
                         <li>
                             <strong>Token ID:</strong> {{ currentInventoryToken.tokenName }}
                         </li>                     
-                        <li ng-if="currentInventoryToken.quantityFloat" class="token-info-balance">
+                        <li ng-if="currentInventoryToken.quantityFloat || currentInventoryToken.quantityFloatReceiving" class="token-info-balance">
                             <strong>My Balance:</strong> {{ numberWithCommas(currentInventoryToken.quantityFloat) }}
+                            <span ng-if="currentInventoryToken.quantityFloatReceiving > 0 || currentInventoryToken.quantityFloatSending > 0">
+                                ({{ numberWithCommas(currentInventoryToken.quantityFloatReceiving - currentInventoryToken.quantityFloatSending) }} unconfirmed)
+                            </span>
                         </li>
                         <li>
                             <strong>Global Supply:</strong> {{ numberWithCommas(currentBvam.assetInfo.supplyFloat) }}

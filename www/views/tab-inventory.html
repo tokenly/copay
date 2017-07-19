@@ -54,7 +54,8 @@
                             <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search " ng-if="!token.divisible">
                                 <a ng-click="openTokenDetails(addr, token, bvamData[token.tokenName])"></a>
                                 <div class="pocket-token-quantity">
-                                    x {{ numberWithCommas(token.quantityFloat) }}
+                                    x {{ numberWithCommas(token.quantityFloat + token.quantityFloatReceiving - token.quantityFloatSending) }}
+                                    <small ng-if="token.quantityFloatReceiving > 0 || token.quantityFloatSending > 0">(unconfirmed)</small>
                                 </div>
                                 <div class="pocket-token-emblem-non-divisible" ng-if="!bvamData[token.tokenName] || !bvamData[token.tokenName].smallImage"
                                 style="background: #{{ token.bg_color }}; border-color: #{{ token.bg_color }};"
@@ -79,7 +80,8 @@
                             <li ng-repeat="token in inventoryBalances[addr.address] | filter: inventory_search" ng-if="token.divisible && token.tokenName != 'XCP'">
                                 <a ng-click="openTokenDetails(addr, token, bvamData[token.tokenName])"></a>
                                 <div class="pocket-token-quantity">
-                                    {{ numberWithCommas(token.quantityFloat) }}
+                                    {{ numberWithCommas(token.quantityFloat + token.quantityFloatReceiving - token.quantityFloatSending) }}
+                                    <small ng-if="token.quantityFloatReceiving > 0 || token.quantityFloatSending > 0">(unconfirmed)</small>
                                 </div>
                                 <div class="pocket-token-emblem-divisible" ng-if="!bvamData[token.tokenName] || !bvamData[token.tokenName].smallImage"
                                 style="background: #{{ token.bg_color }}; border-color: #{{ token.bg_color }};"
