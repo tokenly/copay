@@ -351,18 +351,20 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
             });             
         });        
         
-        var used_tokens = ["BTC"];
+        var used_token_names = [];
+        var used_tokens = [{tokenName: 'BTC', quantitySat: $scope.source_balances['BTC'].quantitySat, quantityFloat: $scope.source_balances['BTC'].quantityFloat}];
         lodash.each(tokenBalances, function(token, idx){
             if(token.quantitySat > 0){
                 $scope.source_balances[token.tokenName] = token;
+                used_token_names.push(token.tokenName)
             }
-            used_tokens.push(token.tokenName);
+            used_tokens.push(token);
         });
         
         $scope.usedTokens = used_tokens;
         
         if(used_tokens.length > 0){
-            bvamService.getBvamData(profileService.counterpartyWalletClients[$scope.wallet.id], used_tokens, function(err, bvam_data){
+            bvamService.getBvamData(profileService.counterpartyWalletClients[$scope.wallet.id], used_token_names, function(err, bvam_data){
               //console.log('-- LOADING COUNTERPARTY BVAM DATA --');
                lodash.each(bvam_data, function(bvam){
                   $scope.bvamData[bvam.asset] = bvam;
@@ -385,8 +387,10 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   $scope.updateSendTokenBalance = function(token){
       $scope.form_data.send_amount = null;
       for(var i = 0; i < $scope.usedTokens.length; i++){
-          if($scope.source_balances[$scope.usedTokens[i]].tokenName == token){
-            $scope.token_balance = $scope.source_balances[$scope.usedTokens[i]].quantityFloat;
+          if ($scope.source_balances[$scope.usedTokens[i].tokenName] == null) { continue; }
+
+          if($scope.source_balances[$scope.usedTokens[i].tokenName].tokenName == token){
+            $scope.token_balance = $scope.source_balances[$scope.usedTokens[i].tokenName].quantityFloat;
           }
       }
   };
@@ -538,7 +542,9 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     var send_token = $scope.form_data.send_token;
     var token_found = false;
     for(var i = 0; i < $scope.usedTokens.length; i++){
-        if($scope.source_balances[$scope.usedTokens[i]].tokenName == send_token){
+        if ($scope.source_balances[$scope.usedTokens[i].tokenName] == null) { continue; }
+
+        if($scope.source_balances[$scope.usedTokens[i].tokenName].tokenName == send_token){
             token_found = true;
         }
     }
