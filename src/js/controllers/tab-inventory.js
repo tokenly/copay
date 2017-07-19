@@ -113,7 +113,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                 console.log('Error loading counterparty tx history, using btc history as backup');
                 console.log(err);
                 $scope.completeTxHistory = txHistory;
-                $scope.showHistory();
+                // $scope.showHistory();
                 $timeout(function() {
                     $scope.$apply();
                 }); 
