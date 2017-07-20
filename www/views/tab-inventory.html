@@ -43,7 +43,7 @@
                         <div class="pocket-title">
                             <input type="text" ng-change="saveAddressLabels()" ng-model="addressLabels[addr.address]" placeholder="{{ 'Pocket #' + ($index+1) }}" />
                             <strong>Address:</strong> <span copy-to-clipboard="addr.address">{{addr.address}}</span>
-                            <a href="https://www.blocktrail.com/BTC/address/{{addr.address}}" title="View on block explorer" target="_blank"><i class="icon ico-view"></i></a>
+                            <a href="https://xchain.io/address/{{addr.address}}" title="View on block explorer" target="_blank"><i class="icon ico-view"></i></a>
                             <br>
                             <span class="token-count">{{ numberWithCommas(inventoryBalances[addr.address].length) }} unique tokens</span>
                         </div>
