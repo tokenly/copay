@@ -251,8 +251,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     
     function filterUtxosForBTCSend(utxos, amount, input_count = 1, extra_bytes = null){
         var fee_estimate = estimateTxFeeFromSize(input_count, 2, $scope.currentFeeRate, extra_bytes); //get initial fee estimate
-        console.log(fee_estimate);
-        console.log(amount);
         var total_amount = parseInt(amount) + parseInt(fee_estimate.fee);
         var dust_size = 141 * $scope.currentFeeRate; //minimum value worth spending
         
@@ -290,9 +288,6 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         
         //calculate change
         var change = parseInt(found) - parseInt(total_amount);
-        console.log(found);
-        console.log(total_amount);
-        console.log(change);
         if(change <= dust_size && change > 0){ //let dust values become part of the miner fee
             fee_estimate.extra_fee = change;
             fee_estimate.fee += change;
@@ -498,7 +493,6 @@ function setWalletSelector(network, minAmount, cb) {
   };  
 
   function getCounterpartyTxp(tx, wallet, dryRun, cb) {
-      console.log('ABOUT TO SEND XCP TX....');
     if (tx.description && !wallet.credentials.sharedEncryptingKey) {
       var msg = gettextCatalog.getString('Could not add message to imported wallet without shared encrypting key');
       $log.warn(msg);
@@ -524,6 +518,7 @@ function setWalletSelector(network, minAmount, cb) {
     }
     
     var txp = {};
+    txp.sourceAddress = tx.sourceAddress;
 
     txp.outputs = [
     {
@@ -537,12 +532,12 @@ function setWalletSelector(network, minAmount, cb) {
     ];
     
     if(tx.change && tx.change > 0){
-        txp.outputs.push({
+        txp.changeOutput = {
           'toAddress': tx.sourceAddress,
           'amount': tx.change,
           'message': null,
           //'token': 'BTC'          
-        });
+        };
     }  
     
     txp.inputs = tx.inputs;
@@ -570,8 +565,6 @@ function setWalletSelector(network, minAmount, cb) {
   
   function tokenBalanceDetailsByName(tokenName) {
     var foundToken = null, keepSearching = true;
-    console.log(tokenName);
-    console.log($scope.bvamData);
     if($scope.bvamData[tokenName]){
         return $scope.bvamData[tokenName];
     }
@@ -889,7 +882,7 @@ function setWalletSelector(network, minAmount, cb) {
             if (amountUsd <= CONFIRM_LIMIT_USD)
               return cb();
 
-            var message = gettextCatalog.getString('Sending {{amountStr}} from your {{name}} wallet', {
+            var message = gettextCatalog.getString('Sending {{amountStr}} from "{{name}}" ', {
               amountStr: tx.amountStr,
               name: wallet.name
             });
@@ -937,8 +930,8 @@ function setWalletSelector(network, minAmount, cb) {
             if (walletService.isEncrypted(wallet))
               return cb();
 
-            var message = gettextCatalog.getString('Sending {{amountStr}} {{asset}} from your {{name}} wallet pocket: {{sourceAddress}}', {
-              amountStr: txFormatService.formatAmountStr(tx.toAmount),
+            var message = gettextCatalog.getString('Sending {{amountStr}} {{asset}} from "{{name}}" pocket: {{sourceAddress}}', {
+              amountStr: $scope.numberWithCommas(parseInt(tx.toAmount)/100000000),
               asset: tx.asset,
               name: wallet.name,
               sourceAddress: tx.sourceAddress
@@ -1028,6 +1021,18 @@ function setWalletSelector(network, minAmount, cb) {
       $state.transitionTo('tabs.home');
     });
   };
+  
+    $scope.numberWithCommas = function(x) {
+        if(typeof x == 'undefined'){
+            return null;
+        }
+        x = parseFloat(x);
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var str = parts.join(".");
+        return str;
+    };
+      
 
   $scope.chooseFeeLevel = function(tx, wallet) {
 

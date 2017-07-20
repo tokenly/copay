@@ -217,6 +217,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
         quantityFloat: quantityFloat,
         amountStr:     ""+delimitNumber(quantityFloat),
         divisible:     divisible,
+        sourceAddress: txp.sourceAddress
       };
     } else if (tokenProposalType == 'issuance') {
       // a fake OP_RETURN for building the script
@@ -282,6 +283,10 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
         var divisible   = oldOutput.divisible;
         newTxp.outputs[0].script = counterpartyUtils.createIssuanceScriptHex(token, quantitySat, divisible, description, trialCreatedTxp.inputs[0].txid);
         console.log('=CPTY= recreateRealTokenIssuanceProposal script is '+newTxp.outputs[0].script+'');
+      }
+      if(originalTxp.changeOutput){
+          //newTxp.outputs.push(originalTxp.changeOutput);
+          newTxp.changeAddress = originalTxp.changeOutput.toAddress;
       }
 
       // for realz

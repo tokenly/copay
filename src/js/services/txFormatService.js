@@ -17,8 +17,11 @@ angular.module('copayApp.services').factory('txFormatService', function($filter,
     return this.Utils.formatAmount(satoshis, config.unitCode, opts);
   };
 
-  root.formatAmountStr = function(satoshis) {
+  root.formatAmountStr = function(satoshis, with_unit = true) {
     if (isNaN(satoshis)) return;
+    if(!with_unit){
+        return root.formatAmount(satoshis);
+    }
     var config = configService.getSync().wallet.settings;
     return root.formatAmount(satoshis) + ' ' + config.unitName;
   };

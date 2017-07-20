@@ -210,16 +210,21 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
               xcpHistory[i].ourAddress = false;
               var outputs = xcpHistory[i].outputs;
               if(xcpHistory[i].action == "sent"){
-                  //come back to this
-              }
-              for(var i2 = 0; i2 < xcpHistory[i].outputs.length; i2++){
-                  for(var i3 = 0; i3 < $scope.addressList.length; i3++){
-                      if($scope.addressList[i3].address == xcpHistory[i].outputs[i2].address){
-                          xcpHistory[i].ourAddress = $scope.addressList[i3].address;
-                          break;
-                      }
+                  if(xcpHistory[i].counterparty.asset){
+                    xcpHistory[i].ourAddress = xcpHistory[i].customData.counterparty.sourceAddress;
                   }
               }
+              else{
+                  for(var i2 = 0; i2 < xcpHistory[i].outputs.length; i2++){
+                      for(var i3 = 0; i3 < $scope.addressList.length; i3++){
+                          if($scope.addressList[i3].address == xcpHistory[i].outputs[i2].address){
+                              xcpHistory[i].ourAddress = $scope.addressList[i3].address;
+                              break;
+                          }
+                      }
+                  }   
+              }
+
                 if(xcpHistory[i].counterparty.asset){
                     var asset = xcpHistory[i].counterparty.asset;
                     if($scope.uniqueTokens.indexOf(asset) == -1){

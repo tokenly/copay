@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.services').factory('walletService', function($log, $timeout, lodash, trezor, ledger, intelTEE, storageService, configService, rateService, uxLanguage, $filter, gettextCatalog, bwcError, $ionicPopup, fingerprintService, ongoingProcess, gettext, $rootScope, txFormatService, $ionicModal, $state, bwcService, bitcore, popupService) {
+angular.module('copayApp.services').factory('walletService', function($log, $timeout, lodash, trezor, ledger, intelTEE, storageService, configService, rateService, uxLanguage, $filter, gettextCatalog, bwcError, $ionicPopup, fingerprintService, ongoingProcess, gettext, $rootScope, txFormatService, $ionicModal, $state, bwcService, bitcore, popupService, counterpartyService) {
 
   // Ratio low amount warning (fee/amount) in incoming TX 
   var LOW_AMOUNT_RATIO = 0.15; 
@@ -661,8 +661,40 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
 
   root.createTx = function(wallet, txp, cb) {
     if (lodash.isEmpty(txp) || lodash.isEmpty(wallet))
-      return cb('MISSING_PARAMETER');
+        return cb('MISSING_PARAMETER');
+        
+    // handle token send
+    console.log('counterpartyService.isTokenSendProposal(txp)', counterpartyService.isTokenSendProposal(txp));
+    var tokenProposalType = counterpartyService.tokenProposalType(txp);
+    var isTokenProposal = tokenProposalType ? true : false;
+    var originalTxp = txp;
+    if (isTokenProposal) {
+      txp = counterpartyService.buildTrialTokenSendProposalScripts(originalTxp, tokenProposalType);
+    }
+    console.log('[walletService] BEGIN client.createTxProposal txp', txp);
+    wallet.createTxProposal(txp, function(err, createdTxp) {
+      if (err) {
+        console.log('[walletService] END client.createTxProposal err', err);
+        return cb(err);
+      }
+      console.log('[walletService] END client.createTxProposal createdTxp', createdTxp);
 
+      // assign counterparty data to customData after plain bitcoin transaction has been verified
+      txp.customData = {isCounterparty: txp.isCounterparty, counterparty: txp.counterparty};  
+
+      if (isTokenProposal) {
+        counterpartyService.recreateRealTokenSendProposal(wallet, originalTxp, txp, createdTxp, function(err, recreatedTxp) {
+          if (err) return cb(err);
+          
+          return cb(null, recreatedTxp);
+        });
+        return
+      }
+      $log.debug('Transaction created');
+      return cb(null, createdTxp);
+    });
+
+/*
     wallet.createTxProposal(txp, function(err, createdTxp) {
       if (err) return cb(err);
       else {
@@ -670,6 +702,8 @@ angular.module('copayApp.services').factory('walletService', function($log, $tim
         return cb(null, createdTxp);
       }
     });
+    
+*/
   };
 
   root.publishTx = function(wallet, txp, cb) {
