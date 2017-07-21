@@ -5,7 +5,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   var originalList;
   var CONTACTS_SHOW_LIMIT;
   var currentContactsPage;
-  const DEFAULT_DUST = 0.0000543;
+  var DEFAULT_DUST = 0.0000543;
   const SATOSHI_MOD = 100000000;
   
   $scope.isChromeApp = platformInfo.isChromeApp;
@@ -244,6 +244,8 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
       
     var config = configService.getSync();    
     $scope.advancedTransactions = config.wallet.advancedTransactions;
+    DEFAULT_DUST = parseFloat((config.counterpartyTokens.defaultDust / SATOSHI_MOD).toFixed(8));
+    $scope.form_data.btc_dust = DEFAULT_DUST;
       
     $scope.checkingBalance = true;
     $scope.formData = {

@@ -11,6 +11,9 @@ angular.module('copayApp.controllers').controller('advancedSettingsController', 
     $scope.advancedTransactions = {
       value: config.wallet.advancedTransactions  
     };
+    $scope.counterpartyDust = {
+      value: config.counterpartyTokens.defaultDust
+    };    
     $scope.recentTransactionsEnabled = {
       value: config.recentTransactions.enabled
     };
@@ -34,6 +37,17 @@ angular.module('copayApp.controllers').controller('advancedSettingsController', 
     var opts = {
       wallet: {
         advancedTransactions: $scope.advancedTransactions.value
+      }
+    };
+    configService.set(opts, function(err) {
+      if (err) $log.debug(err);
+    });
+  };
+  
+  $scope.updateCounterpartyDustValue = function() {
+    var opts = {
+      counterpartyTokens: {
+        defaultDust: $scope.counterpartyDust.value
       }
     };
     configService.set(opts, function(err) {

@@ -22,10 +22,19 @@
         <span class="toggle-label" translate>Enable Advanced Transactions</span>
       </ion-toggle>
       <div class="comment" translate>
-        Enables additional options and advanced wallet features. Recommended for experienced users.
+        Enables additional options and advanced wallet features. Recommended for experienced users only.
       </div>
         
-    
+      <div class="item item-divider"></div>     
+      
+      <ion-item ng-if="advancedTransactions.value">
+          <ion-label class="input-label" translate>Counterparty BTC "dust" value (satoshis)</ion-label>
+          <input type="number" ng-model="counterpartyDust.value" ng-change="updateCounterpartyDustValue()"></input>
+          <div class="comment" translate>
+            Change the default amount of bitcoin (in satoshis) that is sent along with each of your Counterparty token transactions, excluding the miner fee.
+            This must be large enough for miners to accept (default: 5430)
+          </div>          
+      </ion-item>
       <!--
       <div class="item item-divider"></div>      
 

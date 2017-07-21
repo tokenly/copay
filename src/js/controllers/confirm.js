@@ -2,9 +2,11 @@
 
 angular.module('copayApp.controllers').controller('confirmController', function($rootScope, $scope, $interval, $filter, $timeout, $ionicScrollDelegate, gettextCatalog, walletService, platformInfo, lodash, configService, rateService, $stateParams, $window, $state, $log, profileService, bitcore, txFormatService, ongoingProcess, $ionicModal, popupService, $ionicHistory, $ionicConfig, payproService, feeService, bwcError, txConfirmNotification) {
 
+  const SATOSHI_MOD = 100000000;
   var countDown = null;
   var CONFIRM_LIMIT_USD = 20;
   var FEE_TOO_HIGH_LIMIT_PER = 15;
+  
 
   var tx = {};
 
@@ -71,7 +73,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.feeRate = data.stateParams.feeRate;
     $scope.btcDust = data.stateParams.btcDust;
     if($scope.btcDust == null || typeof $scope.btcDust == 'undefined'){
-        $scope.btcDust = defaultConfig.counterpartyTokens.defaultDust;
+        $scope.btcDust = parseFloat((config.counterpartyTokens.defaultDust / SATOSHI_MOD).toFixed(8));
     }
     
     $scope.estimatedFee = null;
@@ -156,7 +158,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                   sourceAddress: $scope.sourceAddress,
                   description: $scope.description,
                   paypro: $scope.paypro,
-                  dust: 0,
+                  dust_size: 0,
 
                   feeLevel: configFeeLevel,
                   feeRate: $scope.currentFeeRate,
@@ -192,7 +194,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             }, 
             function(err, utxos) {
                 if (err) return;
-                var filter_utxos = filterUtxosForCounterpartySend(utxos, $scope.btcDust);
+                var filter_utxos = filterUtxosForCounterpartySend(utxos, parseInt($scope.btcDust*SATOSHI_MOD));
                 if(!filter_utxos.inputs){
                     $scope.insufficientFunds = true;
                     $scope.buttonText = 'Insufficient Funds';
@@ -219,7 +221,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
                   sourceAddress: $scope.sourceAddress,
                   description: $scope.description,
                   paypro: $scope.paypro,
-                  dust: $scope.btcDust,
+                  dust_size: parseInt($scope.btcDust * SATOSHI_MOD),
 
                   feeLevel: configFeeLevel,
                   feeRate: $scope.currentFeeRate,
@@ -271,7 +273,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             if(utxo.locked){ continue; } //filter locked payments
             if(utxo.satoshis <= dust_size){ continue; } //filter dust payments
             found += utxo.satoshis;
-            utxo.amount = parseFloat((utxo.satoshis / 100000000).toFixed(8));
+            utxo.amount = parseFloat((utxo.satoshis / SATOSHI_MOD).toFixed(8));
             utxo.path = $scope.sourceAddressData.path;
             inputs.push(utxo);
             if(found >= total_amount){
@@ -475,7 +477,7 @@ function setWalletSelector(network, minAmount, cb) {
         });        
     }
     else{
-        $scope.amountStr = (toAmount / 100000000).toFixed(8);
+        $scope.amountStr = (toAmount / SATOSHI_MOD).toFixed(8);
         $scope.displayAmount = $scope.amountStr;
         $scope.displayUnit = $scope.sendToken;
         if($scope.bvamData[$scope.sendToken] && $scope.bvamData[$scope.sendToken].metadata.name != $scope.sendToken){
@@ -543,6 +545,10 @@ function setWalletSelector(network, minAmount, cb) {
     txp.inputs = tx.inputs;
     txp.fee = tx.fee;
     txp.message = tx.description;
+    
+    if(tx.asset != 'BTC'){
+        txp.dust_size = parseInt($scope.btcDust * SATOSHI_MOD);
+    }
 
     if (tx.paypro) {
       txp.payProUrl = tx.paypro.url;
@@ -931,7 +937,7 @@ function setWalletSelector(network, minAmount, cb) {
               return cb();
 
             var message = gettextCatalog.getString('Sending {{amountStr}} {{asset}} from "{{name}}" pocket: {{sourceAddress}}', {
-              amountStr: $scope.numberWithCommas(parseInt(tx.toAmount)/100000000),
+              amountStr: $scope.numberWithCommas(parseInt(tx.toAmount)/SATOSHI_MOD),
               asset: tx.asset,
               name: wallet.name,
               sourceAddress: tx.sourceAddress

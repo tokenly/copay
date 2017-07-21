@@ -86,6 +86,10 @@
           </div>
           <i class="icon bp-arrow-right"></i>
         </div>
+        <div class="item item-icon-right" ng-if="advancedTransactions && btcDust && sendToken != 'BTC'">
+            <span class="label">Counterparty BTC "dust"</span>
+            <span class="m10l">{{numberWithCommas(btcDust) || '...'}} BTC</span>
+        </div>
         <div class="item item-icon-right" ng-if="wallet" ng-click="chooseFeeLevel(tx, wallet)">
           <span class="label">{{'Fee:' | translate}} {{currentFeeLevel | translate}} <small style="display: block;" ng-show="advancedTransactions">{{ estimatedBytes }} bytes @ {{currentFeeRate}} satoshis per byte</small></span>
           <span class="m10l">{{numberWithCommas(estimatedFee / 100000000) || '...'}} BTC</span>

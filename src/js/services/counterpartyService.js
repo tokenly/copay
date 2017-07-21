@@ -195,6 +195,7 @@ angular.module('copayApp.services').factory('counterpartyService', function(coun
       if (txp.dust_size && txp.dust_size > use_dust) {
           use_dust = txp.dust_size; //custom dust size, but must be greater than default
       }
+      
       var dustSendOutput = {
         amount: use_dust,
         toAddress: destinationAddress,
