@@ -104,7 +104,7 @@ angular.module('copayApp.services').factory('configService', function(storageSer
       bvamService: {
           url: ''
       }
-    }    
+    },    
     log: {
       filter: 'debug',
     },
