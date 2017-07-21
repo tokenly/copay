@@ -252,7 +252,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     });
     
     function filterUtxosForCounterpartySend(utxos, dust_size){
-        return filterUtxosForBTCSend(utxos, dust_size, 1, 44);
+        return filterUtxosForBTCSend(utxos, dust_size, 1, 45);
     }
     
     function filterUtxosForBTCSend(utxos, amount, input_count = 1, extra_bytes = null){
