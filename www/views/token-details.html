@@ -79,13 +79,13 @@
                             <strong>Token Issuer:</strong> {{ currentBvam.ownerSummary }}
                         </li>
                         <li ng-if="currentBvam">
-                            <strong>Issuance Address:</strong> <a href="https://counterpartychain.io/address/{{ currentBvam.assetInfo.issuer }}" target="_blank">{{ currentBvam.assetInfo.issuer }}</a>
+                            <strong>Issuance Address:</strong> <a href="https://xchain.io/address/{{ currentBvam.assetInfo.issuer }}" target="_blank">{{ currentBvam.assetInfo.issuer }}</a>
                         </li>                                                       
                     </ul>
                     <hr>
                     <h4>Other Token Details</h4>
                     <p>
-                        <a href="https://counterpartychain.io/asset/{{ currentInventoryToken.tokenName }}" target="_blank">View on block explorer</a>
+                        <a href="https://xchain.io/asset/{{ currentInventoryToken.tokenName }}" target="_blank">View on block explorer</a>
                     </p>
                     <ul class="token-info-items">
                         <li ng-if="currentBvam && currentBvam.metadata.name != currentInventoryToken.tokenName">
