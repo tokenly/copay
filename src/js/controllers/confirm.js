@@ -70,7 +70,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.sourceAddressData = data.stateParams.sourceAddressData;
     $scope.sourceBalances = data.stateParams.sourceBalances;
     $scope.sendToken = data.stateParams.sendToken;
-    $scope.feeRate = data.stateParams.feeRate;
+    $scope.customFeeRate = data.stateParams.feeRate;
     $scope.btcDust = data.stateParams.btcDust;
     if($scope.btcDust == null || typeof $scope.btcDust == 'undefined'){
         $scope.btcDust = parseFloat((config.counterpartyTokens.defaultDust / SATOSHI_MOD).toFixed(8));
@@ -80,7 +80,16 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     $scope.estimatedBytes = null;
     $scope.alternativeFeeStr = null;
     $scope.currentFeeRate = null;
-    $scope.currentFeeLevel = feeService.getCurrentFeeLevel();
+    
+    if($scope.customFeeRate){
+        config.wallet.settings.customFeeLevel = parseInt($scope.customFeeRate); //sync to settings
+        $scope.currentFeeLevel = 'custom';
+    }
+    else{
+        $scope.currentFeeLevel = feeService.getCurrentFeeLevel();
+    }
+
+
     
     $scope.buttonText = 'Send ' + $scope.sendToken;
     $scope.insufficientFunds = false;
