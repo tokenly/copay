@@ -18,18 +18,18 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
     var value = lodash.find($scope.feeLevels[$scope.network], {
       level: 'superEconomy'
     });
-    return parseInt((value.feePerKB / 1000).toFixed());
+    return parseInt((value.feePerKB / 1024).toFixed());
   };
 
   var getMaxRecommended = function() {
     var value = lodash.find($scope.feeLevels[$scope.network], {
       level: 'urgent'
     });
-    return parseInt((value.feePerKB / 1000).toFixed());
+    return parseInt((value.feePerKB / 1024).toFixed());
   };
 
   $scope.ok = function() {
-    $scope.customFeePerKB = $scope.customFeePerKB ? ($scope.customSatPerByte.value * 1000).toFixed() : null;
+    $scope.customFeePerKB = $scope.customFeePerKB ? ($scope.customSatPerByte.value * 1024).toFixed() : null;
     $scope.hideModal($scope.feeLevel, $scope.customFeePerKB);
   };
 
@@ -61,12 +61,12 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
     // If no custom fee
     if (value) {
       $scope.customFeePerKB = null;
-      $scope.feePerSatByte = (value.feePerKB / 1000).toFixed();
+      $scope.feePerSatByte = (value.feePerKB / 1024).toFixed();
       $scope.avgConfirmationTime = value.nbBlocks * 10;
     } else {
       $scope.avgConfirmationTime = null;
       $scope.customSatPerByte = { value: Number($scope.feePerSatByte) };
-      $scope.customFeePerKB = ($scope.feePerSatByte * 1000).toFixed();
+      $scope.customFeePerKB = ($scope.feePerSatByte * 1024).toFixed();
     }
 
     // Warnings
