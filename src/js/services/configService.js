@@ -91,7 +91,6 @@ angular.module('copayApp.services').factory('configService', function(storageSer
       enabled: false,
     },
     
-    
     // counterparty token support
     counterpartyTokens: {
       enabled: true,
@@ -106,7 +105,9 @@ angular.module('copayApp.services').factory('configService', function(storageSer
           url: ''
       }
     }    
-    
+    log: {
+      filter: 'debug',
+    },
   };
 
   var configCache = null;
