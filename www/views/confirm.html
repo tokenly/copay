@@ -120,7 +120,7 @@
     ng-if="isCordova && !isWindowsPhoneApp && wallet"
     slide-on-confirm="approve(tx, wallet, statusChangeHandler)"
     slide-send-status="sendStatus"
-    is-disabled="!wallet">
+    is-disabled="!wallet || insufficientFunds">
     {{buttonText}}
   </slide-to-accept>
   <slide-to-accept-success
