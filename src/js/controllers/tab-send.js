@@ -464,7 +464,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
         $scope.errors.btc_dust = 'Not enough BTC balance';
         return false;
     }
-    else if(amount != null && amount < DEFAULT_DUST){
+    else if(amount != null && amount < 0.00005430){
         $scope.errors.btc_dust = 'Dust size too low';
         return false;
     }

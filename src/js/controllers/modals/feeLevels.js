@@ -59,7 +59,7 @@ angular.module('copayApp.controllers').controller('feeLevelsController', functio
     });
 
     // If no custom fee
-    if (value) {
+    if (value && $scope.feeLevel != 'custom') {
       $scope.customFeePerKB = null;
       $scope.feePerSatByte = (value.feePerKB / 1024).toFixed();
       $scope.avgConfirmationTime = value.nbBlocks * 10;

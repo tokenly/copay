@@ -116,7 +116,11 @@ angular.module('copayApp.controllers').controller('confirmController', function(
   
   $scope.pregenerateTransaction = function(){
       
-    feeService.getFeeRate($scope.wallet.network, $scope.currentFeeLevel, function(err, fee_rate){
+    var feeLevel = $scope.currentFeeLevel;
+    if($scope.tx.feeLevel){
+        feeLevel = $scope.tx.feeLevel;
+    }
+    feeService.getFeeRate($scope.wallet.network, feeLevel, function(err, fee_rate){
         
         var fee_rate = parseInt(fee_rate / 1024); //convert to bytes
         $scope.currentFeeRate = fee_rate;
@@ -248,7 +252,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     });
     
     function filterUtxosForCounterpartySend(utxos, dust_size){
-        return filterUtxosForBTCSend(utxos, dust_size, 1, 80);
+        return filterUtxosForBTCSend(utxos, dust_size, 1, 44);
     }
     
     function filterUtxosForBTCSend(utxos, amount, input_count = 1, extra_bytes = null){
@@ -640,12 +644,15 @@ function setWalletSelector(network, minAmount, cb) {
   };
 
   function updateTx(tx, wallet, opts, cb) {
-
     if (opts.clearCache) {
       tx.txp = {};
     }
 
     $scope.tx = tx;
+    
+    $scope.pregenerateTransaction();
+    return;
+
 
     function updateAmount() {
       if (!tx.toAmount) return;
@@ -1046,11 +1053,17 @@ function setWalletSelector(network, minAmount, cb) {
     scope.network = tx.network;
     scope.feeLevel = tx.feeLevel;
     scope.noSave = true;
+    
+    usingCustomFee = scope.feeLevel == 'custom' ? true : false;
+    scope.usingCustomFee = usingCustomFee;
+    console.log('derp');
+    console.log(scope);
+    console.log(tx);
 
-    if (usingCustomFee) {
-      scope.customFeePerKB = tx.feeRate;
-      scope.feePerSatByte = tx.feeRate / 1000;
-    }
+    //if (usingCustomFee) {
+      scope.customFeePerKB = tx.feeRate * 1024;
+      scope.feePerSatByte = tx.feeRate;
+   // }
 
     $ionicModal.fromTemplateUrl('views/modals/chooseFeeLevel.html', {
       scope: scope,
@@ -1070,10 +1083,13 @@ function setWalletSelector(network, minAmount, cb) {
 
       usingCustomFee = newFeeLevel == 'custom' ? true : false;
 
-      if (tx.feeLevel == newFeeLevel && !usingCustomFee) return;
+      if (!usingCustomFee) return;
 
       tx.feeLevel = newFeeLevel;
-      if (usingCustomFee) tx.feeRate = parseInt(customFeePerKB);
+      if (usingCustomFee) {
+          tx.feeRate = parseInt(customFeePerKB / 1024);
+          config.wallet.settings.customFeeLevel = tx.feeRate; //sync with settings
+      }
 
       updateTx(tx, wallet, {
         clearCache: true,
