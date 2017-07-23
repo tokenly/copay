@@ -1096,8 +1096,6 @@ function setWalletSelector(network, minAmount, cb) {
 
       usingCustomFee = newFeeLevel == 'custom' ? true : false;
 
-      if (!usingCustomFee) return;
-
       tx.feeLevel = newFeeLevel;
       if (usingCustomFee) {
         tx.feeRate = parseInt(customFeePerKB / 1024);
