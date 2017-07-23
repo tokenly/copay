@@ -1,7 +1,7 @@
 <ion-view id="txp-details" ion-side-menus>
   <ng-include src="'views/includes/sidebar.html'"></ng-include>   
   <ion-side-menu-content>            
-  <ion-nav-bar class="bar-royal">z
+  <ion-nav-bar class="bar-royal">
     <ion-nav-title>
       {{title}}
     </ion-nav-title>
@@ -33,7 +33,7 @@
               </div>          
           </div>
           <div ng-if="!btx.counterparty.asset">
-              <div class="amount">{{displayAmount}} <span class="unit">{{displayUnit}}</span></div>
+              <div class="amount">{{btx.amountStr}}</div>
               <div class="alternative" ng-click="showRate = !showRate">
                 <span ng-if="!showRate">{{btx.alternativeAmountStr}}</span>
                 <span ng-if="showRate">
@@ -108,11 +108,6 @@
         <div class="item low-fees" ng-if="btx.action == 'received' && btx.lowFees && !btx.counterparty.asset">
           <i class="icon"><img src="img/icon-warning.png" width="20px"></i>
           <span translate>This transaction could take a long time to confirm or could be dropped due to the low fees set by the sender</span>
-        </div>
-        <div class="item low-fees" ng-if="btx.lowAmount && !btx.counterparty.asset">
-          <i class="icon"><img src="img/icon-warning.png" width="20px"></i>
-          <span translate>
-This transaction amount is too small compared to current Bitcoin network fees. Spending these funds will need a Bitcoin network fee cost comparable to the funds itself. </span>
         </div>
  
         <div class="item single-line">

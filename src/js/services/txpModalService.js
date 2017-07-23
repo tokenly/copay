@@ -10,10 +10,14 @@ angular.module('copayApp.services').factory('txpModalService', function(configSe
   // only determined by the tx.message
 
 
-  root.open = function(tx) {
+
+
+  root.open = function(tx, bvamData = null, addressLabels = null) {
     var wallet = tx.wallet ? tx.wallet : profileService.getWallet(tx.walletId);
     var config = configService.getSync().wallet;
     var scope = $rootScope.$new(true);
+    scope.bvamData = bvamData;
+    scope.addressLabels = addressLabels;
     scope.tx = tx;
     if (!scope.tx.toAddress) scope.tx.toAddress = tx.outputs[0].toAddress;
     scope.wallet = wallet;
@@ -22,6 +26,18 @@ angular.module('copayApp.services').factory('txpModalService', function(configSe
     scope.currentSpendUnconfirmed = config.spendUnconfirmed;
     // scope.tx.hasMultiplesOutputs = true;  // Uncomment to test multiple outputs
 
+    scope.numberWithCommas = function(x) {
+        if(typeof x == 'undefined'){
+            return null;
+        }
+        x = parseFloat(x);
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var str = parts.join(".");
+        return str;
+    };
+    
+
     $ionicModal.fromTemplateUrl('views/modals/txp-details.html', {
       scope: scope
     }).then(function(modal) {
@@ -29,6 +45,7 @@ angular.module('copayApp.services').factory('txpModalService', function(configSe
       scope.txpDetailsModal.show();
     });
   };
+  
 
   return root;
 });

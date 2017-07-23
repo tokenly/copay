@@ -19,8 +19,11 @@
           <span translate>Sending</span>
         </div>
         <div class="amount-label">
-          <div class="amount">{{tx.amountValueStr}} <span class="unit">{{tx.amountUnitStr}}</span></div>
-          <div class="alternative" ng-show="tx.alternativeAmountStr">{{tx.alternativeAmountStr}}</div>
+          <div class="amount" ng-if="!tx.customData.isCounterparty">{{tx.amountValueStr}} <span class="unit">{{tx.amountUnitStr}}</span></div>
+          <div class="alternative" ng-show="tx.alternativeAmountStr && !tx.customData.isCounterparty">{{tx.alternativeAmountStr}}</div>
+          
+          <div class="amount" ng-if="tx.customData.isCounterparty">{{ numberWithCommas(tx.customData.counterparty.quantityFloat) }}  <span class="unit">{{bvamData[tx.customData.counterparty.token].metadata.name || tx.customData.counterparty.token}}</span></div>
+          <div class="alternative" ng-show="tx.customData.isCounterparty && bvamData[tx.customData.counterparty.token] && bvamData[tx.customData.counterparty.token].metadata.name != tx.customData.counterparty.token">{{tx.customData.counterparty.token}}</div>
         </div>
 
         <div class="text-center m10t assertive" ng-if="tx.removed" translate>
@@ -53,12 +56,12 @@
           <span class="label" translate>To</span>
           <span class="payment-proposal-to" copy-to-clipboard="tx.toAddress">
             <img src="img/icon-bitcoin-small.svg">
-            <contact ng-if="!tx.hasMultiplesOutputs" class="ellipsis" address="{{tx.toAddress}}"></contact>
-            <span ng-if="tx.hasMultiplesOutputs" translate>Multiple recipients</span>
+            <contact ng-if="!tx.hasMultiplesOutputs || tx.customData.isCounterparty" class="ellipsis" address="{{tx.toAddress}}"></contact>
+            <span ng-if="tx.hasMultiplesOutputs && !tx.customData.isCounterparty" translate>Multiple recipients</span>
           </span>
         </div>
 
-        <div ng-show="tx.hasMultiplesOutputs" class="item" ng-click="showMultiplesOutputs = !showMultiplesOutputs">
+        <div ng-show="tx.hasMultiplesOutputs && !tx.customData.isCounterparty" class="item" ng-click="showMultiplesOutputs = !showMultiplesOutputs">
           <span class="text-gray" translate>Recipients</span>
           <span class="right">{{tx.recipientCount}}
             <i ng-show="showMultiplesOutputs" class="icon ion-ios-arrow-up"></i>
@@ -66,7 +69,7 @@
           </span>
         </div>
 
-        <div class="item" ng-show="tx.hasMultiplesOutputs && showMultiplesOutputs"
+        <div class="item" ng-show="tx.hasMultiplesOutputs && showMultiplesOutputs && !tx.customData.isCounterparty"
           ng-repeat="output in tx.outputs" ng-include="'views/includes/output.html'">
         </div>
 
@@ -79,6 +82,17 @@
             <div>{{wallet.name}}</div>
           </div>
         </div>
+        <div class="item single-line" ng-if="tx.ourAddress">
+            <span class="label">Pocket</span> 
+            <span class="item-note"  style="text-align: right;">
+                <div ng-if="addressLabels[tx.ourAddress]">
+                    {{ addressLabels[tx.ourAddress] }}
+                </div>
+                <div copy-to-clipboard="tx.ourAddress">
+                    {{ tx.ourAddress }}
+                </div>
+            </span>              
+        </div>              
         <div class="item single-line" ng-if="isShared">
           <span class="label" translate>Created by</span>
           <span class="item-note">
@@ -101,7 +115,7 @@
           <span class="label">{{'Fee:' | translate}} {{tx.feeLevelStr | translate}}</span>
           <span class="m10l">{{tx.feeStr || '...'}}</span>
           <span class="item-note m10l">
-            <span>{{tx.feeFiatStr || '...'}}&nbsp;<span class="fee-rate" ng-if="tx.feeRateStr" translate>- {{tx.feeRateStr}} of the transaction</span></span>
+            <span>{{tx.feeFiatStr || '...'}}&nbsp;<span class="fee-rate" ng-if="tx.feeRateStr && !tx.customData.isCounterparty" translate>- {{tx.feeRateStr}} of the transaction</span></span>
           </span>
         </div>
 

@@ -288,6 +288,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             found += utxo.satoshis;
             utxo.amount = parseFloat((utxo.satoshis / SATOSHI_MOD).toFixed(8));
             utxo.path = $scope.sourceAddressData.path;
+            if($scope.wallet.n > 1 && $scope.sourceAddressData.publicKeys){
+                utxo.publicKeys = $scope.sourceAddressData.publicKeys;
+            }
             inputs.push(utxo);
             if(found >= total_amount){
                 break;
@@ -532,6 +535,10 @@ function setWalletSelector(network, minAmount, cb) {
         divisible = tokenBalanceDetails.assetInfo.divisible;
     }
     
+    if(!divisible){
+        tx.toAmount = parseInt(tx.toAmount / SATOSHI_MOD);
+    }
+    
     var txp = {};
     txp.sourceAddress = tx.sourceAddress;
 
@@ -615,11 +622,7 @@ function setWalletSelector(network, minAmount, cb) {
     ];
     
     if(tx.change && tx.change > 0){
-        txp.outputs.push({
-          'toAddress': tx.sourceAddress,
-          'amount': tx.change,
-          'message': null
-        });
+        txp.changeAddress = tx.sourceAddress;
     }
     
     txp.inputs = tx.inputs;
@@ -642,6 +645,7 @@ function setWalletSelector(network, minAmount, cb) {
     }
     txp.excludeUnconfirmedUtxos = !tx.spendUnconfirmed;
     txp.dryRun = dryRun;
+    txp.customData = {sourceAddress: tx.sourceAddress};
     
     walletService.createTx(wallet, txp, function(err, ctxp) {
       if (err) {

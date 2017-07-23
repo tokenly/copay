@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog, counterpartyService, bvamService, timeService, feeService, appConfigService) {
+angular.module('copayApp.controllers').controller('tabWalletController', function($scope, $rootScope, $interval, $timeout, $filter, $log, $ionicModal, $ionicPopover, $state, $stateParams, $ionicHistory, profileService, lodash, configService, platformInfo, walletService, txpModalService, externalLinkService, popupService, addressbookService, storageService, $ionicScrollDelegate, $window, bwcError, gettextCatalog, counterpartyService, bvamService, timeService, feeService, appConfigService, $location) {
 
   var HISTORY_SHOW_LIMIT = 10;
   var currentTxHistoryPage = 0;
@@ -52,7 +52,19 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
       $scope.txps = [];
       return;
     }
+    lodash.each(txps, function(txp){
+        txp.ourAddress = false;
+        if(txp.customData){
+            if(txp.customData.sourceAddress){
+                txp.ourAddress = txp.customData.sourceAddress;
+            }
+            else if(txp.customData.counterparty){
+                txp.ourAddress = txp.customData.counterparty.sourceAddress;
+            }
+        }
+    });
     $scope.txps = lodash.sortBy(txps, 'createdOn').reverse();
+
   };
 
   var analyzeUtxosDone;
@@ -212,6 +224,11 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
               if(xcpHistory[i].action == "sent"){
                   if(xcpHistory[i].counterparty.asset){
                     xcpHistory[i].ourAddress = xcpHistory[i].customData.counterparty.sourceAddress;
+                  }
+                  else{
+                      if(xcpHistory[i].customData && xcpHistory[i].customData.sourceAddress){
+                          xcpHistory[i].ourAddress = xcpHistory[i].customData.sourceAddress;
+                      }
                   }
               }
               else{
@@ -482,9 +499,10 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   
   
   $scope.onWalletSelect = function(wallet) {
-    $scope.wallet = wallet;
     $rootScope.wallet = wallet;
-    $scope.loadWalletAddresses();
+    $state.go('tabs.wallet', {
+      walletId: wallet.id,
+    });
   };
 
   $scope.showWalletSelector = function() {
@@ -493,26 +511,7 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
     $scope.showWallets = true;
   };  
   
-  $scope.txIsOurs = function(tx) {
-      tx.ourAddress = false;
-      var outputs = tx.outputs;
-      if(tx.action == "sent"){
-          //come back to this
-          return true;
-      }
-      var result = false;
-      for(var i = 0; i < tx.outputs.length; i++){
-          for(var i2 = 0; i2 < $scope.addressList.length; i2++){
-              if($scope.addressList[i2].address == tx.outputs[i].address){
-                  result = true;
-                  tx.ourAddress = $scope.addressList[i2].address;
-                  break;
-              }
-          }
-      }
-      return result;
-  };
-
+  
   function setAndroidStatusBarColor() {
     var SUBTRACT_AMOUNT = 15;
     var walletColor;
