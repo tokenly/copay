@@ -1069,9 +1069,6 @@ function setWalletSelector(network, minAmount, cb) {
     
     usingCustomFee = scope.feeLevel == 'custom' ? true : false;
     scope.usingCustomFee = usingCustomFee;
-    console.log('derp');
-    console.log(scope);
-    console.log(tx);
 
     //if (usingCustomFee) {
       scope.customFeePerKB = tx.feeRate * 1024;
