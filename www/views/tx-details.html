@@ -98,6 +98,10 @@
           </div>
           <i class="icon bp-arrow-right"></i>
         </a>
+        <div class="item single-line" ng-if="btx.counterparty.asset">
+            <span class="label">Counterparty BTC "dust"</span>
+            <span class="item-note">{{btx.amountValueStr || '...'}} BTC</span>
+        </div>        
         <div class="item" ng-if="btx.action != 'received'">
           <span class="label" translate>Fee</span>
           <span class="m10l">{{btx.feeStr || '...'}}</span>

@@ -111,6 +111,10 @@
             {{tx.message}}
           </span>
         </div>
+        <div class="item single-line" ng-if="tx.customData.isCounterparty">
+            <span class="label">Counterparty BTC "dust"</span>
+            <span class="item-note">{{tx.amountValueStr || '...'}} BTC</span>
+        </div>                
         <div class="item">
           <span class="label">{{'Fee:' | translate}} {{tx.feeLevelStr | translate}}</span>
           <span class="m10l">{{tx.feeStr || '...'}}</span>
