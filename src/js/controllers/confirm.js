@@ -83,6 +83,9 @@ angular.module('copayApp.controllers').controller('confirmController', function(
     
     if($scope.customFeeRate){
         config.wallet.settings.customFeeLevel = parseInt($scope.customFeeRate); //sync to settings
+        configService.set({wallet: {settings: {customFeeLevel: $scope.customFeeRate}}}, function(err) {
+            if (err) $log.debug(err);
+        });                
         $scope.currentFeeLevel = 'custom';
     }
     else{
@@ -1097,8 +1100,11 @@ function setWalletSelector(network, minAmount, cb) {
 
       tx.feeLevel = newFeeLevel;
       if (usingCustomFee) {
-          tx.feeRate = parseInt(customFeePerKB / 1024);
-          config.wallet.settings.customFeeLevel = tx.feeRate; //sync with settings
+        tx.feeRate = parseInt(customFeePerKB / 1024);
+        config.wallet.settings.customFeeLevel = tx.feeRate; //sync with settings
+        configService.set({wallet: {settings: {customFeeLevel: tx.feeRate}}}, function(err) {
+            if (err) $log.debug(err);
+        });          
       }
 
       updateTx(tx, wallet, {
