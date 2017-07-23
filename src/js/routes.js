@@ -1321,8 +1321,10 @@ angular.module('copayApp').config(function(historicLogProvider, $provide, $logPr
     }
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        /*
       $log.debug('Route change from:', fromState.name || '-', ' to:', toState.name);
       $log.debug('            toParams:' + JSON.stringify(toParams || {}));
       $log.debug('            fromParams:' + JSON.stringify(fromParams || {}));
+      */
     });
   });
