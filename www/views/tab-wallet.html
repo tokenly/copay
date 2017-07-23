@@ -123,6 +123,11 @@
           </span>
         </div>
       </div>
+      
+        <p>
+          <a ng-click="onRefresh()" title="Refresh balances" id="refresh-inventory" style="cursor: pointer; margin-left: 15px;"><i class="icon ico-sync" id="refresh-inventory-icon"></i> Refresh</a>
+        </p>       
+      
       <div class="list" ng-if="txps[0]">
         <!-- <div class="item item-heading" translate>
           <span ng-show="requiresMultipleSignatures" translate>Payment Proposals</span>

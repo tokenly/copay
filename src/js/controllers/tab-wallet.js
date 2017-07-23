@@ -324,10 +324,13 @@ angular.module('copayApp.controllers').controller('tabWalletController', functio
   };
 
   $scope.onRefresh = function() {
+    document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(360deg)';
     $timeout(function() {
       $scope.$broadcast('scroll.refreshComplete');
+      document.getElementById('refresh-inventory-icon').style.webkitTransform = 'rotate(0deg)';  
     }, 300);
     $scope.updateAll(true);
+    
   };
 
   $scope.updateAll = function(force, cb)  {
