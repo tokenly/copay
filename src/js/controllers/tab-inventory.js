@@ -3,12 +3,14 @@
 angular.module('copayApp.controllers').controller('tabInventoryController', function($rootScope, $scope, $location, $timeout, $log, $ionicModal, $state, $ionicHistory, $ionicPopover, storageService, platformInfo, walletService, profileService, configService, lodash, gettextCatalog, popupService, bwcError, counterpartyService, ongoingProcess, bvamService) {
 
   var listeners = [];
+  const SATOSHI_MOD = 100000000;
   $scope.isCordova = platformInfo.isCordova;
   $scope.isNW = platformInfo.isNW;
 
   $scope.inventorySearch = null;
   $scope.inventoryBalances = [];
   $scope.BTCBalances = [];
+  $scope.origBTCBalances = [];
   $scope.bvamData = [];
   $scope.addressLabels = [];
   $scope.unconfirmedInventoryBalances = [];
@@ -62,6 +64,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             }
             walletService.getAddressBalance(selectedWallet, addr.address, function(err, btc_amount){
                 $scope.BTCBalances[addr.address] = btc_amount;
+                $scope.origBTCBalances[addr.address] = btc_amount;
             });
             $scope.inventoryBalances[addr.address] = [];
             $scope.loadAddressBalances(addr.address);
@@ -117,15 +120,17 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
             var found = false;
             for(var i2 = 0; i2 < balances.length; i2++){
                 var balance = balances[i2];
-                if(balance.tokenName == unconf.tokenName){
-                    balance.quantityFloatReceiving = unconf.quantityFloatReceiving;
-                    balance.quantityFloatSending = unconf.quantityFloatSending;
-                    $scope.inventoryBalances[address][i2] = balance;
-                    found = true;
-                    break;
+                if(balance.tokenName != 'BTC'){
+                    if(balance.tokenName == unconf.tokenName){
+                        balance.quantityFloatReceiving = unconf.quantityFloatReceiving;
+                        balance.quantityFloatSending = unconf.quantityFloatSending;
+                        $scope.inventoryBalances[address][i2] = balance;
+                        found = true;
+                        break;
+                    }
                 }
             }
-            if(!found){
+            if(!found && balances.length > 0){
                 $scope.inventoryBalances[address].push(unconf);
             }
         }
@@ -167,7 +172,6 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                             xcpHistory[i].ourAddress = xcpHistory[i].customData.sourceAddress;
                         }
                         else if(xcpHistory[i].customData.counterparty){
-                            console.log(xcpHistory[i].customData.counterparty);
                             xcpHistory[i].ourAddress = xcpHistory[i].customData.counterparty.sourceAddress;
                         }
                     }
@@ -185,7 +189,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                       }
                     }
                 }
-                if(xcpHistory[i].counterparty.asset){
+                if(xcpHistory[i].counterparty && xcpHistory[i].counterparty.asset){
                     var asset = xcpHistory[i].counterparty.asset;
                     if($scope.uniqueTokens.indexOf(asset) == -1){
                         $scope.uniqueTokens.push(asset);
@@ -193,12 +197,11 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                 }
                 unconfirmedHistory.push(xcpHistory[i]);
             }
-            console.log('asdasdadasd');
-            console.log(unconfirmedHistory);
+
             $scope.unconfirmedHistory = unconfirmedHistory;
             lodash.each(unconfirmedHistory, function(tx){
                 if(!tx.counterparty.asset){
-                    return;
+                    //return;
                 }
                 if(tx.action == 'sent'){
                     var tx_source = null;
@@ -208,59 +211,107 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                     else if(tx.counterparty && tx.counterparty.source){
                         tx_source = tx.counterparty.source;
                     }
+                    else if(tx.customData && tx.customData.sourceAddress){
+                        tx_source = tx.customData.sourceAddress;
+                    }
                     if(!tx_source){
                         return;
+                    }
+                    var asset = 'BTC';
+                    var destination = null;
+                    if(tx.counterparty.asset){
+                        asset = tx.counterparty.asset;
+                        destination = tx.counterparty.destination;
+                    }
+                    if(tx.addressTo){
+                        destination = tx.addressTo;
                     }
                     if(!$scope.unconfirmedInventoryBalances[tx_source]){
                         $scope.unconfirmedInventoryBalances[tx_source] = [];
                     }                    
                     var balance_found = false;
-                    lodash.find($scope.unconfirmedInventoryBalances[tx_source], {tokenName: tx.counterparty.asset}, function(current_balance){
+                    lodash.find($scope.unconfirmedInventoryBalances[tx_source], {tokenName: asset}, function(current_balance){
                         balance_found = true;
-                        current_balance.quantityFloatSending += tx.counterparty.quantityFloat;
+                        if(tx.counterparty.asset){
+                            current_balance.quantityFloatSending += tx.counterparty.quantityFloat;
+                        }
+                        else{
+                            current_balance.quantityFloatSending += parseFloat((parseFloat((tx.amount / SATOSHI_MOD).toFixed(8)) + parseFloat((tx.fees / SATOSHI_MOD).toFixed(8))));
+                        }
                     });
                     if(!balance_found){
                         //create a new balance entry for the address
-                        var balance_entry = {
-                            amountStr: "0",
-                            bg_color: stringToColor(tx.counterparty.asset),
-                            divisible: tx.counterparty.divisible,
-                            quantityFloat: 0,
-                            quantityFloatReceiving: 0,
-                            quantityFloatSending: tx.counterparty.quantityFloat,
-                            quantitySat: 0,
-                            tokenName: tx.counterparty.asset
-                        };
+                        if(!tx.counterparty.asset){
+                            var balance_entry = {
+                                amountStr: tx.amountStr,
+                                divisible: true,
+                                quantityFloat: 0,
+                                quantityFloatReceiving: 0,
+                                quantityFloatSending: parseFloat((parseFloat((tx.amount / SATOSHI_MOD).toFixed(8)) + parseFloat((tx.fees / SATOSHI_MOD).toFixed(8)))),
+                                quantitySat: 0,
+                                tokenName: 'BTC'
+                            };
+                        }
+                        else{
+                            var balance_entry = {
+                                amountStr: "0",
+                                bg_color: stringToColor(asset),
+                                divisible: tx.counterparty.divisible,
+                                quantityFloat: 0,
+                                quantityFloatReceiving: 0,
+                                quantityFloatSending: tx.counterparty.quantityFloat,
+                                quantitySat: 0,
+                                tokenName: tx.counterparty.asset
+                            };
+                        }
                         $scope.unconfirmedInventoryBalances[tx_source].push(balance_entry);
                     }
                 }
                 else{ //received
-                    if(!$scope.unconfirmedInventoryBalances[tx.counterparty.destination]){
-                        $scope.unconfirmedInventoryBalances[tx.counterparty.destination] = [];
+                    if(!$scope.unconfirmedInventoryBalances[destination]){
+                        $scope.unconfirmedInventoryBalances[destination] = [];
                     }                    
                     var balance_found = false;
-                    lodash.find($scope.unconfirmedInventoryBalances[tx.counterparty.destination], {tokenName: tx.counterparty.asset}, function(current_balance){
+                    lodash.find($scope.unconfirmedInventoryBalances[destination], {tokenName: tx.counterparty.asset}, function(current_balance){
                         balance_found = true;
-                        current_balance.quantityFloatReceiving += tx.counterparty.quantityFloat;
+                        if(tx.counterparty){
+                            current_balance.quantityFloatReceiving += tx.counterparty.quantityFloat;
+                        }
+                        else{
+                            current_balance.quantityFloatReceiving += parseFloat((tx.amount / SATOSHI_MOD).toFixed(8));
+                        }
                     });
                     if(!balance_found){
                         //create a new balance entry for the address
-                        var balance_entry = {
-                            amountStr: "0",
-                            bg_color: stringToColor(tx.counterparty.asset),
-                            divisible: tx.counterparty.divisible,
-                            quantityFloat: 0,
-                            quantityFloatReceiving: tx.counterparty.quantityFloat,
-                            quantityFloatSending: 0,
-                            quantitySat: 0,
-                            tokenName: tx.counterparty.asset
-                        };
-                        $scope.unconfirmedInventoryBalances[tx.counterparty.destination].push(balance_entry);
+                        if(!tx.counterparty){
+                            var balance_entry = {
+                                amountStr: tx.amountStr,
+                                divisible: true,
+                                quantityFloat: 0,
+                                quantityFloatReceiving: parseFloat((tx.amount / SATOSHI_MOD).toFixed(8)),
+                                quantityFloatSending: 0,
+                                quantitySat: 0,
+                                tokenName: 'BTC'
+                            };
+                        }
+                        else{
+                            var balance_entry = {
+                                amountStr: "0",
+                                bg_color: stringToColor(asset),
+                                divisible: tx.counterparty.divisible,
+                                quantityFloat: 0,
+                                quantityFloatReceiving: tx.counterparty.quantityFloat,
+                                quantityFloatSending: 0,
+                                quantitySat: 0,
+                                tokenName: tx.counterparty.asset
+                            };
+                        }
+                        $scope.unconfirmedInventoryBalances[destination].push(balance_entry);
                     }
                 }
             });
 
-            $timeout(function() {             
+            $timeout(function() {            
                 $scope.$apply();
             });            
         });

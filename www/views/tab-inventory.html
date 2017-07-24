@@ -36,7 +36,8 @@
                                 <span ng-if="BTCBalances[addr.address] != undefined">{{ numberWithCommas(BTCBalances[addr.address] / 100000000) }}</span>
                                 <span ng-if="BTCBalances[addr.address] == undefined">loading...</span>
                             <div ng-repeat="xcp in inventoryBalances[addr.address]" ng-if="xcp.tokenName == 'XCP'">
-                                <strong>XCP:</strong> {{ numberWithCommas(xcp.quantityFloat) }}
+                                <strong>XCP:</strong> {{ numberWithCommas(xcp.quantityFloat + xcp.quantityFloatReceiving - xcp.quantityFloatSending) }}
+                                <small ng-if="xcp.quantityFloatReceiving > 0 || xcp.quantityFloatSending > 0">(unconfirmed)</small>
                             </div>
                         </div>
                         <div class="pocket-title">
