@@ -161,16 +161,29 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                 }
                 xcpHistory[i].ourAddress = false;
                 var outputs = xcpHistory[i].outputs;
-                if(xcpHistory[i].action == "sent"){
-                  //come back to this
+                if(xcpHistory[i].action == "sent"){                   
+                    if(xcpHistory[i].customData){
+                        if(xcpHistory[i].customData.sourceAddress){
+                            xcpHistory[i].ourAddress = xcpHistory[i].customData.sourceAddress;
+                        }
+                        else if(xcpHistory[i].customData.counterparty){
+                            console.log(xcpHistory[i].customData.counterparty);
+                            xcpHistory[i].ourAddress = xcpHistory[i].customData.counterparty.sourceAddress;
+                        }
+                    }
+                    else if(xcpHistory[i].counterparty && xcpHistory[i].counterparty.source){
+                        xcpHistory[i].ourAddress = xcpHistory[i].counterparty.source;
+                    }
                 }
-                for(var i2 = 0; i2 < xcpHistory[i].outputs.length; i2++){
-                  for(var i3 = 0; i3 < $scope.address_list.length; i3++){
-                      if($scope.address_list[i3].address == xcpHistory[i].outputs[i2].address){
-                          xcpHistory[i].ourAddress = $scope.address_list[i3].address;
-                          break;
+                else{
+                    for(var i2 = 0; i2 < xcpHistory[i].outputs.length; i2++){
+                      for(var i3 = 0; i3 < $scope.address_list.length; i3++){
+                          if($scope.address_list[i3].address == xcpHistory[i].outputs[i2].address){
+                              xcpHistory[i].ourAddress = $scope.address_list[i3].address;
+                              break;
+                          }
                       }
-                  }
+                    }
                 }
                 if(xcpHistory[i].counterparty.asset){
                     var asset = xcpHistory[i].counterparty.asset;
@@ -180,19 +193,51 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                 }
                 unconfirmedHistory.push(xcpHistory[i]);
             }
-
+            console.log('asdasdadasd');
+            console.log(unconfirmedHistory);
             $scope.unconfirmedHistory = unconfirmedHistory;
             lodash.each(unconfirmedHistory, function(tx){
                 if(!tx.counterparty.asset){
                     return;
                 }
                 if(tx.action == 'sent'){
-                    
+                    var tx_source = null;
+                    if(tx.customData && tx.customData.counterparty){
+                        tx_source = tx.customData.counterparty.sourceAddress;
+                    }
+                    else if(tx.counterparty && tx.counterparty.source){
+                        tx_source = tx.counterparty.source;
+                    }
+                    if(!tx_source){
+                        return;
+                    }
+                    if(!$scope.unconfirmedInventoryBalances[tx_source]){
+                        $scope.unconfirmedInventoryBalances[tx_source] = [];
+                    }                    
+                    var balance_found = false;
+                    lodash.find($scope.unconfirmedInventoryBalances[tx_source], {tokenName: tx.counterparty.asset}, function(current_balance){
+                        balance_found = true;
+                        current_balance.quantityFloatSending += tx.counterparty.quantityFloat;
+                    });
+                    if(!balance_found){
+                        //create a new balance entry for the address
+                        var balance_entry = {
+                            amountStr: "0",
+                            bg_color: stringToColor(tx.counterparty.asset),
+                            divisible: tx.counterparty.divisible,
+                            quantityFloat: 0,
+                            quantityFloatReceiving: 0,
+                            quantityFloatSending: tx.counterparty.quantityFloat,
+                            quantitySat: 0,
+                            tokenName: tx.counterparty.asset
+                        };
+                        $scope.unconfirmedInventoryBalances[tx_source].push(balance_entry);
+                    }
                 }
                 else{ //received
                     if(!$scope.unconfirmedInventoryBalances[tx.counterparty.destination]){
                         $scope.unconfirmedInventoryBalances[tx.counterparty.destination] = [];
-                    }
+                    }                    
                     var balance_found = false;
                     lodash.find($scope.unconfirmedInventoryBalances[tx.counterparty.destination], {tokenName: tx.counterparty.asset}, function(current_balance){
                         balance_found = true;
@@ -214,7 +259,8 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
                     }
                 }
             });
-            $timeout(function() {
+
+            $timeout(function() {             
                 $scope.$apply();
             });            
         });
@@ -282,7 +328,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
         $timeout(function() {
             $scope.applyUnconfirmedBalances(address);
             $scope.$apply();
-        });          
+        }, 300);          
     });
       
   };
