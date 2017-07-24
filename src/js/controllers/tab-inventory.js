@@ -328,7 +328,7 @@ angular.module('copayApp.controllers').controller('tabInventoryController', func
   }
 
   
-  $scope.onWalletSelect = function(wallet, refresh = true) {
+  $scope.onWalletSelect = function(wallet, refresh) {
     $scope.wallet = wallet;
     $rootScope.wallet = wallet;
     if(refresh){

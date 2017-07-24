@@ -4,7 +4,7 @@ angular.module('copayApp.controllers').controller('preferencesFeeController', fu
 
   var network;
   
-  $scope.save = function(newFee, custom_fee = null) {
+  $scope.save = function(newFee, custom_fee) {
 
     $scope.currentFeeLevel = newFee;
 

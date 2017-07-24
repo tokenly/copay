@@ -265,7 +265,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
 
     // select first wallet if no wallet selected previously
     var selectedWallet = checkSelectedWallet($rootScope.wallet, $scope.wallets);
-    $scope.onWalletSelect(selectedWallet);    
+    $scope.onWalletSelect(selectedWallet, true);    
     
     $scope.loadWalletAddresses();
     
@@ -290,11 +290,6 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.loadWalletTransactions();
   });
   
-  $scope.onWalletSelect = function(wallet) {
-    $scope.wallet = wallet;
-    $rootScope.wallet = wallet;
-    loadWalletAddresses();
-  };  
   
   var checkSelectedWallet = function(wallet, wallets) {
     if (!wallet) return wallets[0];
@@ -611,7 +606,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
   
   
-  $scope.onWalletSelect = function(wallet, refresh = true) {
+  $scope.onWalletSelect = function(wallet, refresh) {
     $scope.wallet = wallet;
     $rootScope.wallet = wallet;
     if(refresh){
@@ -627,7 +622,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
     $scope.showWallets = true;
   };      
   
-  $scope.validateAddress = function(address, require = false){
+  $scope.validateAddress = function(address, require){
       if(require && (address == null || address.trim() == '')){
           $scope.errors.to_address = 'Bitcoin destination address required.';
           return false;
@@ -642,7 +637,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
       return is_valid;
   };
 
-  $scope.validateAmount = function(amount, require = false){
+  $scope.validateAmount = function(amount, require){
     var token = $scope.form_data.send_token;
     var balance = $scope.token_balance;
     
@@ -663,7 +658,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
 
-  $scope.validateBTCDust = function(amount, require = false){
+  $scope.validateBTCDust = function(amount, require){
     var balance = $scope.btc_balance;
     if(require && amount == null){
         $scope.errors.btc_dust = 'Dust size required';
@@ -689,7 +684,7 @@ angular.module('copayApp.controllers').controller('tabSendController', function(
   };
 
 
-  $scope.validateFeeRate = function(rate, require = false){
+  $scope.validateFeeRate = function(rate, require){
     if(rate != null && rate <= 0){
         $scope.errors.fee_rate = 'Invalid amount';
         return false;

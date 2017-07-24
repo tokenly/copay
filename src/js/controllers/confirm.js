@@ -146,7 +146,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
             }, 
             function(err, utxos) {
                 if (err) return;
-                var filter_utxos = filterUtxosForBTCSend(utxos, $scope.toAmount);
+                var filter_utxos = filterUtxosForBTCSend(utxos, $scope.toAmount, 1);
                 if(!filter_utxos.inputs){
                     $scope.insufficientFunds = true;
                     $scope.buttonText = 'Insufficient Funds';
@@ -267,7 +267,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         return filterUtxosForBTCSend(utxos, dust_size, 1, 45);
     }
     
-    function filterUtxosForBTCSend(utxos, amount, input_count = 1, extra_bytes = null){
+    function filterUtxosForBTCSend(utxos, amount, input_count, extra_bytes){
         var fee_estimate = estimateTxFeeFromSize(input_count, 2, $scope.currentFeeRate, extra_bytes); //get initial fee estimate
         var total_amount = parseInt(amount) + parseInt(fee_estimate.fee);
         var dust_size = 141 * $scope.currentFeeRate; //minimum value worth spending
@@ -320,7 +320,7 @@ angular.module('copayApp.controllers').controller('confirmController', function(
         return {"inputs": inputs, "amount": amount, "fee": fee_estimate, "change": change};
     }
     
-    function estimateTxFeeFromSize(inputs, outputs, fee_rate, extra_bytes = 0){
+    function estimateTxFeeFromSize(inputs, outputs, fee_rate, extra_bytes){
         var input_bytes = 141 * inputs;
         var output_bytes = 34 * outputs;
         var extra = 10;

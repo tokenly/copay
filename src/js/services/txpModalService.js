@@ -12,7 +12,7 @@ angular.module('copayApp.services').factory('txpModalService', function(configSe
 
 
 
-  root.open = function(tx, bvamData = null, addressLabels = null) {
+  root.open = function(tx, bvamData, addressLabels) {
     var wallet = tx.wallet ? tx.wallet : profileService.getWallet(tx.walletId);
     var config = configService.getSync().wallet;
     var scope = $rootScope.$new(true);

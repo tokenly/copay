@@ -91,17 +91,11 @@ angular.module('copayApp.controllers').controller('tabsController', function($ro
   });
 
 
-  $scope.openWallet = function(wallet = null) {
+  $scope.openWallet = function(wallet) {
     
     $ionicHistory.nextViewOptions({
         disableAnimate: true
     });    
-    
-
-    //if($state.current.name != 'tabs.wallet'){
-        //$state.go('tabs.home');
-    //}
-    
 
     if(wallet == undefined || wallet == null){
         var wallets = $rootScope.wallets;
