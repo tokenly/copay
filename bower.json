@@ -19,7 +19,7 @@
     "moment": "2.10.3",
     "ng-lodash": "0.2.3",
     "qrcode-decoder-js": "*",
-    "trezor-connect": "~1.0.1",
+    "trezor-connect": "v4",
     "ng-csv": "~0.3.6",
     "ion-datetime-picker": "^0.4.1"
   },
