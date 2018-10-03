@@ -21,7 +21,14 @@
   </section>
 
   <section class="middle tab-bar-section">
-    <h1 class="title ellipsis">
+    <div ng-show="!hideCloseWarning" style="margin-bottom: 0px; background: #900; font-weight: bold; font-size: 85%; padding: 12px; line-height: 110%">
+        IMPORTANT: Token Pockets will be ceasing operation on January 1st, 2019.<br/>
+        Please move all tokens and bitcoin to another Counterparty compatible wallet before then to ensure access to your funds.
+        &nbsp;&nbsp;&nbsp;<a ng-click="hideCloseWarning = true" style="color: white;">
+           &times; <span style="text-decoration: underline;" translate>Close</span>
+        </a>
+    </div>
+    <h1 class="title ellipsis" style="margin-top: 8px; line-height: 100%;">
       {{(titleSection|translate) || (index.alias || index.walletName)}}
     </h1>
   </section>
